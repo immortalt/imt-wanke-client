@@ -13,7 +13,8 @@ namespace imt_wankeyun_client.Helpers
                 string json = JsonHelper.Serialize(settings);
                 var wSettings = EncryptHelper.EncryptDES(json, "hahasetr");
                 Debug.WriteLine("WriteSettings " + json);
-                System.IO.File.WriteAllText("Settings.ini", wSettings);
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\imt-wanke-settings.ini";
+                System.IO.File.WriteAllText(path, wSettings);
             }
             catch (Exception ex)
             {
@@ -24,7 +25,8 @@ namespace imt_wankeyun_client.Helpers
         {
             try
             {
-                var txt = System.IO.File.ReadAllText("Settings.ini");
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\imt-wanke-settings.ini";
+                var txt = System.IO.File.ReadAllText(path);
                 var json = EncryptHelper.DecryptDES(txt, "hahasetr");
                 Debug.WriteLine("ReadSettings " + json);
                 var wSettings = JsonHelper.Deserialize<WankeSettings>(json);
