@@ -38,8 +38,9 @@
     <MinimumRequiredVersion>0.0.0.4</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationRevision>17</ApplicationRevision>
     <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
