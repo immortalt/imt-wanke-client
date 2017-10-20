@@ -210,6 +210,7 @@ namespace imt_wankeyun_client
             {
                 if (this._deviceInfos == null)
                 {
+                    double yesAllCoin = 0;
                     _deviceInfos = new ObservableCollection<DeviceInfoVM>();
                     foreach (var t in ApiHelper.userBasicDatas)
                     {
@@ -218,6 +219,7 @@ namespace imt_wankeyun_client
                             var ubd = t.Value;
                             var device = ApiHelper.userDevices[ubd.phone];
                             var userInfo = ApiHelper.userInfos[ubd.phone];
+                            yesAllCoin += userInfo.yes_wkb;
                             var di = new DeviceInfoVM
                             {
                                 phone = ubd.phone,
@@ -248,6 +250,7 @@ namespace imt_wankeyun_client
                             Debug.Write(ex.Message);
                         }
                     }
+                    tbk_yesAllCoin.Text = yesAllCoin.ToString();
                 }
                 return _deviceInfos;
             }

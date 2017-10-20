@@ -64,7 +64,7 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="昨日挖矿:"/>
-                                                                <TextBlock Foreground="Red" Text="{Binding Path=yes_wkb}"/>
+                                                                <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="激活天数:"/>
@@ -173,6 +173,9 @@
                                 <CheckBox x:Name="chk_autoRefresh" Margin="175,7,0,0" Width="105" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" Click="chk_autoRefresh_Click" IsChecked="True"
                                           >启用自动刷新</CheckBox>
+                                <TextBlock Margin="284,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
+                                          >昨日总收入：<Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod">30</Run></TextBlock>
                             </Grid>
                         </TabItem>
                     </TabControl>
