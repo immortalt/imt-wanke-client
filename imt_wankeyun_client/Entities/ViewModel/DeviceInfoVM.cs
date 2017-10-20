@@ -14,6 +14,7 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string device_name { get; set; }
         public string ip { get; set; }
         public string status { get; set; }
+        public string status_color { get; set; }
         public string dcdn_upnp_status { get; set; }
         public string system_version { get; set; }
         public string dcdn_download_speed { get; set; }

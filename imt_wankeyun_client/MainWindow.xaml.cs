@@ -226,6 +226,7 @@ namespace imt_wankeyun_client
                                 ip = device.ip,
                                 device_name = device.device_name,
                                 status = device.status,
+                                status_color = device.status == "online" ? "Green" : "Red",
                                 dcdn_upnp_status = device.dcdn_upnp_status,
                                 system_version = device.system_version,
                                 dcdn_download_speed = device.dcdn_download_speed.ToString(),
