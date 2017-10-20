@@ -321,5 +321,21 @@ namespace imt_wankeyun_client
             Hyperlink link = sender as Hyperlink;
             Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
+        private void btu_delete_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            var result = MessageBox.Show($"确定删除账号{phone}?", "提示", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                ApiHelper.userBasicDatas.Remove(phone);
+                ApiHelper.userDevices.Remove(phone);
+                ApiHelper.userInfos.Remove(phone);
+                settings.loginDatas = settings.loginDatas.Where(t => t.phone != phone).ToList();
+                RefreshStatus();
+                SettingHelper.WriteSettings(settings);
+                MessageBox.Show($"删除账号{phone}成功", "提示");
+            }
+        }
     }
 }
