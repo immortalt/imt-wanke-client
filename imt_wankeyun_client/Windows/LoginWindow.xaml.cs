@@ -31,7 +31,7 @@ namespace imt_wankeyun_client.Windows
         public LoginWindow()
         {
             InitializeComponent();
-            Uri iconUri = new Uri("pack://application:,,,/icon.ico", UriKind.RelativeOrAbsolute);
+            Uri iconUri = new Uri("pack://application:,,,/img/icon.ico", UriKind.RelativeOrAbsolute);
             this.Icon = BitmapFrame.Create(iconUri);
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)

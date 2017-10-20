@@ -112,13 +112,13 @@
                                                     <DataTemplate>
                                                         <StackPanel>
                                                             <StackPanel>
-                                                                <TextBlock Text="数量:"/>
+                                                                <TextBlock Text="运行:"/>
                                                                 <TextBlock Text="{Binding Path=dcdn_clients_count}"/>
                                                             </StackPanel>
-                                                            <StackPanel>
+                                                            <!--<StackPanel>
                                                                 <TextBlock Text="上传:"/>
                                                                 <TextBlock Text="{Binding Path=dcdn_upload_speed}"/>
-                                                            </StackPanel>
+                                                            </StackPanel>-->
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
