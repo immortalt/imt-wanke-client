@@ -6,3 +6,5 @@
 允许任何人观看、修改，并散播本项目的源代码，
 条件是如果你要发布修改后的版本，就要连源代码一起公布，同样遵守GPLv3协议，
 否则将承担相应的法律责任。
+ ## Software Preview
+![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot1.png)
