@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using imt_wankeyun_client.Entities.Account.Activate;
 using System.Text.RegularExpressions;
 using System.Windows.Documents;
+using imt_wankeyun_client.Entities.WKB;
 
 namespace imt_wankeyun_client
 {
@@ -57,7 +58,7 @@ namespace imt_wankeyun_client
                 SettingHelper.WriteSettings(settings);
             }
             StatusTimer = new DispatcherTimer();
-            StatusTimer.Interval = TimeSpan.FromSeconds(6);
+            StatusTimer.Interval = TimeSpan.FromSeconds(15);
             StatusTimer.Tick += StatusTimer_Tick;
             StatusTimer.Start();
         }
@@ -100,6 +101,10 @@ namespace imt_wankeyun_client
                 if (lp)
                 {
                     var gui = await GetUserInfo(phone);
+                    if (gui)
+                    {
+                        var his = await GetIncomeHistory(phone);
+                    }
                 }
             }
             deviceInfos = null;
@@ -127,7 +132,7 @@ namespace imt_wankeyun_client
             switch (resp.statusCode)
             {
                 case HttpStatusCode.OK:
-                    var pr = resp.data as PeerRoot;
+                    var pr = resp.data as PeerResponse;
                     if (pr.rtn == 0)
                     {
                         if (pr.result.Count > 1)
@@ -196,6 +201,40 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
+        async Task<bool> GetIncomeHistory(string phone, int page = 0)
+        {
+            HttpMessage resp = await ApiHelper.GetIncomeHistory(phone, page);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var r = resp.data as IncomeHistoryResponse;
+                    if (r.iRet == 0)
+                    {
+                        var incomeHistory = r.data;
+                        if (incomeHistory != null)
+                        {
+                            if (!ApiHelper.incomeHistorys.ContainsKey(phone))
+                            {
+                                ApiHelper.incomeHistorys.Add(phone, incomeHistory);
+                            }
+                            else
+                            {
+                                ApiHelper.incomeHistorys[phone] = incomeHistory;
+                            }
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"GetIncomeHistory-获取数据出错{r.iRet}:{r.sMsg}");
+                    }
+                    return false;
+                default:
+                    Debug.WriteLine("GetIncomeHistory-网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
         private void StatusTimer_Tick(object sender, EventArgs e)
         {
             if (settings.autoRefresh)
@@ -211,6 +250,7 @@ namespace imt_wankeyun_client
                 if (this._deviceInfos == null)
                 {
                     double yesAllCoin = 0;
+                    double hisAllCoin = 0;
                     _deviceInfos = new ObservableCollection<DeviceInfoVM>();
                     foreach (var t in ApiHelper.userBasicDatas)
                     {
@@ -219,7 +259,9 @@ namespace imt_wankeyun_client
                             var ubd = t.Value;
                             var device = ApiHelper.userDevices[ubd.phone];
                             var userInfo = ApiHelper.userInfos[ubd.phone];
+                            var incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
                             yesAllCoin += userInfo.yes_wkb;
+                            hisAllCoin += incomeHistory.totalIncome;
                             var di = new DeviceInfoVM
                             {
                                 phone = ubd.phone,
@@ -237,11 +279,11 @@ namespace imt_wankeyun_client
                                 onecloud_coin = (device.features.onecloud_coin / 10E8).ToString(),
                                 dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
                                 dcdn_upnp_message = device.dcdn_upnp_message,
-                                imported = device.imported,
                                 upgradeable = device.upgradeable ? "可升级" : "已最新",
                                 ip_info = $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}",
                                 yes_wkb = userInfo.yes_wkb.ToString(),
                                 activate_days = userInfo.activate_days.ToString(),
+                                totalIncome = incomeHistory.totalIncome.ToString(),
                             };
                             _deviceInfos.Add(di);
                         }
@@ -251,6 +293,7 @@ namespace imt_wankeyun_client
                         }
                     }
                     tbk_yesAllCoin.Text = yesAllCoin.ToString();
+                    tbk_hisAllCoin.Text = hisAllCoin.ToString();
                 }
                 return _deviceInfos;
             }

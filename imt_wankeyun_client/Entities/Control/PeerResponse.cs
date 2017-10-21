@@ -88,7 +88,7 @@ namespace imt_wankeyun_client.Entities.Control
     {
         public List<Device> devices { get; set; }
     }
-    public class PeerRoot
+    public class PeerResponse
     {
         public int rtn { get; set; }
         public List<object> result { get; set; }

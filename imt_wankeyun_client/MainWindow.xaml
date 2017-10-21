@@ -67,19 +67,26 @@
                                                                 <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
                                                             </StackPanel>
                                                             <StackPanel>
-                                                                <TextBlock Text="激活天数:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=activate_days}"/>
+                                                                <TextBlock Text="历史总收入:"/>
+                                                                <TextBlock Foreground="Goldenrod" Text="{Binding Path=totalIncome}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="状态">
+                                            <GridViewColumn Header="设备">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel>
-                                                            <TextBlock Text="{Binding Path=status}"
+                                                            <StackPanel>
+                                                                <TextBlock Text="运行状态:"/>
+                                                                <TextBlock Text="{Binding Path=status}"
                                                                        Foreground="{Binding Path=status_color}"/>
+                                                            </StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="激活天数:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding Path=activate_days}"/>
+                                                            </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
@@ -175,7 +182,10 @@
                                           >启用自动刷新</CheckBox>
                                 <TextBlock Margin="284,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
-                                          >昨日总收入：<Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod">30</Run></TextBlock>
+                                          >昨日总收入：<Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
+                                <TextBlock Margin="544,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
+                                          >历史总收入：<Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
                             </Grid>
                         </TabItem>
                     </TabControl>

@@ -23,11 +23,11 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string onecloud_coin { get; set; }
         public string dcdn_clients_count { get; set; }
         public string dcdn_upnp_message { get; set; }
-        public string imported { get; set; }
         public string upgradeable { get; set; }
         public string ip_info { get; set; }
         public string yes_wkb { get; set; }
         public string activate_days { get; set; }
-        
+        public string totalIncome { get; set; }
+
     }
 }

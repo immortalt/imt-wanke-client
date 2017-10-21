@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using imt_wankeyun_client.Entities.Control;
 using imt_wankeyun_client.Entities.Account.Activate;
+using imt_wankeyun_client.Entities.WKB;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -28,6 +29,8 @@ namespace imt_wankeyun_client.Helpers
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
         internal static Dictionary<string, Device> userDevices = new Dictionary<string, Device>();
         internal static Dictionary<string, UserInfo> userInfos = new Dictionary<string, UserInfo>();
+        internal static Dictionary<string, IncomeHistory> incomeHistorys = new Dictionary<string, IncomeHistory>();
+        
         static RestClient GetClient(string phone)
         {
             if (!clients.ContainsKey(phone))
@@ -150,7 +153,7 @@ namespace imt_wankeyun_client.Helpers
             if (resp.StatusCode == HttpStatusCode.OK)
             {
                 Debug.WriteLine(resp.Content);
-                var root = JsonHelper.Deserialize<PeerRoot>(resp.Content);
+                var root = JsonHelper.Deserialize<PeerResponse>(resp.Content);
                 message.data = root;
             }
             else
@@ -161,7 +164,7 @@ namespace imt_wankeyun_client.Helpers
             return message;
         }
         /// <summary>
-        /// 获取设备详情
+        /// 获取用户信息
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
@@ -198,6 +201,45 @@ namespace imt_wankeyun_client.Helpers
             {
                 Debug.WriteLine(resp.Content);
                 var root = JsonHelper.Deserialize<UserInfoResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 获取玩客币收入历史
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> GetIncomeHistory(string phone, int page = 0)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("appversion", appVersion);
+            data.Add("page", page.ToString());
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiAccountUrl);
+                var request = new RestRequest($"wkb/income-history", Method.POST);
+                Debug.WriteLine(GetParams(client, data));
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine(resp.Content);
+                var root = JsonHelper.Deserialize<IncomeHistoryResponse>(resp.Content);
                 message.data = root;
             }
             else
@@ -272,6 +314,7 @@ namespace imt_wankeyun_client.Helpers
             var client = GetClient(phone);
             var imagedata = await Task.Run(() =>
             {
+                client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest(url, Method.GET);
                 return client.Execute(request);
             });

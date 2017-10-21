@@ -149,10 +149,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
-    <Compile Include="Entities\Control\Peer.cs" />
+    <Compile Include="Entities\Control\PeerResponse.cs" />
     <Compile Include="Entities\HttpMessage.cs" />
     <Compile Include="Entities\Account\LoginData.cs" />
     <Compile Include="Entities\Account\CheckRegisterResponse.cs" />
+    <Compile Include="Entities\WKB\IncomeHistoryResponse.cs" />
     <Compile Include="Entities\ViewModel\DeviceInfoVM.cs" />
     <Compile Include="Entities\WankeSettings.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
