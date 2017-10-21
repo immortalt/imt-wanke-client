@@ -25,7 +25,7 @@ namespace imt_wankeyun_client.Helpers
         static string appVersion = "1.4.5";
         static string apiAccountUrl = "https://account.onethingpcs.com";
         static string apiControlUrl = "https://control.onethingpcs.com";
-        static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
+        internal static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
         internal static Dictionary<string, Device> userDevices = new Dictionary<string, Device>();
         internal static Dictionary<string, UserInfo> userInfos = new Dictionary<string, UserInfo>();

@@ -375,9 +375,11 @@ namespace imt_wankeyun_client
             var result = MessageBox.Show($"确定删除账号{phone}?", "提示", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
+                ApiHelper.clients.Remove(phone);
                 ApiHelper.userBasicDatas.Remove(phone);
                 ApiHelper.userDevices.Remove(phone);
                 ApiHelper.userInfos.Remove(phone);
+                ApiHelper.incomeHistorys.Remove(phone);
                 settings.loginDatas = settings.loginDatas.Where(t => t.phone != phone).ToList();
                 RefreshStatus();
                 SettingHelper.WriteSettings(settings);
