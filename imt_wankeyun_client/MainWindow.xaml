@@ -177,13 +177,13 @@
                                 <Button x:Name="Btu_refreshStatus" Content="刷新" HorizontalAlignment="Left" Margin="90,3,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top" Click="Btu_refreshStatus_Click"/>
-                                <CheckBox x:Name="chk_autoRefresh" Margin="175,7,0,0" Width="105" Height="20" HorizontalAlignment="Left"
+                                <CheckBox x:Name="chk_autoRefresh" Margin="175,7,0,0" Width="75" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" Click="chk_autoRefresh_Click" IsChecked="True"
-                                          >启用自动刷新</CheckBox>
-                                <TextBlock Margin="284,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
+                                          >自动刷新</CheckBox>
+                                <TextBlock Margin="254,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
                                           >昨日总收入：<Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
-                                <TextBlock Margin="544,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="514,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
                                           >历史总收入：<Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
                             </Grid>
@@ -213,9 +213,9 @@
                     </Grid.Effect>
                     <Label Content="   功能列表" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" 
                            Background="#FFFDFDFD" Foreground="#BB48677C" Margin="0,1,0,0"/>
-                    <TabControl Margin="0,0.4,-0.2,0" Grid.ColumnSpan="2" Grid.Row="1" 
+                    <TabControl x:Name="tbc_fileList" Margin="0,0.4,-0.2,0" Grid.ColumnSpan="2" Grid.Row="1" 
                                 Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" 
-                                BorderBrush="{x:Null}" Background="{x:Null}">
+                                BorderBrush="{x:Null}" Background="{x:Null}" SelectionChanged="tbc_fileList_SelectionChanged">
                         <TabItem Header="全部" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="0">
                             <TabItem.Background>
                                 <ImageBrush ImageSource="img\2.png" Stretch="UniformToFill"/>
@@ -267,9 +267,81 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
+                                <ListView Name="lv_remoteDlStatus" FontSize="14" Margin="0,31,0,-0.4">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="133" Header="状态">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <StackPanel Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                        Orientation="Horizontal">
+                                                                <Image Width="30" Height="30" Source="{Binding state_img}"></Image>
+                                                                <TextBlock Height="30" Margin="0,5,0,0" Foreground="{Binding state_color}" 
+                                                                       Text="{Binding Path=state}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="320" Header="文件名">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <TextBlock Width="310" Text="{Binding Path=name}" TextWrapping="Wrap"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="80" Header="速度">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <TextBlock Width="100" Text="{Binding Path=speed}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <!--<GridViewColumn Width="60" Header="操作">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Vertical">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Button x:Name="btu_deleteRemoteTask"
+                                                    Content="删除" Margin="2"
+                                                    CommandParameter="{Binding Path=id}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>-->
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button x:Name="btu_addRemoteDlTask" Click="btu_addRemoteDlTask_Click" Content="云添加" HorizontalAlignment="Left" Margin="10,3,0,0" 
+                                        VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                        VerticalContentAlignment="Top"/>
+                                <Button x:Name="btu_refreshRemoteDlInfo" Click="btu_refreshRemoteDlInfo_Click" Content="刷新" HorizontalAlignment="Left" Margin="90,3,0,0" 
+                                        VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                        VerticalContentAlignment="Top"/>
+                                <CheckBox x:Name="chk_refreshRemoteDl"  Margin="175,7,0,0" Width="77" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top" IsChecked="True"
+                                          >自动刷新</CheckBox>
+                                <TextBlock Margin="256,6,0,0" Width="160" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
+                                          >云添加任务：<Run x:Name="tbx_taskCount" Foreground="Green">0</Run></TextBlock>
+                                <TextBlock Margin="423,7,0,0" Width="160" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
+                                          >已完成：<Run x:Name="tbx_taskFinishedCount" Foreground="Goldenrod">0</Run></TextBlock>
                             </Grid>
                         </TabItem>
                     </TabControl>
+                    <ComboBox HorizontalAlignment="Left" Margin="86,14,0,0" 
+                        VerticalAlignment="Top" Width="113" Height="23" x:Name="cbx_curAccount"
+                                SelectedValue="{Binding Path=/, Mode=TwoWay}"
+                        VerticalContentAlignment="Top" Grid.Column="1" SelectionChanged="cbx_curAccount_SelectionChanged"/>
+                    <TextBlock Margin="12,17,0,0" Width="69" Height="20" HorizontalAlignment="Left"
+                        VerticalAlignment="Top" Grid.Column="1" Text="当前账号："/>
                 </Grid>
             </TabItem>
             <TabItem Header="设置" Margin="336,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle3}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black">

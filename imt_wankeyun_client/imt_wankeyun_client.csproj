@@ -40,7 +40,7 @@
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>28</ApplicationRevision>
+    <ApplicationRevision>29</ApplicationRevision>
     <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -150,9 +150,11 @@
     </ApplicationDefinition>
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
     <Compile Include="Entities\Control\PeerResponse.cs" />
+    <Compile Include="Entities\Control\RemoteDL\RemoteDLResponse.cs" />
     <Compile Include="Entities\HttpMessage.cs" />
     <Compile Include="Entities\Account\LoginData.cs" />
     <Compile Include="Entities\Account\CheckRegisterResponse.cs" />
+    <Compile Include="Entities\ViewModel\DlTaskVM.cs" />
     <Compile Include="Entities\WKB\IncomeHistoryResponse.cs" />
     <Compile Include="Entities\ViewModel\DeviceInfoVM.cs" />
     <Compile Include="Entities\WankeSettings.cs" />
@@ -287,6 +289,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\state_0.png" />
+    <Resource Include="img\state_12.png" />
+    <Resource Include="img\state_8.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

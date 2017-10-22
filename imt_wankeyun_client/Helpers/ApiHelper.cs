@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
@@ -14,6 +13,7 @@ using System.IO;
 using imt_wankeyun_client.Entities.Control;
 using imt_wankeyun_client.Entities.Account.Activate;
 using imt_wankeyun_client.Entities.WKB;
+using imt_wankeyun_client.Entities.Control.RemoteDL;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -25,12 +25,14 @@ namespace imt_wankeyun_client.Helpers
         static string appVersion = "1.4.5";
         static string apiAccountUrl = "https://account.onethingpcs.com";
         static string apiControlUrl = "https://control.onethingpcs.com";
+        static string apiRemoteDlUrl = "http://control.remotedl.onethingpcs.com";
         internal static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
         internal static Dictionary<string, Device> userDevices = new Dictionary<string, Device>();
         internal static Dictionary<string, UserInfo> userInfos = new Dictionary<string, UserInfo>();
         internal static Dictionary<string, IncomeHistory> incomeHistorys = new Dictionary<string, IncomeHistory>();
-        
+        internal static Dictionary<string, RemoteDLResponse> remoteDlInfos = new Dictionary<string, RemoteDLResponse>();
+
         static RestClient GetClient(string phone)
         {
             if (!clients.ContainsKey(phone))
@@ -103,7 +105,7 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"user/login?appversion={appVersion}", Method.POST);
-                Debug.WriteLine(GetParams(client, logindata));
+                //Debug.WriteLine(GetParams(client, logindata));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("application/x-www-form-urlencoded", GetParams(GetClient(phone), logindata), ParameterType.RequestBody);
                 return client.Execute(request);
@@ -111,7 +113,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                //Debug.WriteLine(resp.Content);
                 message.data = JsonHelper.Deserialize<LoginResponse>(resp.Content);
             }
             else
@@ -136,14 +138,11 @@ namespace imt_wankeyun_client.Helpers
             var gstr = GetParams(client, data, true);
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
             var userid = GetCookie(client, apiAccountUrl, "userid");
-            //Debug.WriteLine("ListPeer-gstr:" + gstr);
-            //Debug.WriteLine("ListPeer-sessionid:" + sessionid);
-            //Debug.WriteLine("ListPeer-userid:" + userid);
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"listPeer?{gstr}", Method.GET);
-                Debug.WriteLine(GetParams(client, data));
+                //Debug.WriteLine(GetParams(client, data));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -152,7 +151,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                //Debug.WriteLine(resp.Content);
                 var root = JsonHelper.Deserialize<PeerResponse>(resp.Content);
                 message.data = root;
             }
@@ -188,7 +187,7 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"activate/userinfo?appversion=1.4.5", Method.POST);
-                Debug.WriteLine(GetParams(client, data));
+                //Debug.WriteLine(GetParams(client, data));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -199,7 +198,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                //Debug.WriteLine(resp.Content);
                 var root = JsonHelper.Deserialize<UserInfoResponse>(resp.Content);
                 message.data = root;
             }
@@ -248,6 +247,61 @@ namespace imt_wankeyun_client.Helpers
                 message.data = resp.Content;
             }
             return message;
+        }
+        /// <summary>
+        /// 获取设备云添加信息
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> GetRemoteDlInfo(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("pid", GetPeerID(phone));
+            data.Add("v", "2");
+            data.Add("ct", "32");
+            data.Add("pos", "0");
+            data.Add("number", "1000");
+            data.Add("type", "0");
+            data.Add("needUrl", "0");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("GetRemoteDlInfo-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"/list?{gstr}", Method.GET);
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("GetRemoteDlInfo:" + resp.Content);
+                var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        internal static string GetPeerID(string phone)
+        {
+            if (userDevices.ContainsKey(phone) && userDevices[phone] != null)
+            {
+                return userDevices[phone].peerid != null ? userDevices[phone].peerid : null;
+            }
+            else
+            {
+                return null;
+            }
         }
         /// <summary>
         /// 获取client的cookie的值
