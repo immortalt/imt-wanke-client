@@ -6,6 +6,7 @@
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
     <Grid >
+        <WebBrowser Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"></WebBrowser>
         <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,18,0,2">
             <TabItem Header="账户" Margin="64,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle2}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
                 <Grid Margin="0,0,0,0">
