@@ -151,6 +151,7 @@
     </ApplicationDefinition>
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
     <Compile Include="Entities\Control\PeerResponse.cs" />
+    <Compile Include="Entities\Control\RemoteDL\CreateTaskInfo.cs" />
     <Compile Include="Entities\Control\RemoteDL\RemoteDLResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\TaskInfoResponse.cs" />
     <Compile Include="Entities\HttpMessage.cs" />
@@ -166,6 +167,9 @@
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\SettingHelper.cs" />
     <Compile Include="Helpers\UtilHelper.cs" />
+    <Compile Include="Windows\CreateTaskWindow.xaml.cs">
+      <DependentUpon>CreateTaskWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -203,6 +207,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\NoResize_window.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\CreateTaskWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

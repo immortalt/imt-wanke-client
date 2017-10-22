@@ -10,6 +10,10 @@ namespace imt_wankeyun_client.Helpers
 {
     public class UtilHelper
     {
+        public static double SizeConvertToGB(int size)
+        {
+            return size / 1024d / 1024d / 1024d;
+        }
         public static string RandomCode(int length)
         {
             char[] arrChar = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };

@@ -303,14 +303,20 @@ namespace imt_wankeyun_client.Helpers
             var client = GetClient(phone);
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
             var userid = GetCookie(client, apiAccountUrl, "userid");
-            var purl = System.Web.HttpUtility.UrlEncode("{\"url\":\"" + url + "\"}", Encoding.UTF8);
+            var obj = new
+            {
+                url = url
+            };
+            var json = JsonHelper.Serialize(obj);
+            var purl = System.Web.HttpUtility.UrlEncode(json, Encoding.UTF8);
+            Debug.WriteLine("purl=" + purl);
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"urlResolve?pid={GetPeerID(phone)}&v=1", Method.POST);
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
-                request.AddParameter("text/plain;charset=utf-8", purl);
+                request.AddParameter("text/plain", purl, ParameterType.RequestBody);
                 return client.Execute(request);
             });
             var message = new HttpMessage { statusCode = resp.StatusCode };

@@ -38,7 +38,7 @@ namespace imt_wankeyun_client
         DispatcherTimer StatusTimer;
         DispatcherTimer RemoteDlTimer;
         internal static WankeSettings settings;
-        string curAccount = null;
+        internal static string curAccount = null;
         ObservableCollection<string> userList;
         public MainWindow()
         {
@@ -573,9 +573,9 @@ namespace imt_wankeyun_client
 
         private void btu_addRemoteDlTask_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("开发中，请等待更新！");
+            CreateTaskWindow crw = new CreateTaskWindow();
+            crw.ShowDialog();
         }
-
         private void btu_refreshRemoteDlInfo_Click(object sender, RoutedEventArgs e)
         {
             RefreshRemoteDlStatus();

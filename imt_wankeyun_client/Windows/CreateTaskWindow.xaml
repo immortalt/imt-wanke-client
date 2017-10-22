@@ -1,0 +1,66 @@
+﻿<Window x:Name="window" x:Class="imt_wankeyun_client.Windows.CreateTaskWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+        mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
+        Title="玩客云登陆" Height="300" Width="612.439" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="window_MouseLeftButtonDown">
+    <Window.Background>
+        <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
+    </Window.Background>
+    <Grid>
+        <TextBlock Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="云添加"/>
+        <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="0,0,2,250.4" VerticalAlignment="Bottom" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
+        <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0.2,0.4" Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="11*"></RowDefinition>
+                <RowDefinition Height="34*"></RowDefinition>
+                <RowDefinition Height="192*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="7*"></ColumnDefinition>
+                <ColumnDefinition Width="auto" MinWidth="75.2"></ColumnDefinition>
+                <ColumnDefinition Width="444*"></ColumnDefinition>
+                <ColumnDefinition Width="59*"/>
+                <ColumnDefinition Width="5*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock  Grid.Row="1" Margin="7,4.8,3.4,4.8"
+                    FontSize="18" Grid.ColumnSpan="2">下载链接</TextBlock>
+            <TextBox x:Name="tbx_url" Grid.Row="1" Grid.Column="2" Margin="2.6,4.8,3.4,4.8" FontSize="18"/>
+            <Button x:Name="btu_urlResolve" Click="btu_urlResolve_Click" Grid.Column="3" Style="{DynamicResource SimpleButton}" Margin="1.6,11,0.6,5.8"
+                FontSize="18" Grid.RowSpan="2">添加</Button>
+            <Grid Grid.Row="2" Grid.ColumnSpan="4" x:Name="grid_info">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="17*"/>
+                    <ColumnDefinition Width="555*"/>
+                    <ColumnDefinition Width="14*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="58*"/>
+                    <RowDefinition Height="28*"/>
+                    <RowDefinition Height="38*"/>
+                    <RowDefinition Height="44*"/>
+                    <RowDefinition Height="15*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Grid.Column="1" Height="60" VerticalAlignment="Top" TextWrapping="Wrap"
+                    FontSize="18" Margin="1.2,0.4,-0.4,0" Grid.RowSpan="2" Grid.ColumnSpan="2" Foreground="SlateBlue">文件名：
+                    <Run Foreground="Black" x:Name="tbx_filename"/>
+                </TextBlock>
+                <TextBlock  Grid.Row="2" Grid.Column="1" Height="30" VerticalAlignment="Top"
+                    FontSize="18" Margin="1.2,4.8,-0.4,0" Grid.RowSpan="2" Grid.ColumnSpan="2"  Foreground="SlateBlue">大小：
+                    <Run x:Name="tbx_size" Foreground="Black"></Run>
+                </TextBlock>
+                <TextBlock  Grid.Row="3" Grid.Column="1" Height="30" VerticalAlignment="Top"  Foreground="SlateBlue"
+                    FontSize="18" Margin="1.2,9.8,-0.4,0" Grid.ColumnSpan="2" Grid.RowSpan="2">格式：
+                    <Run Foreground="Black" x:Name="tbx_format"></Run>
+                </TextBlock>
+                <Button x:Name="btu_createTask" Click="btu_createTask_Click" Grid.Row="4" Style="{DynamicResource SimpleButtonOpposite}"
+                FontSize="18" Grid.Column="1" Margin="120,5" Height="30">添加到玩客云</Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

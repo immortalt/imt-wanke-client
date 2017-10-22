@@ -91,9 +91,9 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
-                            <Grid Margin="0,0,0,1.2" ForceCursor="False" OpacityMask="#FF003AFF" OverridesDefaultStyle="True">
+                            <Grid ForceCursor="False" OpacityMask="#FF003AFF" OverridesDefaultStyle="True">
                                 <Border x:Name="border" BorderThickness="1" CornerRadius="5,5,5,5" 
-                                        Margin="0,0,1.4,0.2" Background="White" BorderBrush="#FF2A43CD"
+                                         Background="White" BorderBrush="#FF2A43CD"
                                         RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
                                         Width="{TemplateBinding Content}" Height="{TemplateBinding Height}" >
@@ -126,6 +126,39 @@
                                             </LinearGradientBrush>
                                         </Setter.Value>
                                     </Setter>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False"/>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="SimpleButtonOpposite" TargetType="{x:Type Button}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid ForceCursor="False" OpacityMask="#FF003AFF" OverridesDefaultStyle="True" VerticalAlignment="Bottom">
+                                <Border x:Name="border" CornerRadius="10" 
+                                         Background="#3CA8FF"
+                                        RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Width="{TemplateBinding Content}" Height="{TemplateBinding Height}" >
+                                    <TextBlock TextAlignment="Center" FontSize="{TemplateBinding FontSize}" 
+                                               TextWrapping="Wrap" Text="{TemplateBinding Content}"
+                                               Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" 
+                                               HorizontalAlignment="Center"   VerticalAlignment="Bottom"
+                                               Margin="0,-5"
+                                               FontWeight="Medium" Foreground="White"/>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsFocused" Value="True"/>
+                                <Trigger Property="IsDefaulted" Value="True"/>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="border" Value="SkyBlue"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" TargetName="border" Value="Gray"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False"/>
                             </ControlTemplate.Triggers>
