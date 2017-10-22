@@ -274,6 +274,7 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"/list?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
                 return client.Execute(request);
@@ -283,6 +284,40 @@ namespace imt_wankeyun_client.Helpers
             {
                 Debug.WriteLine("GetRemoteDlInfo:" + resp.Content);
                 var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 解析云添加任务的URL
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> UrlResolve(string phone, string url)
+        {
+            var client = GetClient(phone);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var purl = System.Web.HttpUtility.UrlEncode("{\"url\":\"" + url + "\"}", Encoding.UTF8);
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"urlResolve?pid={GetPeerID(phone)}&v=1", Method.POST);
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                request.AddParameter("text/plain;charset=utf-8", purl);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("UrlResolve:" + resp.Content);
+                var root = JsonHelper.Deserialize<TaskInfoResponse>(resp.Content);
                 message.data = root;
             }
             else

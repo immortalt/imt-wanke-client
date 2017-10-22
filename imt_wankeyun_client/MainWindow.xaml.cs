@@ -155,11 +155,14 @@ namespace imt_wankeyun_client
         }
         async void RefreshRemoteDlStatus()
         {
-            Debug.WriteLine("curAccount=" + curAccount);
-            if (await GetRemoteDlInfo(curAccount))
+            if (curAccount != null)
             {
-                dlTasks = null;
-                lv_remoteDlStatus.ItemsSource = dlTasks;
+                Debug.WriteLine("curAccount=" + curAccount);
+                if (await GetRemoteDlInfo(curAccount))
+                {
+                    dlTasks = null;
+                    lv_remoteDlStatus.ItemsSource = dlTasks;
+                }
             }
         }
         private void Btu_AddAccount_Click(object sender, RoutedEventArgs e)
