@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
-        Title="玩客云登陆" Height="300" Width="612.439" ResizeMode="NoResize"
+        Title="云添加" Height="300" Width="612.439" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="window_MouseLeftButtonDown">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>

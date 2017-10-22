@@ -426,7 +426,8 @@ namespace imt_wankeyun_client
                                 state = t.state == 0 ? "添加中" : (t.state == 8 ? "正在等待" : "链接无效(130)"),
                                 state_color = t.state == 0 ? "DodgerBlue" : (t.state == 8 ? "LightBlue" : "Orange"),
                                 state_img = stateimg,
-                                speed = ((double)t.speed / 1024.0).ToString("f2") + "KB/s",
+                                speed = UtilHelper.ConvertToSpeedString(t.speed),
+                                progress = (t.progress / 100d).ToString("f2") + "%",
                             };
                             _dlTasks.Add(task);
                         }
@@ -575,6 +576,7 @@ namespace imt_wankeyun_client
         {
             CreateTaskWindow crw = new CreateTaskWindow();
             crw.ShowDialog();
+            RefreshRemoteDlStatus();
         }
         private void btu_refreshRemoteDlInfo_Click(object sender, RoutedEventArgs e)
         {

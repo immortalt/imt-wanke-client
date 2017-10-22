@@ -60,14 +60,38 @@ namespace imt_wankeyun_client.Windows
                     return null;
             }
         }
-
-        private void btu_createTask_Click(object sender, RoutedEventArgs e)
+        async Task<int> CreateTask(string phone, CreateTaskInfo cti)
+        {
+            HttpMessage resp = await ApiHelper.CreateTask(phone, cti);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return -1;
+                    }
+                    var r = resp.data as CreateTaskResponse;
+                    if (r.rtn == 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"CreateTask-出错({r.rtn})");
+                    }
+                    return r.rtn;
+                default:
+                    Debug.WriteLine("CreateTask-网络异常错误！");
+                    return -1;
+            }
+        }
+        private async void btu_createTask_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow.curAccount != null)
             {
                 if (taskInfo != null)
                 {
-                    CreateTaskInfo ctk = new CreateTaskInfo
+                    CreateTaskInfo cti = new CreateTaskInfo
                     {
                         path = "/media/sda1/onecloud/tddownload",
                         tasks = new List<CreateTask>{
@@ -75,11 +99,21 @@ namespace imt_wankeyun_client.Windows
                             {
                                 name =taskInfo.name,
                                 url = taskInfo.url,
-                                filesize = taskInfo.size
+                                filesize = 0
                             }
                         }
                     };
-
+                    var ctk = await CreateTask(MainWindow.curAccount, cti);
+                    if (ctk == 0)
+                    {
+                        Close();
+                        MessageBox.Show("添加成功！", "提示");
+                    }
+                    else
+                    {
+                        Close();
+                        MessageBox.Show("添加失败！", $"错误({ctk})");
+                    }
                 }
             }
         }
@@ -102,7 +136,7 @@ namespace imt_wankeyun_client.Windows
                     ext = ext.Substring(1, ext.Length - 1);
                 }
                 tbx_filename.Text = taskInfo.name;
-                tbx_size.Text = UtilHelper.SizeConvertToGB(taskInfo.size).ToString() + "GB";
+                tbx_size.Text = UtilHelper.ConvertToSizeString(taskInfo.size);
                 tbx_format.Text = ext;
                 grid_info.Opacity = 1;
                 grid_info.IsEnabled = true;

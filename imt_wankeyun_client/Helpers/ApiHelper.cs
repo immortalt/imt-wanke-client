@@ -297,6 +297,7 @@ namespace imt_wankeyun_client.Helpers
         /// 解析云添加任务的URL
         /// </summary>
         /// <param name="phone"></param>
+        /// <param name="url"></param>
         /// <returns></returns>
         public static async Task<HttpMessage> UrlResolve(string phone, string url)
         {
@@ -324,6 +325,43 @@ namespace imt_wankeyun_client.Helpers
             {
                 Debug.WriteLine("UrlResolve:" + resp.Content);
                 var root = JsonHelper.Deserialize<TaskInfoResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 创建云添加任务
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <param name="cti"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> CreateTask(string phone, CreateTaskInfo cti)
+        {
+            var client = GetClient(phone);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var json = JsonHelper.Serialize(cti);
+            var purl = System.Web.HttpUtility.UrlEncode(json, Encoding.UTF8);
+            Debug.WriteLine("purl=" + purl);
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"createTask?pid={GetPeerID(phone)}&v=2&ct=32", Method.POST);
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                request.AddParameter("text/plain", purl, ParameterType.RequestBody);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("CreateTask:" + resp.Content);
+                var root = JsonHelper.Deserialize<CreateTaskResponse>(resp.Content);
                 message.data = root;
             }
             else

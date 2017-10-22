@@ -18,7 +18,7 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string state_color { get; set; }
         public BitmapImage state_img { get; set; }
         public int remainTime { get; set; }
-        public int progress { get; set; }
+        public string progress { get; set; }
         public string path { get; set; }
         public int type { get; set; }
         public string id { get; set; }

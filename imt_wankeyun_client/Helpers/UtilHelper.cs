@@ -10,9 +10,61 @@ namespace imt_wankeyun_client.Helpers
 {
     public class UtilHelper
     {
-        public static double SizeConvertToGB(int size)
+        public static string ConvertToSizeString(int size)
         {
-            return size / 1024d / 1024d / 1024d;
+            var GB = size / 1024d / 1024d / 1024d;
+            if (GB < 1)
+            {
+                var MB = size / 1024d / 1024d;
+                if (MB < 1)
+                {
+                    var KB = size / 1024d;
+                    if (KB < 1)
+                    {
+                        return size.ToString("f2") + "B";
+                    }
+                    else
+                    {
+                        return KB.ToString("f2") + "KB";
+                    }
+                }
+                else
+                {
+                    return MB.ToString("f2") + "MB";
+                }
+            }
+            else
+            {
+                return GB.ToString("f2") + "GB";
+            }
+        }
+        public static string ConvertToSpeedString(int speed)
+        {
+            var GB = speed / 1024d / 1024d / 1024d;
+            if (GB < 1)
+            {
+                var MB = speed / 1024d / 1024d;
+                if (MB < 1)
+                {
+                    var KB = speed / 1024d;
+                    if (KB < 1)
+                    {
+                        return speed.ToString("f2") + "B/s";
+                    }
+                    else
+                    {
+                        return KB.ToString("f2") + "KB/s";
+                    }
+                }
+                else
+                {
+                    return MB.ToString("f2") + "MB/s";
+                }
+            }
+            else
+            {
+                return GB.ToString("f2") + "GB/s";
+            }
         }
         public static string RandomCode(int length)
         {
