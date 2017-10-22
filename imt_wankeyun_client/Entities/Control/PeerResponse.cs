@@ -8,8 +8,8 @@ namespace imt_wankeyun_client.Entities.Control
 {
     public class Features
     {
-        public int onecloud_coin { get; set; }
-        public int miner { get; set; }
+        public object onecloud_coin { get; set; }
+        public object miner { get; set; }
     }
 
     public class IpInfo

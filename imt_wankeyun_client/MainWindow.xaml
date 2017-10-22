@@ -42,7 +42,22 @@
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="账号" DisplayMemberBinding="{Binding Path=phone}" />
-                                            <GridViewColumn Header="设备名称" DisplayMemberBinding="{Binding Path=device_name}" />
+                                            <GridViewColumn Header="名称">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="设备名称:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding Path=device_name}"/>
+                                                            </StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="激活状态:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding Path=isActived}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
                                             <GridViewColumn Header="网络">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>

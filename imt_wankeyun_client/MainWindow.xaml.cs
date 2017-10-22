@@ -360,7 +360,7 @@ namespace imt_wankeyun_client
                                 dcdn_download_speed = device.dcdn_download_speed.ToString(),
                                 dcdn_upload_speed = device.dcdn_upload_speed.ToString(),
                                 exception_message = device.exception_message,
-                                onecloud_coin = (device.features.onecloud_coin / 10E8).ToString(),
+                                isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活",
                                 dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
                                 dcdn_upnp_message = device.dcdn_upnp_message,
                                 upgradeable = device.upgradeable ? "可升级" : "已最新",

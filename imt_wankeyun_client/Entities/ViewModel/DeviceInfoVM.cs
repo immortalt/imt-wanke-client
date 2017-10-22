@@ -28,6 +28,8 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string yes_wkb { get; set; }
         public string activate_days { get; set; }
         public string totalIncome { get; set; }
+        public string isActived { get; set; }
+
 
     }
 }
