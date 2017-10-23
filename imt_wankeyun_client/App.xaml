@@ -11,6 +11,39 @@
                 <ResourceDictionary Source="/Resources/TabItem.xaml"/>
                 <ResourceDictionary Source="/Resources/Button.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <!--ListViewItem的样式-->
+            <Style TargetType="{x:Type ListViewItem}">
+                <Style.Setters>
+                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                <Border x:Name="bd"
+                                 BorderThickness="0,0,0,1" BorderBrush="Gray"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                                    <GridViewRowPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  Margin="0"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Trigger.Setters>
+                                            <Setter TargetName="bd" Property="Background">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush StartPoint="0.5,0.22" EndPoint="0.5,1">
+                                                        <GradientStop Color="SkyBlue" Offset="0.31"/>
+                                                        <GradientStop Color="White" Offset="0.88"/>
+                                                    </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger.Setters>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style.Setters>
+            </Style>
             <Style x:Key="NormalButton" TargetType="{x:Type Button}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -167,6 +200,5 @@
                 </Setter>
             </Style>
         </ResourceDictionary>
-
     </Application.Resources>
 </Application>

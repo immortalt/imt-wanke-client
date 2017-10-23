@@ -1,7 +1,7 @@
 ﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Controls="clr-namespace:Wpf.Controls;assembly=Wpf.SplitButton" mc:Ignorable="d" x:Class="imt_wankeyun_client.MainWindow"
-        Title="不朽玩客云客户端" Height="768" Width="1024" Style="{DynamicResource NoResize_window}" BorderThickness="1" BorderBrush="#FF87AFD4" MouseLeftButtonDown="Window_MouseLeftButtonDown" HorizontalContentAlignment="Center" Icon="/img/icon.ico" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="不朽玩客云客户端" Height="600" Width="900" Style="{DynamicResource NoResize_window}" BorderThickness="1" BorderBrush="#FF87AFD4" MouseLeftButtonDown="Window_MouseLeftButtonDown" HorizontalContentAlignment="Center" Icon="/img/icon.ico" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>

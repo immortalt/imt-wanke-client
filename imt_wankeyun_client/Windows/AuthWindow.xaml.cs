@@ -26,7 +26,7 @@ namespace imt_wankeyun_client.Windows
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
+            tbx_password.Focus();
         }
         private void loginWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -67,6 +67,14 @@ namespace imt_wankeyun_client.Windows
                 SettingHelper.DeleteSettings();
                 MessageBox.Show("已删除配置文件！请重启程序", "提示");
                 Environment.Exit(0);
+            }
+        }
+
+        private void tbx_password_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                btu_submit_Click(btu_submit, null);
             }
         }
     }

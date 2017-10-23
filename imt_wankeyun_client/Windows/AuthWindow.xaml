@@ -34,7 +34,7 @@
                     FontSize="18" Grid.ColumnSpan="5" Margin="47,0.6,47,1.2" Grid.Row="1">请输入启动密码</TextBlock>
             <TextBlock  Grid.Row="2" Grid.Column="1" Margin="9.8,10.8,10.2,9.6"
                     FontSize="18">启动密码</TextBlock>
-            <PasswordBox x:Name="tbx_password" Grid.Row="2" Grid.Column="2" Margin="9.8,10.4,9.8,10" MaxLength="32"
+            <PasswordBox x:Name="tbx_password" Grid.Row="2" Grid.Column="2" Margin="9.8,10.2,10,20" MaxLength="32" KeyDown="tbx_password_KeyDown"
                  FontSize="18" Grid.ColumnSpan="2" TabIndex="2"/>
             <Button x:Name="btu_submit" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Margin="9.8,10,9.8,10.2" Style="{DynamicResource SimpleButton}"
                 Click="btu_submit_Click"  FontSize="18">确定</Button>
