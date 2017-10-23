@@ -34,6 +34,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        internal static string password;
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
         private ObservableCollection<DlTaskVM> _dlTasks = null;
         DispatcherTimer StatusTimer;
@@ -54,7 +55,7 @@ namespace imt_wankeyun_client
                 tbk_version.Text = "开发版";
                 Debug.WriteLine(ex.Message);
             }
-            InitLogin();//初始化登陆
+            LoadSettings();//载入设置
             StatusTimer = new DispatcherTimer();
             StatusTimer.Interval = TimeSpan.FromSeconds(15);
             StatusTimer.Tick += StatusTimer_Tick;
@@ -125,7 +126,7 @@ namespace imt_wankeyun_client
         }
         private void x_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Environment.Exit(0);
         }
         private void ___Click(object sender, RoutedEventArgs e)
         {
@@ -464,30 +465,62 @@ namespace imt_wankeyun_client
                 _dlTasks = value;
             }
         }
-        async void InitLogin()
+        void LoadSettings()
         {
-            if (SettingHelper.ReadSettings() != null)
+            if (SettingHelper.ReadOldSettings() != null)//检测到旧配置文件
             {
-                settings = SettingHelper.ReadSettings();
-                if (settings.loginDatas != null && settings.loginDatas.Count > 0)
+                var r = MessageBox.Show("软件已更新！检测到旧版本的用户列表，是否导入？", "提示", MessageBoxButton.YesNo);
+                if (r == MessageBoxResult.Yes)
                 {
-                    for (int i = 0; i < settings.loginDatas.Count; i++)
-                    {
-                        var t = settings.loginDatas[i];
-                        await UserLogin(t);
-                    }
+                    settings = SettingHelper.ReadOldSettings();
+                    SetPasswordWindow spw = new SetPasswordWindow();
+                    spw.ShowDialog();
+                    SettingHelper.DeleteOldSettings();
+                    InitLogin();
+                    return;
                 }
-                chk_autoRefresh.IsChecked = settings.autoRefresh;
-                LoadAccounts();
-                RefreshStatus();
+                else
+                {
+                    SettingHelper.DeleteOldSettings();
+                    MessageBox.Show("已删除旧版本的用户列表", "提示");
+                }
+            }
+            if (SettingHelper.ExistSettings())//如果存在新版配置文件
+            {
+                AuthWindow aw = new AuthWindow();//开始验证
+                aw.ShowDialog();
+                if (settings != null)//如果验证通过，读取新配置文件成功
+                {
+                    InitLogin();
+                }
+                else//如果读取配置文件失败
+                {
+                    SettingHelper.DeleteSettings();
+                    MessageBox.Show("读取配置文件失败，已删除配置文件", "提示");
+                    Environment.Exit(0);
+                }
             }
             else
             {
-                settings = new WankeSettings();
-                settings.loginDatas = new List<LoginData>();
-                settings.autoRefresh = true;
-                SettingHelper.WriteSettings(settings);
+                SetPasswordWindow spw = new SetPasswordWindow();
+                spw.ShowDialog();
+                InitLogin();
             }
+        }
+
+        async void InitLogin()
+        {
+            if (settings.loginDatas != null && settings.loginDatas.Count > 0)
+            {
+                for (int i = 0; i < settings.loginDatas.Count; i++)
+                {
+                    var t = settings.loginDatas[i];
+                    await UserLogin(t);
+                }
+            }
+            chk_autoRefresh.IsChecked = settings.autoRefresh;
+            LoadAccounts();
+            RefreshStatus();
         }
         async Task UserLogin(LoginData ld)
         {
@@ -508,7 +541,7 @@ namespace imt_wankeyun_client
                         if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
                         {
                             settings.loginDatas.Remove(ld);
-                            SettingHelper.WriteSettings(settings);
+                            SettingHelper.WriteSettings(settings, password);
                         }
                         MessageBox.Show($"账号{ld.phone}登陆失败：验证码输入错误！请重新添加账号", "错误(-121)");
                     }
@@ -517,7 +550,7 @@ namespace imt_wankeyun_client
                         if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
                         {
                             settings.loginDatas.Remove(ld);
-                            SettingHelper.WriteSettings(settings);
+                            SettingHelper.WriteSettings(settings, password);
                         }
                         MessageBox.Show($"账号{ld.phone}登陆失败：需要输入验证码！请重新添加账号", "提示(-122)");
                     }
@@ -526,7 +559,7 @@ namespace imt_wankeyun_client
                         if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
                         {
                             settings.loginDatas.Remove(ld);
-                            SettingHelper.WriteSettings(settings);
+                            SettingHelper.WriteSettings(settings, password);
                         }
                         MessageBox.Show($"账号{ld.phone}登陆失败：{loginResponse.sMsg}！请重新添加账号", $"登陆失败({loginResponse.iRet})");
                     }
@@ -547,7 +580,7 @@ namespace imt_wankeyun_client
             {
                 StatusTimer.Stop();
             }
-            SettingHelper.WriteSettings(settings);
+            SettingHelper.WriteSettings(settings, password);
         }
         private void Btu_refreshStatus_Click(object sender, RoutedEventArgs e)
         {
@@ -577,7 +610,7 @@ namespace imt_wankeyun_client
                 }
                 LoadAccounts();
                 RefreshStatus();
-                SettingHelper.WriteSettings(settings);
+                SettingHelper.WriteSettings(settings, password);
                 MessageBox.Show($"删除账号{phone}成功", "提示");
             }
         }

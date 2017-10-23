@@ -110,12 +110,12 @@ namespace imt_wankeyun_client.Windows
                         LoginSuccess = true;
                         MessageBox.Show("登陆成功", "恭喜");
                         Debug.WriteLine(MainWindow.settings.loginDatas == null);
-                        if(MainWindow.settings.loginDatas == null)
+                        if (MainWindow.settings.loginDatas == null)
                         {
-                            MainWindow.settings.loginDatas = new List<LoginData>();                          
+                            MainWindow.settings.loginDatas = new List<LoginData>();
                         }
                         MainWindow.settings.loginDatas.Add(ld);
-                        SettingHelper.WriteSettings(MainWindow.settings);
+                        SettingHelper.WriteSettings(MainWindow.settings, MainWindow.password);
                         //保存登陆信息
                         ApiHelper.userBasicDatas.Add(loginResponse.data.phone, loginResponse.data);
                         //载入登陆响应信息到主窗口
