@@ -11,20 +11,22 @@
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
     <Grid>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Height="22" Margin="239,0,-2.6,112.4" VerticalAlignment="Bottom" Width="42" Style="{DynamicResource XButtonStyle}" Click="button_Click"/>
-        <Grid HorizontalAlignment="Left" Height="106" Margin="0,28,0,0" VerticalAlignment="Top" Width="278">
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Right" Height="22" Margin="256,0,-0.4,131.6" VerticalAlignment="Bottom" Width="42" Style="{DynamicResource XButtonStyle}" Click="button_Click"/>
+        <Grid HorizontalAlignment="Left" Height="126" Margin="0,28,-0.4,-0.4" VerticalAlignment="Top" Width="298">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FF4D92D5" Offset="0"/>
                     <GradientStop Color="White" Offset="1"/>
                 </LinearGradientBrush>
             </Grid.Background>
-            <Button x:Name="button1" Content="确定" HorizontalAlignment="Left" Height="30" Margin="111,66,0,0" VerticalAlignment="Top" Width="56" Style="{DynamicResource NormalButton}" Click="button1_Click"/>
-            <TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" TextWrapping="Wrap" Text="www.immortalt.com" VerticalAlignment="Top" Foreground="#FF0031FF" FontFamily="微软雅黑" FontWeight="Medium" Margin="85,41,0,0" FontSize="10" Height="20" Width="121"/>
+            <Button x:Name="button1" Content="确定" HorizontalAlignment="Left" Height="30" Margin="125,81,0,0" VerticalAlignment="Top" Width="56" Style="{DynamicResource NormalButton}" Click="button1_Click"/>
+            <TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF0031FF" FontFamily="微软雅黑" FontWeight="Medium" Margin="99,57,0,0" FontSize="10" Height="19" Width="121">
+            <Hyperlink NavigateUri="http://www.immortalt.com" Click="Hyperlink_Click">www.immortalt.com</Hyperlink>
+            </TextBlock>
         </Grid>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="关于" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Margin="7,4,0,0" FontSize="15"/>
-        <TextBlock x:Name="textBlock_title" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="44,28,0,0" FontSize="16" Height="20" Width="200"><Run Text="不朽玩客云客户端"/><Run x:Name="tbx_version"/></TextBlock>
-        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="不朽网保留所有权利" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="80,53,0,0" FontSize="12" Height="20" Width="114"/>
+        <TextBlock x:Name="textBlock_title" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="58,43,0,0" FontSize="16" Height="20" Width="200"><Run Text="不朽玩客云客户端"/><Run x:Name="tbx_version"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="不朽网保留所有权利" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="94,68,0,0" FontSize="12" Height="20" Width="114"/>
 
     </Grid>
 </Window>

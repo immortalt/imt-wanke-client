@@ -2,6 +2,7 @@
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace imt_wankeyun_client
@@ -38,6 +39,12 @@ namespace imt_wankeyun_client
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
     }
 }

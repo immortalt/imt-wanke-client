@@ -13,7 +13,7 @@
     </Window.Background>
     <Grid>
         <TextBlock Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="云添加"/>
-        <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="0,0,2,250.4" VerticalAlignment="Bottom" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
+        <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="0,0,0,250.4" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
         <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0.2,0.4" Background="White">
             <Grid.RowDefinitions>
                 <RowDefinition Height="11*"></RowDefinition>
