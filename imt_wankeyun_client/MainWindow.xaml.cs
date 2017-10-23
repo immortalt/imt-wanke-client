@@ -25,6 +25,7 @@ using System.Windows.Documents;
 using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
 using System.Windows.Media.Imaging;
+using System.Deployment.Application;
 
 namespace imt_wankeyun_client
 {
@@ -44,6 +45,15 @@ namespace imt_wankeyun_client
         public MainWindow()
         {
             InitializeComponent();
+            try
+            {
+                tbk_version.Text = GetEdition();
+            }
+            catch (Exception ex)
+            {
+                tbk_version.Text = "开发版";
+                Debug.WriteLine(ex.Message);
+            }
             InitLogin();//初始化登陆
             StatusTimer = new DispatcherTimer();
             StatusTimer.Interval = TimeSpan.FromSeconds(15);
@@ -52,6 +62,10 @@ namespace imt_wankeyun_client
             RemoteDlTimer = new DispatcherTimer();
             RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
+        }
+        public static string GetEdition()
+        {
+            return ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
         }
         /// <summary>
         /// 载入账号列表
@@ -539,7 +553,7 @@ namespace imt_wankeyun_client
         {
             RefreshStatus();
         }
-        private void link_sourcecode_Click(object sender, RoutedEventArgs e)
+        private void link_Click(object sender, RoutedEventArgs e)
         {
             Hyperlink link = sender as Hyperlink;
             Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
@@ -627,6 +641,12 @@ namespace imt_wankeyun_client
             this.Top = rcnormal.Top;
             this.Width = rcnormal.Width;
             this.Height = rcnormal.Height;
+        }
+
+        private void link_showQQ_Click(object sender, RoutedEventArgs e)
+        {
+            AboutWindow a = new AboutWindow();
+            a.ShowDialog();
         }
     }
 }

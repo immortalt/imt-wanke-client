@@ -414,16 +414,32 @@
         <Controls:SplitButton x:Name="mainmenu" Content="-" HorizontalAlignment="Right" Margin="0,-1,210,0" VerticalAlignment="Top" Width="20" Mode="Dropdown" Height="21" RenderTransformOrigin="-11.24,0.99" Visibility="Hidden">
             <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
         </Controls:SplitButton>
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
+        <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102">
+        V<Run x:Name="tbk_version"></Run>
+        </TextBlock>
         <TextBlock x:Name="tbk_source" HorizontalAlignment="Right" VerticalAlignment="Top" Width="160" 
                    Margin="0,52,0,0" Height="20"
                    FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
-                                             Click="link_sourcecode_Click">软件源码 on Github</Hyperlink>
+                                             Click="link_Click">软件源码 on Github</Hyperlink>
+        </TextBlock>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
+                   Margin="0,52,159.8,0" Height="20"
+                   FontSize="16"><Hyperlink x:Name="link_updateInfo"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/commits/master"
+                                             Click="link_Click">更新历史</Hyperlink>
         </TextBlock>
         <Button x:Name="btu_maxnormal" Content="Button" HorizontalAlignment="Right" Visibility="Collapsed" Height="24" Style="{DynamicResource MaxNormalButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_maxnormal_Click"/>
         <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
         <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
         <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
         <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="71" 
+            Margin="0,52,235.8,0" Height="20"
+            FontSize="16"><Hyperlink x:Name="link_updateInfo1"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/issues"
+                Click="link_Click"><Run Text="反馈Bug"/></Hyperlink></TextBlock>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
+            Margin="0,52,309.8,0" Height="20"
+            FontSize="16"><Hyperlink x:Name="link_showQQ"  Foreground="Purple"
+                Click="link_showQQ_Click"><Run Text="QQ群讨论"/></Hyperlink></TextBlock>
     </Grid>
 </Window>

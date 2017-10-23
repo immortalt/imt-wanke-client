@@ -17,10 +17,11 @@ namespace imt_wankeyun_client
             InitializeComponent();
             try
             {
-                tbx_version.Text = GetEdition();
+                tbk_version.Text = GetEdition();
             }
             catch (Exception ex)
             {
+                tbk_version.Text = "开发版";
                 Debug.WriteLine(ex.Message);
             }
         }
