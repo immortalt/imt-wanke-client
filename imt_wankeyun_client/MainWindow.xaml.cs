@@ -166,6 +166,10 @@ namespace imt_wankeyun_client
                 }
             }
         }
+        static bool IsLogined()
+        {
+            return curAccount != null && curAccount != "";
+        }
         private void Btu_AddAccount_Click(object sender, RoutedEventArgs e)
         {
             LoginWindow lw = new LoginWindow();
@@ -453,8 +457,9 @@ namespace imt_wankeyun_client
                 settings = SettingHelper.ReadSettings();
                 if (settings.loginDatas != null && settings.loginDatas.Count > 0)
                 {
-                    foreach (var t in settings.loginDatas)
+                    for (int i = 0; i < settings.loginDatas.Count; i++)
                     {
+                        var t = settings.loginDatas[i];
                         await UserLogin(t);
                     }
                 }
@@ -489,6 +494,7 @@ namespace imt_wankeyun_client
                         if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
                         {
                             settings.loginDatas.Remove(ld);
+                            SettingHelper.WriteSettings(settings);
                         }
                         MessageBox.Show($"账号{ld.phone}登陆失败：验证码输入错误！请重新添加账号", "错误(-121)");
                     }
@@ -497,6 +503,7 @@ namespace imt_wankeyun_client
                         if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
                         {
                             settings.loginDatas.Remove(ld);
+                            SettingHelper.WriteSettings(settings);
                         }
                         MessageBox.Show($"账号{ld.phone}登陆失败：需要输入验证码！请重新添加账号", "提示(-122)");
                     }
@@ -505,6 +512,7 @@ namespace imt_wankeyun_client
                         if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
                         {
                             settings.loginDatas.Remove(ld);
+                            SettingHelper.WriteSettings(settings);
                         }
                         MessageBox.Show($"账号{ld.phone}登陆失败：{loginResponse.sMsg}！请重新添加账号", $"登陆失败({loginResponse.iRet})");
                     }
@@ -575,6 +583,11 @@ namespace imt_wankeyun_client
 
         private void btu_addRemoteDlTask_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsLogined())
+            {
+                MessageBox.Show("请先登陆", "提示");
+                return;
+            }
             CreateTaskWindow crw = new CreateTaskWindow();
             crw.ShowDialog();
             RefreshRemoteDlStatus();
@@ -607,7 +620,7 @@ namespace imt_wankeyun_client
         }
 
         private void btu_maxnormal_Click(object sender, RoutedEventArgs e)
-        {           
+        {
             btu_max.Visibility = Visibility.Visible;
             btu_maxnormal.Visibility = Visibility.Collapsed;
             this.Left = rcnormal.Left;
