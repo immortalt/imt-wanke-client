@@ -74,19 +74,19 @@
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="挖矿">
+                                            <GridViewColumn Header="昨日挖矿">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel>
-                                                            <StackPanel>
-                                                                <TextBlock Text="昨日挖矿:"/>
-                                                                <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
-                                                            </StackPanel>
-                                                            <StackPanel>
-                                                                <TextBlock Text="历史总收入:"/>
-                                                                <TextBlock Foreground="Goldenrod" Text="{Binding Path=totalIncome}"/>
-                                                            </StackPanel>
+                                                            <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
                                                         </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="历史总收入">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Foreground="Goldenrod" Text="{Binding Path=totalIncome}"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
