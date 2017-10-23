@@ -40,6 +40,7 @@ namespace imt_wankeyun_client
         internal static WankeSettings settings;
         internal static string curAccount = null;
         ObservableCollection<string> userList;
+        Rect rcnormal;//定义一个全局rect记录还原状态下窗口的位置和大小
         public MainWindow()
         {
             InitializeComponent();
@@ -591,6 +592,28 @@ namespace imt_wankeyun_client
                 curAccount = cbx_curAccount.SelectedValue.ToString();
                 RefreshRemoteDlStatus();
             }
+        }
+
+        private void btu_max_Click(object sender, RoutedEventArgs e)
+        {
+            btu_maxnormal.Visibility = Visibility.Visible;
+            btu_max.Visibility = Visibility.Collapsed;
+            rcnormal = new Rect(this.Left, this.Top, this.Width, this.Height);//保存下当前位置与大小
+            this.Left = 0;//设置位置
+            this.Top = 0;
+            Rect rc = SystemParameters.WorkArea;//获取工作区大小
+            this.Width = rc.Width;
+            this.Height = rc.Height;
+        }
+
+        private void btu_maxnormal_Click(object sender, RoutedEventArgs e)
+        {           
+            btu_max.Visibility = Visibility.Visible;
+            btu_maxnormal.Visibility = Visibility.Collapsed;
+            this.Left = rcnormal.Left;
+            this.Top = rcnormal.Top;
+            this.Width = rcnormal.Width;
+            this.Height = rcnormal.Height;
         }
     }
 }

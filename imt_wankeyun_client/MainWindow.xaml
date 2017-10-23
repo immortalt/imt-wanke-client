@@ -420,8 +420,10 @@
                    FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
                                              Click="link_sourcecode_Click">软件源码 on Github</Hyperlink>
         </TextBlock>
-        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,0,81,0" Click="s_Click"/>
-        <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="___Click"/>
+        <Button x:Name="btu_maxnormal" Content="Button" HorizontalAlignment="Right" Visibility="Collapsed" Height="24" Style="{DynamicResource MaxNormalButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_maxnormal_Click"/>
+        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
+        <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
         <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
+        <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
     </Grid>
 </Window>
