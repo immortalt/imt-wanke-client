@@ -16,30 +16,38 @@
         <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="386,0,0,250.4" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
         <Grid VerticalAlignment="Stretch" x:Name="grid_setPassword" Margin="0,41,0.2,0.4" Background="White">
             <Grid.RowDefinitions>
-                <RowDefinition Height="26*"></RowDefinition>
-                <RowDefinition Height="61*"></RowDefinition>
-                <RowDefinition Height="46*"></RowDefinition>
+                <RowDefinition Height="31*"></RowDefinition>
+                <RowDefinition Height="30*"></RowDefinition>
+                <RowDefinition Height="44*"/>
+                <RowDefinition Height="55*"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="63*"></RowDefinition>
-                <RowDefinition Height="14*"></RowDefinition>
+                <RowDefinition Height="76*"></RowDefinition>
+                <RowDefinition Height="17*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="59*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="79*"></ColumnDefinition>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="78*"></ColumnDefinition>
+                <ColumnDefinition Width="60*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock TextWrapping="Wrap" Foreground="DarkBlue"
-                    FontSize="18" Grid.ColumnSpan="5" Margin="47,0.6,47,1.2" Grid.Row="1">请输入启动密码</TextBlock>
-            <TextBlock  Grid.Row="2" Grid.Column="1" Margin="9.8,10.8,10.2,9.6"
+                    FontSize="18" Grid.ColumnSpan="6" Margin="47,0.8" Grid.Row="1" Grid.RowSpan="2">请输入启动密码</TextBlock>
+            <TextBlock  Grid.Row="3" Grid.Column="1" Margin="9.8,11.2,10.2,9"
                     FontSize="18">启动密码</TextBlock>
-            <PasswordBox x:Name="tbx_password" Grid.Row="2" Grid.Column="2" Margin="9.8,10.2,10,20" MaxLength="32" KeyDown="tbx_password_KeyDown"
-                 FontSize="18" Grid.ColumnSpan="2" TabIndex="2"/>
-            <Button x:Name="btu_submit" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Margin="9.8,10,9.8,10.2" Style="{DynamicResource SimpleButton}"
-                Click="btu_submit_Click"  FontSize="18">确定</Button>
-            <Button x:Name="btu_delete" Grid.Column="2" Margin="108.8,-2,10,50.8" Style="{DynamicResource SimpleButton}"
-                Click="btu_delete_Click"  FontSize="16" Content="删除配置文件" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+            <PasswordBox x:Name="tbx_password" Grid.Row="3" Grid.Column="2" Margin="9.8,10.2,10,20" MaxLength="32" KeyDown="tbx_password_KeyDown"
+                 FontSize="18" Grid.ColumnSpan="3" TabIndex="2"/>
+            <Button x:Name="btu_submit" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Margin="9.8,10,10,10" Style="{DynamicResource SimpleButton}"
+                Click="btu_submit_Click"  FontSize="18" Grid.RowSpan="2">确定</Button>
+            <TextBlock Grid.Column="1" Margin="4.8,5,7.4,4.8" Grid.Row="2" VerticalAlignment="Bottom" Foreground="DarkOrange"
+                FontSize="16" Text="配置文件:" HorizontalAlignment="Right"/>
+            <Button x:Name="btu_import" Grid.Column="2"  Style="{DynamicResource SimpleButton}" Margin="4.8,5,7.4,4.8" Grid.Row="2"
+                Click="btu_import_Click"  FontSize="16" Content="导入"/>
+            <Button x:Name="btu_export" Grid.Column="3"  Style="{DynamicResource SimpleButton}" Margin="4.8,5,7.4,4.8" Grid.Row="2"
+                Click="btu_export_Click"  FontSize="16" Content="导出"/>
+            <Button x:Name="btu_delete" Grid.Column="4"  Style="{DynamicResource SimpleButton}" Margin="2.6,5,5,4.8"
+                Click="btu_delete_Click"  FontSize="16" Content="删除" Grid.Row="2"/>
         </Grid>
     </Grid>
 </Window>

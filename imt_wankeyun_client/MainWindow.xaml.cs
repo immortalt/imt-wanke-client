@@ -681,5 +681,28 @@ namespace imt_wankeyun_client
             AboutWindow a = new AboutWindow();
             a.ShowDialog();
         }
+        private void btu_changePwd_Click(object sender, RoutedEventArgs e)
+        {
+            if (password == pwd_original.Password)
+            {
+                if (pwd_new.Password == pwd_new_confirm.Password)
+                {
+                    SettingHelper.WriteSettings(settings, pwd_new_confirm.Password);
+                    password = pwd_new_confirm.Password;
+                    MessageBox.Show("修改密码成功！", "提示");
+                    pwd_original.Password = null;
+                    pwd_new.Password = null;
+                    pwd_new_confirm.Password = null;
+                }
+                else
+                {
+                    MessageBox.Show("修改密码失败！两次输入的新密码不一致", "提示");
+                }
+            }
+            else
+            {
+                MessageBox.Show("修改密码失败！原密码错误", "提示");
+            }
+        }
     }
 }

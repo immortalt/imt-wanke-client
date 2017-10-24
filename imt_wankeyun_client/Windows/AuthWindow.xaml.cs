@@ -1,12 +1,6 @@
-﻿using imt_wankeyun_client.Entities;
-using imt_wankeyun_client.Entities.Account;
-using imt_wankeyun_client.Helpers;
+﻿using imt_wankeyun_client.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -75,6 +69,50 @@ namespace imt_wankeyun_client.Windows
             if (e.Key == Key.Enter)
             {
                 btu_submit_Click(btu_submit, null);
+            }
+        }
+        private void btu_import_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            ofd.Filter = "不朽玩客云配置文件(*.ini)|*.ini";
+            ofd.RestoreDirectory = true;
+
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string filename = ofd.FileName;
+                    File.Copy(filename, SettingHelper.settingPath, true);
+                    MessageBox.Show("导入成功！", "提示");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导入失败！" + ex.Message, "提示");
+                }
+            }
+        }
+        int exp = 1;
+        private void btu_export_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            sfd.Filter = "不朽玩客云配置文件(*.ini)|*.ini";
+            sfd.RestoreDirectory = true;
+            sfd.FileName = DateTime.Now.ToLongDateString() + (exp++) + ".ini";
+
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string filename = sfd.FileName;
+                    File.Copy(SettingHelper.settingPath, filename);
+                    MessageBox.Show("导出成功！", "提示");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导出失败！" + ex.Message, "提示");
+                }
             }
         }
     }

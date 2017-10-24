@@ -391,7 +391,45 @@
                     </Grid.Effect>
                     <Label Content="   功能列表" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Background="#FFFDFDFD" Foreground="#BB48677C" Margin="0,1,0,0"/>
                     <TabControl Margin="0,0.4,-0.2,0.4" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" BorderBrush="{x:Null}" Background="{x:Null}">
-                        <TabItem Header="尚未开发" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="0">
+                        <TabItem TabIndex="0" Header="配置文件" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
+                            <TabItem.Background>
+                                <ImageBrush ImageSource="img\settings.png" Stretch="Uniform"/>
+                            </TabItem.Background>
+                            <Grid Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="74*"/>
+                                    <ColumnDefinition Width="107*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="37*"/>
+                                    <RowDefinition Height="40*"/>
+                                    <RowDefinition Height="38*"/>
+                                    <RowDefinition Height="38*"/>
+                                    <RowDefinition Height="279*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.Effect>
+                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
+                                </Grid.Effect>
+                                <TextBlock Margin="10,10,0,0" FontSize="20" Width="82" HorizontalAlignment='Left' VerticalAlignment='Top' Height="26">
+                                    更改密码</TextBlock>
+                                <TextBlock Grid.Row="1" Margin="0,6.6,0,6.2" FontSize="18" Width="82" HorizontalAlignment='Right' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="24">原密码：</TextBlock>
+                                <TextBlock Grid.Row="2" Margin="0,7.8,0,8.2" FontSize="18" Width="82" HorizontalAlignment='Right' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="24">新密码：</TextBlock>
+                                <TextBlock Grid.Row="3" Margin="0,6.8,13,6.8" FontSize="18" Width="105" HorizontalAlignment='Right' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="24">重复新密码：</TextBlock>
+                                <PasswordBox x:Name="pwd_original" Grid.Row="1" Grid.Column="1" Margin="0,6.6,0,6.2" FontSize="18" Width="231" HorizontalAlignment='Left' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"></PasswordBox>
+                                <PasswordBox x:Name="pwd_new" Grid.Row="2" Grid.Column="1" Margin="0,7.8,0,8.2" FontSize="18" Width="231" HorizontalAlignment='Left' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"></PasswordBox>
+                                <PasswordBox x:Name="pwd_new_confirm" Grid.Row="3" Grid.Column="1" Margin="0,6.8" FontSize="18" Width="231" HorizontalAlignment='Left' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"></PasswordBox>
+                                <Button x:Name="btu_changePwd" Style="{StaticResource SimpleButton}" Grid.Row="4" Grid.Column="1" Margin="0,8.2,0,0.2" FontSize="18" Width="231" HorizontalAlignment='Left' 
+                                           VerticalAlignment='Center' Foreground="Black" Height="30" Click="btu_changePwd_Click">修改密码</Button>
+                            </Grid>
+                        </TabItem>
+                        <TabItem TabIndex="1" Header="请等待作者更新" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
                             <TabItem.Background>
                                 <ImageBrush ImageSource="img\settings.png" Stretch="Uniform"/>
                             </TabItem.Background>
