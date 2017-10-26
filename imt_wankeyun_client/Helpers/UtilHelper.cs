@@ -10,7 +10,7 @@ namespace imt_wankeyun_client.Helpers
 {
     public class UtilHelper
     {
-        public static string ConvertToSizeString(int size)
+        public static string ConvertToSizeString(ulong size)
         {
             var GB = size / 1024d / 1024d / 1024d;
             if (GB < 1)

@@ -5,6 +5,11 @@
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
+    <Window.Resources>
+        <Style x:Key="FileListItemStyle" TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="file_item_DoubleClick"/>
+        </Style>
+    </Window.Resources>
     <Grid >
         <WebBrowser Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"></WebBrowser>
         <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,18,0,2">
@@ -100,8 +105,8 @@
                                                                        Foreground="{Binding Path=status_color}"/>
                                                             </StackPanel>
                                                             <StackPanel>
-                                                                <TextBlock Text="激活天数:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=activate_days}"/>
+                                                                <TextBlock Text="硬盘使用:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding Path=volume}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -207,7 +212,7 @@
                     </TabControl>
                 </Grid>
             </TabItem>
-            <TabItem Header="文件" Margin="200,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
+            <TabItem x:Name="tab_file" Header="文件" Margin="200,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
                 <Grid Margin="0,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.075*"/>
@@ -240,7 +245,20 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <TextBlock>尚未开发，请等待作者更新（软件会自动更新）</TextBlock>
+                                <ListView FontSize="14" x:Name="lv_file" Margin="0,31,0,-0.4" ItemContainerStyle="{StaticResource FileListItemStyle}"
+                                          SelectionChanged="lv_file_SelectionChanged">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="名称" DisplayMemberBinding="{Binding Path=label}" />
+                                            <GridViewColumn Header="已使用" DisplayMemberBinding="{Binding Path=used}" />
+                                            <GridViewColumn Header="总容量" DisplayMemberBinding="{Binding Path=capacity}" />
+                                            <GridViewColumn Header="路径" DisplayMemberBinding="{Binding Path=path}" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button x:Name="btu_refreshFile" Click="btu_refreshFile_Click" Content="刷新" HorizontalAlignment="Left" Margin="10,3,0,0" 
+                                    VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                    VerticalContentAlignment="Top"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="上传" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
@@ -251,6 +269,7 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
+                                <TextBlock>尚未开发，请等待作者更新（软件会自动更新）</TextBlock>
                             </Grid>
                         </TabItem>
                         <TabItem Header="下载" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
@@ -261,6 +280,7 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
+                                <TextBlock>尚未开发，请等待作者更新（软件会自动更新）</TextBlock>
                                 <!--<ListBox x:Name="lbox_Download" Margin="0,0,0,0">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>

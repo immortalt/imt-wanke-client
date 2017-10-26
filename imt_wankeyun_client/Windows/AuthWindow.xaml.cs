@@ -12,6 +12,7 @@ namespace imt_wankeyun_client.Windows
     /// </summary>
     public partial class AuthWindow : Window
     {
+        bool isAuthed = false;
         public AuthWindow()
         {
             InitializeComponent();
@@ -33,6 +34,7 @@ namespace imt_wankeyun_client.Windows
 
         private void btu_submit_Click(object sender, RoutedEventArgs e)
         {
+            isAuthed = false;
             if (tbx_password.Password.Length > 32)
             {
                 MessageBox.Show("密码的长度不能超过32位", "错误");
@@ -45,6 +47,7 @@ namespace imt_wankeyun_client.Windows
                 MainWindow.password = password;
                 MainWindow.settings = settings;
                 MessageBox.Show("验证成功！", "恭喜");
+                isAuthed = true;
                 Close();
             }
             else
@@ -113,6 +116,14 @@ namespace imt_wankeyun_client.Windows
                 {
                     MessageBox.Show("导出失败！" + ex.Message, "提示");
                 }
+            }
+        }
+
+        private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!isAuthed)
+            {
+                Environment.Exit(0);
             }
         }
     }

@@ -37,6 +37,7 @@ namespace imt_wankeyun_client
         internal static string password;
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
         private ObservableCollection<DlTaskVM> _dlTasks = null;
+        private ObservableCollection<FileVM> _partitions = null;
         DispatcherTimer StatusTimer;
         DispatcherTimer RemoteDlTimer;
         internal static WankeSettings settings;
@@ -141,6 +142,19 @@ namespace imt_wankeyun_client
             AboutWindow a = new AboutWindow();
             a.ShowDialog();
         }
+        void AutoHeaderWidth(ListView lv)
+        {
+            //调整列宽  
+            GridView gv = lv.View as GridView;
+            if (gv != null)
+            {
+                foreach (GridViewColumn gvc in gv.Columns)
+                {
+                    gvc.Width = gvc.ActualWidth;
+                    gvc.Width = Double.NaN;
+                }
+            }
+        }
         async void RefreshStatus()
         {
             for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
@@ -150,24 +164,17 @@ namespace imt_wankeyun_client
                 var basic = t.Value;
                 if (await ListPeer(phone))
                 {
+                    var gui = GetUsbInfo(phone);
                     if (await GetUserInfo(phone))
                     {
                         await GetIncomeHistory(phone);
                     }
+                    await gui;
                 }
             }
             deviceInfos = null;
             lv_DeviceStatus.ItemsSource = deviceInfos;
-            //调整列宽  
-            GridView gv = lv_DeviceStatus.View as GridView;
-            if (gv != null)
-            {
-                foreach (GridViewColumn gvc in gv.Columns)
-                {
-                    gvc.Width = gvc.ActualWidth;
-                    gvc.Width = Double.NaN;
-                }
-            }
+            AutoHeaderWidth(lv_DeviceStatus);
         }
         async void RefreshRemoteDlStatus()
         {
@@ -178,6 +185,19 @@ namespace imt_wankeyun_client
                 {
                     dlTasks = null;
                     lv_remoteDlStatus.ItemsSource = dlTasks;
+                }
+            }
+        }
+        async void RefreshFileStatus()
+        {
+            if (curAccount != null)
+            {
+                Debug.WriteLine("curAccount=" + curAccount);
+                if (await GetUsbInfo(curAccount))
+                {
+                    partitions = null;
+                    lv_file.ItemsSource = partitions;
+                    AutoHeaderWidth(lv_file);
                 }
             }
         }
@@ -335,6 +355,50 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
+        async Task<bool> GetUsbInfo(string phone)
+        {
+            HttpMessage resp = await ApiHelper.GetUSBInfo(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return false;
+                    }
+                    var r = resp.data as UsbInfoResponse;
+                    if (r.rtn == 0)
+                    {
+                        if (r.result.Count > 1)
+                        {
+                            if (r.result[1] != null)
+                            {
+                                UsbInfoPartitions parts = JsonHelper.Deserialize<UsbInfoPartitions>(r.result[1].ToString());
+                                if (parts != null)
+                                {
+                                    if (!ApiHelper.usbInfoPartitions.ContainsKey(phone))
+                                    {
+                                        ApiHelper.usbInfoPartitions.Add(phone, parts.partitions);
+                                    }
+                                    else
+                                    {
+                                        ApiHelper.usbInfoPartitions[phone] = parts.partitions;
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"GetRemoteDlInfo-获取数据出错{r.rtn}:{r.rtn}");
+                    }
+                    return false;
+                default:
+                    Debug.WriteLine("GetRemoteDlInfo-网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
         private void RemoteDlTimer_Tick(object sender, EventArgs e)
         {
             if (chk_refreshRemoteDl.IsChecked == true)
@@ -366,6 +430,15 @@ namespace imt_wankeyun_client
                             var ubd = t.Value;
                             var device = ApiHelper.userDevices[ubd.phone];
                             var userInfo = ApiHelper.userInfos[ubd.phone];
+                            var partitions = ApiHelper.usbInfoPartitions[ubd.phone];
+                            ulong cap = 0;
+                            ulong used = 0;
+                            partitions.ForEach(p =>
+                            {
+                                cap += p.capacity;
+                                used += p.used;
+                            });
+                            string volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
                             var incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
                             yesAllCoin += userInfo.yes_wkb;
                             hisAllCoin += incomeHistory.totalIncome;
@@ -376,14 +449,14 @@ namespace imt_wankeyun_client
                                 nickname = ubd.nickname,
                                 ip = device.ip,
                                 device_name = device.device_name,
-                                status = device.status,
+                                status = device.status == "exception" ? "异常" : device.status,
                                 status_color = device.status == "online" ? "Green" : "Red",
                                 dcdn_upnp_status = device.dcdn_upnp_status,
                                 system_version = device.system_version,
                                 dcdn_download_speed = device.dcdn_download_speed.ToString(),
                                 dcdn_upload_speed = device.dcdn_upload_speed.ToString(),
                                 exception_message = device.exception_message,
-                                isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活",
+                                isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
                                 dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
                                 dcdn_upnp_message = device.dcdn_upnp_message,
                                 upgradeable = device.upgradeable ? "可升级" : "已最新",
@@ -391,6 +464,7 @@ namespace imt_wankeyun_client
                                 yes_wkb = userInfo.yes_wkb.ToString(),
                                 activate_days = userInfo.activate_days.ToString(),
                                 totalIncome = incomeHistory.totalIncome.ToString(),
+                                volume = volume,
                             };
                             _deviceInfos.Add(di);
                         }
@@ -465,6 +539,51 @@ namespace imt_wankeyun_client
                 _dlTasks = value;
             }
         }
+        internal ObservableCollection<FileVM> partitions
+        {
+            get
+            {
+                try
+                {
+                    if (this._partitions == null)
+                    {
+                        _partitions = new ObservableCollection<FileVM>();
+                        if (!ApiHelper.usbInfoPartitions.ContainsKey(curAccount))
+                        {
+                            return _partitions;
+                        }
+                        if (ApiHelper.usbInfoPartitions[curAccount] == null)
+                        {
+                            return _partitions;
+                        }
+                        foreach (var t in ApiHelper.usbInfoPartitions[curAccount])
+                        {
+                            var p = new FileVM
+                            {
+                                capacity = UtilHelper.ConvertToSizeString(t.capacity),
+                                used = UtilHelper.ConvertToSizeString(t.used),
+                                label = t.label,
+                                path = t.path,
+                                id = t.id.ToString(),
+                                unique = t.unique.ToString(),
+                                disk_id = t.disk_id.ToString()
+                            };
+                            _partitions.Add(p);
+                        }
+                    }
+                    return _partitions;
+                }
+                catch (Exception ex)
+                {
+                    Debug.Write("partitions-get-error " + ex.Message);
+                    return _partitions;
+                }
+            }
+            set
+            {
+                _partitions = value;
+            }
+        }
         void LoadSettings()
         {
             if (SettingHelper.ReadOldSettings() != null)//检测到旧配置文件
@@ -507,7 +626,6 @@ namespace imt_wankeyun_client
                 InitLogin();
             }
         }
-
         async void InitLogin()
         {
             if (settings.loginDatas != null && settings.loginDatas.Count > 0)
@@ -614,10 +732,13 @@ namespace imt_wankeyun_client
                 MessageBox.Show($"删除账号{phone}成功", "提示");
             }
         }
-
         private void tbc_fileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (tbc_fileList.SelectedIndex == 3)
+            if (tbc_fileList.SelectedIndex == 0)
+            {
+                RefreshFileStatus();
+            }
+            else if (tbc_fileList.SelectedIndex == 3)
             {
                 RefreshRemoteDlStatus();
                 RemoteDlTimer.Start();
@@ -627,7 +748,6 @@ namespace imt_wankeyun_client
                 RemoteDlTimer.Stop();
             }
         }
-
         private void btu_addRemoteDlTask_Click(object sender, RoutedEventArgs e)
         {
             if (!IsLogined())
@@ -643,17 +763,14 @@ namespace imt_wankeyun_client
         {
             RefreshRemoteDlStatus();
         }
-
         private void cbx_curAccount_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //MessageBox.Show(cbx_curAccount.SelectedValue.ToString());
             if (cbx_curAccount.SelectedValue != null)
             {
                 curAccount = cbx_curAccount.SelectedValue.ToString();
-                RefreshRemoteDlStatus();
+                tbc_fileList_SelectionChanged(null, null);
             }
         }
-
         private void btu_max_Click(object sender, RoutedEventArgs e)
         {
             btu_maxnormal.Visibility = Visibility.Visible;
@@ -665,7 +782,6 @@ namespace imt_wankeyun_client
             this.Width = rc.Width;
             this.Height = rc.Height;
         }
-
         private void btu_maxnormal_Click(object sender, RoutedEventArgs e)
         {
             btu_max.Visibility = Visibility.Visible;
@@ -675,7 +791,6 @@ namespace imt_wankeyun_client
             this.Width = rcnormal.Width;
             this.Height = rcnormal.Height;
         }
-
         private void link_showQQ_Click(object sender, RoutedEventArgs e)
         {
             AboutWindow a = new AboutWindow();
@@ -703,6 +818,19 @@ namespace imt_wankeyun_client
             {
                 MessageBox.Show("修改密码失败！原密码错误", "提示");
             }
+        }
+        private void btu_refreshFile_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshFileStatus();
+        }
+        private void file_item_DoubleClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("文件访问功能请等待后续开发和更新", "提示");
+        }
+
+        private void lv_file_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

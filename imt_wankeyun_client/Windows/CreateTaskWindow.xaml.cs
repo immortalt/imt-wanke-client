@@ -136,7 +136,7 @@ namespace imt_wankeyun_client.Windows
                     ext = ext.Substring(1, ext.Length - 1);
                 }
                 tbx_filename.Text = taskInfo.name;
-                tbx_size.Text = UtilHelper.ConvertToSizeString(taskInfo.size);
+                tbx_size.Text = UtilHelper.ConvertToSizeString(Convert.ToUInt64(taskInfo.size));
                 tbx_format.Text = ext;
                 grid_info.Opacity = 1;
                 grid_info.IsEnabled = true;

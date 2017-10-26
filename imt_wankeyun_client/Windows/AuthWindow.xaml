@@ -7,7 +7,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
         Title="软件启动认证" Height="296.341" Width="450" ResizeMode="NoResize" x:Name="window"
-        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="loginWindow_MouseLeftButtonDown">
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="loginWindow_MouseLeftButtonDown" Closing="window_Closing">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>

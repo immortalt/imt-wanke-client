@@ -32,6 +32,7 @@ namespace imt_wankeyun_client.Helpers
         internal static Dictionary<string, UserInfo> userInfos = new Dictionary<string, UserInfo>();
         internal static Dictionary<string, IncomeHistory> incomeHistorys = new Dictionary<string, IncomeHistory>();
         internal static Dictionary<string, RemoteDLResponse> remoteDlInfos = new Dictionary<string, RemoteDLResponse>();
+        internal static Dictionary<string, List<UsbInfoPartition>> usbInfoPartitions = new Dictionary<string, List<UsbInfoPartition>>();
 
         static RestClient GetClient(string phone)
         {
@@ -151,7 +152,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                //Debug.WriteLine(resp.Content);
+                Debug.WriteLine(resp.Content);
                 var root = JsonHelper.Deserialize<PeerResponse>(resp.Content);
                 message.data = root;
             }
@@ -273,7 +274,7 @@ namespace imt_wankeyun_client.Helpers
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
-                var request = new RestRequest($"/list?{gstr}", Method.GET);
+                var request = new RestRequest($"list?{gstr}", Method.GET);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -370,6 +371,59 @@ namespace imt_wankeyun_client.Helpers
                 message.data = resp.Content;
             }
             return message;
+        }
+        /// <summary>
+        /// 获取设备云添加信息
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> GetUSBInfo(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("GetUSBInfo-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"getUSBInfo?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("GetUSBInfo:" + resp.Content);
+                var root = JsonHelper.Deserialize<UsbInfoResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        internal static string GetDeviceID(string phone)
+        {
+            if (userDevices.ContainsKey(phone) && userDevices[phone] != null)
+            {
+                return userDevices[phone].device_id != null ? userDevices[phone].device_id : null;
+            }
+            else
+            {
+                return null;
+            }
         }
         internal static string GetPeerID(string phone)
         {
