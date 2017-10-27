@@ -19,3 +19,4 @@
  ### Software Preview
 ![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot1.png)
 ![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot2.png)
+![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot3.png)
