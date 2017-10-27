@@ -34,6 +34,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        LoadingWindow ld;
         internal static string password;
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
         private ObservableCollection<DlTaskVM> _dlTasks = null;
@@ -159,24 +160,29 @@ namespace imt_wankeyun_client
         {
             for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
             {
+
                 var t = ApiHelper.userBasicDatas.ElementAt(i);
                 var phone = t.Key;
                 var basic = t.Value;
+                if (ld != null)
+                {
+                    ld.SetTitle($"正在获取数据");
+                    ld.SetPgr(i, ApiHelper.userBasicDatas.Count);
+                    ld.SetTip($"正在获取账号{phone}的数据");
+                }
                 if (await ListPeer(phone))
                 {
-                    var gwkb = GetWkbAccountInfo(phone);
-                    var gui = GetUsbInfo(phone);
                     if (await GetUserInfo(phone))
                     {
                         await GetIncomeHistory(phone);
+                        await GetWkbAccountInfo(phone);
+                        await GetUsbInfo(phone);
                     }
-                    await gwkb;
-                    await gui;
                 }
+                deviceInfos = null;
+                lv_DeviceStatus.ItemsSource = deviceInfos;
+                AutoHeaderWidth(lv_DeviceStatus);
             }
-            deviceInfos = null;
-            lv_DeviceStatus.ItemsSource = deviceInfos;
-            AutoHeaderWidth(lv_DeviceStatus);
         }
         async void RefreshRemoteDlStatus()
         {
@@ -670,7 +676,7 @@ namespace imt_wankeyun_client
         {
             if (settings.loginDatas != null && settings.loginDatas.Count > 0)
             {
-                LoadingWindow ld = new LoadingWindow();
+                ld = new LoadingWindow();
                 ld.Show();
                 ld.SetTitle("登陆中");
                 ld.SetTip("正在登陆");
@@ -686,6 +692,7 @@ namespace imt_wankeyun_client
                 LoadAccounts();
                 await RefreshStatus();
                 ld.Close();
+                ld = null;
             }
         }
         async Task UserLogin(LoginData ld)
