@@ -37,7 +37,7 @@
                     <TabControl Margin="0,0.4,-0.2,0.4" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" BorderBrush="{x:Null}" Background="{x:Null}">
                         <TabItem Header="玩客云管理" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="0">
                             <TabItem.Background>
-                                <ImageBrush ImageSource="/img/coin.png" Stretch="Uniform"/>
+                                <ImageBrush ImageSource="/img/file.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White">
                                 <Grid.Effect>
@@ -88,10 +88,20 @@
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="历史总收入">
+                                            <GridViewColumn Header="历史收入">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Foreground="Goldenrod" Text="{Binding Path=totalIncome}"/>
+                                                        <StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="可提币:"/>
+                                                                <TextBlock Text="{Binding Path=ketiWkb}"
+                                                                       Foreground="Goldenrod"/>
+                                                            </StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="总收入:"/>
+                                                                <TextBlock Foreground="Goldenrod" Text="{Binding Path=totalIncome}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -201,12 +211,28 @@
                                 <CheckBox x:Name="chk_autoRefresh" Margin="175,7,0,0" Width="75" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" Click="chk_autoRefresh_Click" IsChecked="True"
                                           >自动刷新</CheckBox>
-                                <TextBlock Margin="254,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="收入管理" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="1">
+                            <TabItem.Background>
+                                <ImageBrush ImageSource="/img/coin.png" Stretch="Uniform"/>
+                            </TabItem.Background>
+                            <Grid Background="White">
+                                <Grid.Effect>
+                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
+                                </Grid.Effect>
+                                <TextBlock Margin="26,25,0,0" Width="478" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
                                           >昨日总收入：<Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
-                                <TextBlock Margin="514,6,0,0" Width="260" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="26,50,0,0" Width="478" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
                                           >历史总收入：<Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
+                                <TextBlock Margin="26,75,0,0" Width="478" Height="20" HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                          ><Run Text="可提玩客币："/><Run x:Name="tbk_ketiWkb" Foreground="Goldenrod" Text="0"/></TextBlock>
+                                <Button x:Name="btu_tibi" Content="一键提币" HorizontalAlignment="Left" Margin="26,100,0,0" 
+                                        VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                        VerticalContentAlignment="Top" Click="btu_tibi_Click"/>
                             </Grid>
                         </TabItem>
                     </TabControl>

@@ -33,6 +33,7 @@ namespace imt_wankeyun_client.Helpers
         internal static Dictionary<string, IncomeHistory> incomeHistorys = new Dictionary<string, IncomeHistory>();
         internal static Dictionary<string, RemoteDLResponse> remoteDlInfos = new Dictionary<string, RemoteDLResponse>();
         internal static Dictionary<string, List<UsbInfoPartition>> usbInfoPartitions = new Dictionary<string, List<UsbInfoPartition>>();
+        internal static Dictionary<string, WkbAccountInfo> wkbAccountInfos = new Dictionary<string, WkbAccountInfo>();
 
         static RestClient GetClient(string phone)
         {
@@ -373,7 +374,7 @@ namespace imt_wankeyun_client.Helpers
             return message;
         }
         /// <summary>
-        /// 获取设备云添加信息
+        /// 获取设备硬盘信息
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
@@ -405,6 +406,43 @@ namespace imt_wankeyun_client.Helpers
             {
                 Debug.WriteLine("GetUSBInfo:" + resp.Content);
                 var root = JsonHelper.Deserialize<UsbInfoResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 获取玩客币账号信息
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> GetWkbAccountInfo(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("appversion", appVersion);
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiAccountUrl);
+                var request = new RestRequest($"wkb/account-info", Method.POST);
+                Debug.WriteLine(GetParams(client, data));
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine(resp.Content);
+                var root = JsonHelper.Deserialize<WkbAccountInfoResponse>(resp.Content);
                 message.data = root;
             }
             else

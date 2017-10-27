@@ -164,11 +164,13 @@ namespace imt_wankeyun_client
                 var basic = t.Value;
                 if (await ListPeer(phone))
                 {
+                    var gwkb = GetWkbAccountInfo(phone);
                     var gui = GetUsbInfo(phone);
                     if (await GetUserInfo(phone))
                     {
                         await GetIncomeHistory(phone);
                     }
+                    await gwkb;
                     await gui;
                 }
             }
@@ -321,6 +323,39 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
+        async Task<bool> GetWkbAccountInfo(string phone)
+        {
+            HttpMessage resp = await ApiHelper.GetWkbAccountInfo(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var r = resp.data as WkbAccountInfoResponse;
+                    if (r.iRet == 0)
+                    {
+                        if (r.data != null)
+                        {
+                            if (!ApiHelper.wkbAccountInfos.ContainsKey(phone))
+                            {
+                                ApiHelper.wkbAccountInfos.Add(phone, r.data);
+                            }
+                            else
+                            {
+                                ApiHelper.wkbAccountInfos[phone] = r.data;
+                            }
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"GetWkbAccountInfo-获取数据出错{r.iRet}:{r.sMsg}");
+                    }
+                    return false;
+                default:
+                    Debug.WriteLine("GetWkbAccountInfo-网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
         async Task<bool> GetRemoteDlInfo(string phone)
         {
             HttpMessage resp = await ApiHelper.GetRemoteDlInfo(phone);
@@ -422,6 +457,7 @@ namespace imt_wankeyun_client
                 {
                     double yesAllCoin = 0;
                     double hisAllCoin = 0;
+                    double ketiWkb = 0;
                     _deviceInfos = new ObservableCollection<DeviceInfoVM>();
                     foreach (var t in ApiHelper.userBasicDatas)
                     {
@@ -431,6 +467,7 @@ namespace imt_wankeyun_client
                             var device = ApiHelper.userDevices[ubd.phone];
                             var userInfo = ApiHelper.userInfos[ubd.phone];
                             var partitions = ApiHelper.usbInfoPartitions[ubd.phone];
+                            var wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
                             ulong cap = 0;
                             ulong used = 0;
                             partitions.ForEach(p =>
@@ -442,6 +479,7 @@ namespace imt_wankeyun_client
                             var incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
                             yesAllCoin += userInfo.yes_wkb;
                             hisAllCoin += incomeHistory.totalIncome;
+                            ketiWkb += wkbAccountInfo.balance;
                             var di = new DeviceInfoVM
                             {
                                 phone = ubd.phone,
@@ -465,6 +503,7 @@ namespace imt_wankeyun_client
                                 activate_days = userInfo.activate_days.ToString(),
                                 totalIncome = incomeHistory.totalIncome.ToString(),
                                 volume = volume,
+                                ketiWkb = wkbAccountInfo.balance.ToString(),
                             };
                             _deviceInfos.Add(di);
                         }
@@ -475,6 +514,7 @@ namespace imt_wankeyun_client
                     }
                     tbk_yesAllCoin.Text = yesAllCoin.ToString();
                     tbk_hisAllCoin.Text = hisAllCoin.ToString();
+                    tbk_ketiWkb.Text = ketiWkb.ToString();
                 }
                 return _deviceInfos;
             }
@@ -838,6 +878,11 @@ namespace imt_wankeyun_client
         private void lv_file_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void btu_tibi_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("请等待接下来的开发和更新", "提示");
         }
     }
 }
