@@ -155,7 +155,7 @@ namespace imt_wankeyun_client
                 }
             }
         }
-        async void RefreshStatus()
+        async Task RefreshStatus()
         {
             for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
             {
@@ -630,15 +630,23 @@ namespace imt_wankeyun_client
         {
             if (settings.loginDatas != null && settings.loginDatas.Count > 0)
             {
+                LoadingWindow ld = new LoadingWindow();
+                ld.Show();
+                ld.SetTitle("加载中");
+                ld.SetTip("正在登陆");
+                ld.SetPgr(0, settings.loginDatas.Count);
                 for (int i = 0; i < settings.loginDatas.Count; i++)
                 {
                     var t = settings.loginDatas[i];
+                    ld.SetPgr(i, settings.loginDatas.Count);
+                    ld.SetTip("正在登陆账号：" + t.phone);
                     await UserLogin(t);
                 }
+                chk_autoRefresh.IsChecked = settings.autoRefresh;
+                LoadAccounts();
+                await RefreshStatus();
+                ld.Close();
             }
-            chk_autoRefresh.IsChecked = settings.autoRefresh;
-            LoadAccounts();
-            RefreshStatus();
         }
         async Task UserLogin(LoginData ld)
         {
@@ -827,7 +835,6 @@ namespace imt_wankeyun_client
         {
             MessageBox.Show("文件访问功能请等待后续开发和更新", "提示");
         }
-
         private void lv_file_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             e.Handled = true;
