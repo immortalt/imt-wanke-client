@@ -61,7 +61,6 @@ namespace imt_wankeyun_client
             StatusTimer = new DispatcherTimer();
             StatusTimer.Interval = TimeSpan.FromSeconds(15);
             StatusTimer.Tick += StatusTimer_Tick;
-            StatusTimer.Start();
             RemoteDlTimer = new DispatcherTimer();
             RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
@@ -440,6 +439,31 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
+        async Task<DrawWkbData> DrawWkb(string phone)
+        {
+            HttpMessage resp = await ApiHelper.DrawWkb(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return null;
+                    }
+                    var r = resp.data as DrawWkbResponse;
+                    if (r.data != null)
+                    {
+                        return r.data;
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"DrawWkb-获取数据出错{r.iRet}:{r.iRet}");
+                    }
+                    return null;
+                default:
+                    Debug.WriteLine("DrawWkb-网络异常错误！");
+                    return null;
+            }
+        }
         private void RemoteDlTimer_Tick(object sender, EventArgs e)
         {
             if (chk_refreshRemoteDl.IsChecked == true)
@@ -693,6 +717,7 @@ namespace imt_wankeyun_client
                 await RefreshStatus();
                 ld.Close();
                 ld = null;
+                StatusTimer.Start();
             }
         }
         async Task UserLogin(LoginData ld)
@@ -776,6 +801,8 @@ namespace imt_wankeyun_client
                 ApiHelper.userDevices.Remove(phone);
                 ApiHelper.userInfos.Remove(phone);
                 ApiHelper.incomeHistorys.Remove(phone);
+                ApiHelper.usbInfoPartitions.Remove(phone);
+                ApiHelper.wkbAccountInfos.Remove(phone);
                 settings.loginDatas = settings.loginDatas.Where(t => t.phone != phone).ToList();
                 if (curAccount == phone)
                 {
@@ -890,6 +917,26 @@ namespace imt_wankeyun_client
         private void btu_tibi_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("请等待接下来的开发和更新", "提示");
+        }
+
+        private async void btu_drawWkb_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            var result = MessageBox.Show($"确定提取账号{phone}的玩客币?", "提示", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                var r = await DrawWkb(phone);
+                if (r != null)
+                {
+                    RefreshStatus();
+                    MessageBox.Show($"{r.drawMsg}", $"提示({r.drawRet})");
+                }
+                else
+                {
+                    MessageBox.Show($"网络请求失败", "提示");
+                }
+            }
         }
     }
 }

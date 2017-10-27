@@ -82,8 +82,11 @@
                                             <GridViewColumn Header="昨日挖矿">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel>
+                                                        <StackPanel Orientation="Vertical">
                                                             <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
+                                                            <Button x:Name="btu_drawWkb" Style="{DynamicResource SmallButton}"
+                                                    Content="提币" Margin="2" Click="btu_drawWkb_Click" Width="60"
+                                                    CommandParameter="{Binding Path=phone}"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>

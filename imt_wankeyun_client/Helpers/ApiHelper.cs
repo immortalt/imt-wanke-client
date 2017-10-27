@@ -452,6 +452,44 @@ namespace imt_wankeyun_client.Helpers
             }
             return message;
         }
+        /// <summary>
+        /// 提币
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> DrawWkb(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("gasType", "2");
+            data.Add("appversion", appVersion);
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiAccountUrl);
+                var request = new RestRequest($"wkb/draw", Method.POST);
+                Debug.WriteLine(GetParams(client, data));
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine(resp.Content);
+                var root = JsonHelper.Deserialize<DrawWkbResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
         internal static string GetDeviceID(string phone)
         {
             if (userDevices.ContainsKey(phone) && userDevices[phone] != null)
