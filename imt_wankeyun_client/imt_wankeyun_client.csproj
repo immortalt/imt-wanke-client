@@ -40,7 +40,7 @@
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>53</ApplicationRevision>
+    <ApplicationRevision>54</ApplicationRevision>
     <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -154,6 +154,7 @@
     <Compile Include="Entities\Control\PeerResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskInfo.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskResponse.cs" />
+    <Compile Include="Entities\Control\RemoteDL\RemoteDlLoginResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\RemoteDLResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\TaskInfoResponse.cs" />
     <Compile Include="Entities\HttpMessage.cs" />

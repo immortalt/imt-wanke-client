@@ -38,6 +38,7 @@ namespace imt_wankeyun_client
         internal static string password;
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
         private ObservableCollection<DlTaskVM> _dlTasks = null;
+        private ObservableCollection<DlTaskVM> _dlTasks_finished = null;
         private ObservableCollection<FileVM> _partitions = null;
         DispatcherTimer StatusTimer;
         DispatcherTimer RemoteDlTimer;
@@ -188,10 +189,24 @@ namespace imt_wankeyun_client
             if (curAccount != null)
             {
                 Debug.WriteLine("curAccount=" + curAccount);
-                if (await GetRemoteDlInfo(curAccount))
+                await RemoteDlLogin(curAccount);
+                if (await GetRemoteDlInfo(curAccount, 0))
                 {
                     dlTasks = null;
                     lv_remoteDlStatus.ItemsSource = dlTasks;
+                }
+            }
+        }
+        async void RefreshRemoteDlStatus_finished()
+        {
+            if (curAccount != null)
+            {
+                Debug.WriteLine("curAccount=" + curAccount);
+                await RemoteDlLogin(curAccount);
+                if (await GetRemoteDlInfo(curAccount, 1))
+                {
+                    dlTasks_finished = null;
+                    lv_remoteDlStatus_finished.ItemsSource = dlTasks_finished;
                 }
             }
         }
@@ -361,9 +376,9 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
-        async Task<bool> GetRemoteDlInfo(string phone)
+        async Task<bool> GetRemoteDlInfo(string phone, int type)
         {
-            HttpMessage resp = await ApiHelper.GetRemoteDlInfo(phone);
+            HttpMessage resp = await ApiHelper.GetRemoteDlInfo(phone, type);
             switch (resp.statusCode)
             {
                 case HttpStatusCode.OK:
@@ -374,13 +389,27 @@ namespace imt_wankeyun_client
                     var r = resp.data as RemoteDLResponse;
                     if (r.rtn == 0)
                     {
-                        if (!ApiHelper.remoteDlInfos.ContainsKey(phone))
+                        if (type == 0)
                         {
-                            ApiHelper.remoteDlInfos.Add(phone, r);
+                            if (!ApiHelper.remoteDlInfos.ContainsKey(phone))
+                            {
+                                ApiHelper.remoteDlInfos.Add(phone, r);
+                            }
+                            else
+                            {
+                                ApiHelper.remoteDlInfos[phone] = r;
+                            }
                         }
                         else
                         {
-                            ApiHelper.remoteDlInfos[phone] = r;
+                            if (!ApiHelper.remoteDlInfos_finished.ContainsKey(phone))
+                            {
+                                ApiHelper.remoteDlInfos_finished.Add(phone, r);
+                            }
+                            else
+                            {
+                                ApiHelper.remoteDlInfos_finished[phone] = r;
+                            }
                         }
                         return true;
                     }
@@ -392,6 +421,31 @@ namespace imt_wankeyun_client
                 default:
                     Debug.WriteLine("GetRemoteDlInfo-网络异常错误！");
                     //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
+        async Task<bool> RemoteDlLogin(string phone)
+        {
+            HttpMessage resp = await ApiHelper.RemoteDlLogin(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return false;
+                    }
+                    var r = resp.data as RemoteDlLoginResponse;
+                    if (r.rtn == 0)
+                    {                   
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"RemoteDlLogin-获取数据出错{r.rtn}:{r.rtn}");
+                    }
+                    return false;
+                default:
+                    Debug.WriteLine("RemoteDlLogin-网络异常错误！");
                     return false;
             }
         }
@@ -512,7 +566,7 @@ namespace imt_wankeyun_client
                                 nickname = ubd.nickname,
                                 ip = device.ip,
                                 device_name = device.device_name,
-                                status = device.status == "exception" ? "异常" : device.status,
+                                status = device.status,
                                 status_color = device.status == "online" ? "Green" : "Red",
                                 dcdn_upnp_status = device.dcdn_upnp_status,
                                 system_version = device.system_version,
@@ -603,6 +657,56 @@ namespace imt_wankeyun_client
             set
             {
                 _dlTasks = value;
+            }
+        }
+        public ObservableCollection<DlTaskVM> dlTasks_finished
+        {
+            get
+            {
+                try
+                {
+                    if (this._dlTasks_finished == null)
+                    {
+                        _dlTasks_finished = new ObservableCollection<DlTaskVM>();
+                        if (!ApiHelper.remoteDlInfos_finished.ContainsKey(curAccount))
+                        {
+                            return _dlTasks_finished;
+                        }
+                        if (ApiHelper.remoteDlInfos_finished[curAccount] == null)
+                        {
+                            return _dlTasks_finished;
+                        }
+                        if (ApiHelper.remoteDlInfos_finished[curAccount].tasks == null)
+                        {
+                            return _dlTasks_finished;
+                        }
+                        tbx_taskCount.Text = ApiHelper.remoteDlInfos_finished[curAccount].dlNum.ToString();
+                        tbx_taskFinishedCount.Text = ApiHelper.remoteDlInfos_finished[curAccount].completeNum.ToString();
+                        foreach (var t in ApiHelper.remoteDlInfos_finished[curAccount].tasks)
+                        {
+                            var task = new DlTaskVM
+                            {
+                                name = t.name,
+                                state = "已完成",
+                                state_color = "Green",
+                                state_img = null,
+                                speed = UtilHelper.ConvertToSpeedString(t.speed),
+                                progress = (t.progress / 100d).ToString("f2") + "%",
+                            };
+                            _dlTasks_finished.Add(task);
+                        }
+                    }
+                    return _dlTasks_finished;
+                }
+                catch (Exception ex)
+                {
+                    Debug.Write("dlTasks-get-error " + ex.Message);
+                    return _dlTasks_finished;
+                }
+            }
+            set
+            {
+                _dlTasks_finished = value;
             }
         }
         internal ObservableCollection<FileVM> partitions
@@ -818,7 +922,7 @@ namespace imt_wankeyun_client
             }
             else if (tbc_fileList.SelectedIndex == 3)
             {
-                RefreshRemoteDlStatus();
+                remoteDlTab_SelectionChanged(null, null);
                 RemoteDlTimer.Start();
             }
             else
@@ -839,7 +943,7 @@ namespace imt_wankeyun_client
         }
         private void btu_refreshRemoteDlInfo_Click(object sender, RoutedEventArgs e)
         {
-            RefreshRemoteDlStatus();
+            remoteDlTab_SelectionChanged(null, null);
         }
         private void cbx_curAccount_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -909,7 +1013,6 @@ namespace imt_wankeyun_client
         {
             e.Handled = true;
         }
-
         private async void btu_tibi_Click(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("请等待接下来的开发和更新", "提示");
@@ -962,6 +1065,22 @@ namespace imt_wankeyun_client
                 {
                     MessageBox.Show($"网络请求失败", "提示");
                 }
+            }
+        }
+
+        private async void remoteDlTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (remoteDlTab.SelectedIndex == 0)
+            {
+                RefreshRemoteDlStatus();
+            }
+            else
+            {
+                RefreshRemoteDlStatus_finished();
+            }
+            if (e != null)
+            {
+                e.Handled = true;
             }
         }
     }

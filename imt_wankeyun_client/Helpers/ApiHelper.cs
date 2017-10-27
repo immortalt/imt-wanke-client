@@ -27,11 +27,13 @@ namespace imt_wankeyun_client.Helpers
         static string apiControlUrl = "https://control.onethingpcs.com";
         static string apiRemoteDlUrl = "http://control.remotedl.onethingpcs.com";
         internal static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
+        internal static Dictionary<string, RestClient> DlClients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
         internal static Dictionary<string, Device> userDevices = new Dictionary<string, Device>();
         internal static Dictionary<string, UserInfo> userInfos = new Dictionary<string, UserInfo>();
         internal static Dictionary<string, IncomeHistory> incomeHistorys = new Dictionary<string, IncomeHistory>();
         internal static Dictionary<string, RemoteDLResponse> remoteDlInfos = new Dictionary<string, RemoteDLResponse>();
+        internal static Dictionary<string, RemoteDLResponse> remoteDlInfos_finished = new Dictionary<string, RemoteDLResponse>();
         internal static Dictionary<string, List<UsbInfoPartition>> usbInfoPartitions = new Dictionary<string, List<UsbInfoPartition>>();
         internal static Dictionary<string, WkbAccountInfo> wkbAccountInfos = new Dictionary<string, WkbAccountInfo>();
 
@@ -46,6 +48,18 @@ namespace imt_wankeyun_client.Helpers
                 clients.Add(phone, c);
             }
             return clients[phone];
+        }
+        static RestClient GetDlClient(string phone)
+        {
+            if (!DlClients.ContainsKey(phone))
+            {
+                var c = new RestClient(apiRemoteDlUrl)
+                {
+                    CookieContainer = GetClient(phone).CookieContainer
+                };
+                DlClients.Add(phone, c);
+            }
+            return DlClients[phone];
         }
         /// <summary>
         /// 检查手机号是否已经注册
@@ -255,16 +269,16 @@ namespace imt_wankeyun_client.Helpers
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public static async Task<HttpMessage> GetRemoteDlInfo(string phone)
+        public static async Task<HttpMessage> GetRemoteDlInfo(string phone, int type = 0)
         {
-            var client = GetClient(phone);
+            var client = GetDlClient(phone);
             var data = new Dictionary<string, string>();
             data.Add("pid", GetPeerID(phone));
             data.Add("v", "2");
-            data.Add("ct", "1");
+            data.Add("ct", "32");
             data.Add("pos", "0");
-            data.Add("number", "1000");
-            data.Add("type", "0");
+            data.Add("number", "100");
+            data.Add("type", type.ToString());
             data.Add("needUrl", "0");
             var gstr = GetParams(client, data, true);
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
@@ -286,6 +300,47 @@ namespace imt_wankeyun_client.Helpers
             {
                 Debug.WriteLine("GetRemoteDlInfo:" + resp.Content);
                 var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 云添加登陆
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> RemoteDlLogin(string phone)
+        {
+            var client = GetDlClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("pid", GetPeerID(phone));
+            data.Add("v", "1");
+            data.Add("ct", "32");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("RemoteDlLogin-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"login?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("RemoteDlLogin:" + resp.Content);
+                var root = JsonHelper.Deserialize<RemoteDlLoginResponse>(resp.Content);
                 message.data = root;
             }
             else
@@ -344,7 +399,7 @@ namespace imt_wankeyun_client.Helpers
         /// <returns></returns>
         public static async Task<HttpMessage> CreateTask(string phone, CreateTaskInfo cti)
         {
-            var client = GetClient(phone);
+            var client = GetDlClient(phone);
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
             var userid = GetCookie(client, apiAccountUrl, "userid");
             var json = JsonHelper.Serialize(cti);

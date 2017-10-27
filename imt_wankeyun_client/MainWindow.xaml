@@ -231,7 +231,7 @@
                                           >自动刷新</CheckBox>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="收入管理" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="1">
+                        <TabItem Header="收益管理" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="1">
                             <TabItem.Background>
                                 <ImageBrush ImageSource="/img/coin.png" Stretch="Uniform"/>
                             </TabItem.Background>
@@ -347,51 +347,53 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <ListView Name="lv_remoteDlStatus" FontSize="14" Margin="0,31,0,-0.4">
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Width="133" Header="状态">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                            <StackPanel Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                <TabControl x:Name="remoteDlTab" Margin="0,31,0,-0.4" SelectionChanged="remoteDlTab_SelectionChanged">
+                                    <TabItem Header="正在添加">
+                                    <ListView Name="lv_remoteDlStatus" FontSize="14">
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Width="133" Header="状态">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <StackPanel Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                         Orientation="Horizontal">
-                                                                <Image Width="30" Height="30" Source="{Binding state_img}"></Image>
-                                                                <TextBlock Height="30" Margin="0,5,0,0" Foreground="{Binding state_color}" 
+                                                                    <Image Width="30" Height="30" Source="{Binding state_img}"></Image>
+                                                                    <TextBlock Height="30" Margin="0,5,0,0" Foreground="{Binding state_color}" 
                                                                        Text="{Binding Path=state}"/>
+                                                                </StackPanel>
                                                             </StackPanel>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                            <GridViewColumn Width="320" Header="文件名">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel>
-                                                            <TextBlock Width="310" Text="{Binding Path=name}" TextWrapping="Wrap"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                            <GridViewColumn Width="90" Header="速度">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel>
-                                                            <TextBlock Width="100" Text="{Binding Path=speed}"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                            <GridViewColumn Width="90" Header="进度">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel>
-                                                            <TextBlock Width="100" Text="{Binding Path=progress}"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>
-                                            <!--<GridViewColumn Width="60" Header="操作">
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Width="320" Header="文件名">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel>
+                                                                <TextBlock Width="310" Text="{Binding Path=name}" TextWrapping="Wrap"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Width="90" Header="速度">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel>
+                                                                <TextBlock Width="100" Text="{Binding Path=speed}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Width="90" Header="进度">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel>
+                                                                <TextBlock Width="100" Text="{Binding Path=progress}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <!--<GridViewColumn Width="60" Header="操作">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Vertical">
@@ -404,9 +406,51 @@
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>-->
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    </TabItem>
+                                    <TabItem Header="已完成">
+                                        <ListView Name="lv_remoteDlStatus_finished" FontSize="14">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn Width="133" Header="状态">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                    <StackPanel Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                        Orientation="Horizontal">
+                                                                        <Image Width="30" Height="30" Source="{Binding state_img}"></Image>
+                                                                        <TextBlock Height="30" Margin="0,5,0,0" Foreground="{Binding state_color}" 
+                                                                       Text="{Binding Path=state}"/>
+                                                                    </StackPanel>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Width="320" Header="文件名">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel>
+                                                                    <TextBlock Width="310" Text="{Binding Path=name}" TextWrapping="Wrap"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Width="90" Header="进度">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel>
+                                                                    <TextBlock Width="100" Text="{Binding Path=progress}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                    </TabItem>
+                                </TabControl>
                                 <Button x:Name="btu_addRemoteDlTask" Click="btu_addRemoteDlTask_Click" Content="云添加" HorizontalAlignment="Left" Margin="10,3,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top"/>
