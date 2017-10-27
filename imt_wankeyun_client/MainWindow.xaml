@@ -46,7 +46,22 @@
                                 <ListView Name="lv_DeviceStatus" FontSize="14" Margin="0,31,0,-0.4">
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Header="账号" DisplayMemberBinding="{Binding Path=phone}" />
+                                            <GridViewColumn Header="账号">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="手机:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding Path=phone}"/>
+                                                            </StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="SN:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding Path=device_sn}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
                                             <GridViewColumn Header="名称">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>

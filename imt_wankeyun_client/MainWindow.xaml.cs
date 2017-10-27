@@ -528,6 +528,7 @@ namespace imt_wankeyun_client
                                 activate_days = userInfo.activate_days.ToString(),
                                 totalIncome = incomeHistory.totalIncome.ToString(),
                                 volume = volume,
+                                device_sn = device.device_sn,
                                 ketiWkb = wkbAccountInfo.balance.ToString(),
                             };
                             _deviceInfos.Add(di);
