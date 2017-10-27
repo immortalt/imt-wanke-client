@@ -260,7 +260,7 @@ namespace imt_wankeyun_client.Helpers
             var data = new Dictionary<string, string>();
             data.Add("pid", GetPeerID(phone));
             data.Add("v", "2");
-            data.Add("ct", "32");
+            data.Add("ct", "1");
             data.Add("pos", "0");
             data.Add("number", "1000");
             data.Add("type", "0");

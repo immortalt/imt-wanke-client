@@ -632,7 +632,7 @@ namespace imt_wankeyun_client
             {
                 LoadingWindow ld = new LoadingWindow();
                 ld.Show();
-                ld.SetTitle("加载中");
+                ld.SetTitle("登陆中");
                 ld.SetTip("正在登陆");
                 ld.SetPgr(0, settings.loginDatas.Count);
                 for (int i = 0; i < settings.loginDatas.Count; i++)
