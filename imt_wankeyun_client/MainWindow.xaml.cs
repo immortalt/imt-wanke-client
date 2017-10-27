@@ -439,24 +439,19 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
-        async Task<DrawWkbData> DrawWkb(string phone)
+        async Task<DrawWkbResponse> DrawWkb(string phone)
         {
             HttpMessage resp = await ApiHelper.DrawWkb(phone);
             switch (resp.statusCode)
             {
                 case HttpStatusCode.OK:
-                    if (resp.data == null)
+                    if (resp.data != null)
                     {
-                        return null;
-                    }
-                    var r = resp.data as DrawWkbResponse;
-                    if (r.data != null)
-                    {
-                        return r.data;
+                        return resp.data as DrawWkbResponse;
                     }
                     else
                     {
-                        Debug.WriteLine($"DrawWkb-获取数据出错{r.iRet}:{r.iRet}");
+                        Debug.WriteLine($"DrawWkb-获取数据出错{(resp.data as DrawWkbResponse).iRet}");
                     }
                     return null;
                 default:
@@ -914,9 +909,39 @@ namespace imt_wankeyun_client
             e.Handled = true;
         }
 
-        private void btu_tibi_Click(object sender, RoutedEventArgs e)
+        private async void btu_tibi_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("请等待接下来的开发和更新", "提示");
+            //MessageBox.Show("请等待接下来的开发和更新", "提示");
+            LoadingWindow wkld = new LoadingWindow();
+            wkld.SetTitle("正在提取玩客币");
+            wkld.Show();
+            string result = "";
+            for (int i = 0; i < settings.loginDatas.Count; i++)
+            {
+                var t = settings.loginDatas[i];
+                wkld.SetTip($"正在提取账号{t.phone}的玩客币");
+                wkld.SetPgr(i, settings.loginDatas.Count);
+                string tresult = "";
+                var r = await DrawWkb(t.phone);
+                if (r != null)
+                {
+                    tresult = $"{t.phone}:({r.iRet}){r.sMsg}";
+                }
+                else
+                {
+                    tresult = $"{t.phone}:网络通讯失败";
+                }
+                if (i != settings.loginDatas.Count - 1)
+                {
+                    result += tresult + Environment.NewLine;
+                }
+                else
+                {
+                    result += tresult;
+                }
+            }
+            wkld.Close();
+            MessageBox.Show(result, "提币结果");
         }
 
         private async void btu_drawWkb_Click(object sender, RoutedEventArgs e)
@@ -930,7 +955,7 @@ namespace imt_wankeyun_client
                 if (r != null)
                 {
                     RefreshStatus();
-                    MessageBox.Show($"{r.drawMsg}", $"提示({r.drawRet})");
+                    MessageBox.Show($"{r.sMsg}", $"提示({r.iRet})");
                 }
                 else
                 {
