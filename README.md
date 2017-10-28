@@ -1,5 +1,5 @@
 # imt-wanke-client
-不朽玩客云客户端(Immortalt Wanke Client)本软件**永久免费！永久免费！**
+不朽玩客云客户端(Immortalt Wanke Client)本软件**永久免费！永久免费！**  
 本项目是对迅雷玩客云实现的第三方桌面客户端，目前可以监控多设备的矿机的运行情况、提币、查看云添加列表等，
 以后有空将逐步完善剩下的功能。
 ### [**安装软件**](https://github.com/Immortalt/imt-wanke-client/blob/master/README.md)
