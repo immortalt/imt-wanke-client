@@ -1,5 +1,6 @@
 ﻿using imt_wankeyun_client.Entities;
 using imt_wankeyun_client.Entities.Account;
+using imt_wankeyun_client.Entities.Control;
 using imt_wankeyun_client.Helpers;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace imt_wankeyun_client.Windows
         public static LoginResponse loginResponse;
         public string url_login_vali;
         public bool isShowVali = false;
-        public bool LoginSuccess = false;
+        public static bool LoginSuccess = false;
         LoginData ld = new LoginData
         {
             account_type = "4",
@@ -33,6 +34,7 @@ namespace imt_wankeyun_client.Windows
             InitializeComponent();
             Uri iconUri = new Uri("pack://application:,,,/img/icon.ico", UriKind.RelativeOrAbsolute);
             this.Icon = BitmapFrame.Create(iconUri);
+            LoginSuccess = false;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -107,6 +109,13 @@ namespace imt_wankeyun_client.Windows
                     loginResponse = resp.data as LoginResponse;
                     if (loginResponse.iRet == 0)
                     {
+                        var devices = await GetDevices(ld.phone);
+                        if (devices == null || devices.Count == 0)
+                        {
+                            MessageBox.Show("请先用app绑定玩客云设备", "错误");
+                            LoginSuccess = false;
+                            return;
+                        }
                         LoginSuccess = true;
                         MessageBox.Show("登陆成功", "恭喜");
                         Debug.WriteLine(MainWindow.settings.loginDatas == null);
@@ -149,7 +158,35 @@ namespace imt_wankeyun_client.Windows
                     break;
             }
         }
-
+        async Task<List<Device>> GetDevices(string phone)
+        {
+            HttpMessage resp = await ApiHelper.ListPeer(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var pr = resp.data as PeerResponse;
+                    if (pr.rtn == 0)
+                    {
+                        if (pr.result.Count > 1)
+                        {
+                            if (pr.result[1] != null)
+                            {
+                                Devices devicesArr = JsonHelper.Deserialize<Devices>(pr.result[1].ToString());
+                                var devices = devicesArr.devices;
+                                return devices;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("获取数据出错！");
+                    }
+                    return null;
+                default:
+                    Debug.WriteLine("网络异常错误！");
+                    return null;
+            }
+        }
         private void img_vali_MouseDown(object sender, MouseButtonEventArgs e)
         {
             RefreshVali();

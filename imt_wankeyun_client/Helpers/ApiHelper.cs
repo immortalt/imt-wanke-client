@@ -106,6 +106,7 @@ namespace imt_wankeyun_client.Helpers
             string deviceid, string imeiid)
         {
             var client = GetClient(phone);
+            client.CookieContainer = new CookieContainer();
             var logindata = new Dictionary<string, string>();
             logindata.Add("phone", phone);
             logindata.Add("pwd", pwd);
@@ -129,7 +130,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                //Debug.WriteLine(resp.Content);
+                Debug.WriteLine("Login:" + resp.Content);
                 message.data = JsonHelper.Deserialize<LoginResponse>(resp.Content);
             }
             else

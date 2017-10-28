@@ -119,7 +119,10 @@ namespace imt_wankeyun_client
         {
             try
             {
-                this.DragMove();
+                if (!(btu_max.Visibility == Visibility.Collapsed))
+                {//如果不是最大化状态
+                    this.DragMove();
+                }
             }
             catch
             {
@@ -158,9 +161,15 @@ namespace imt_wankeyun_client
         }
         async Task RefreshStatus()
         {
+            if (ApiHelper.userBasicDatas.Count == 0)
+            {
+                deviceInfos = null;
+                lv_DeviceStatus.ItemsSource = deviceInfos;
+                AutoHeaderWidth(lv_DeviceStatus);
+                return;
+            }
             for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
             {
-
                 var t = ApiHelper.userBasicDatas.ElementAt(i);
                 var phone = t.Key;
                 var basic = t.Value;
@@ -231,8 +240,11 @@ namespace imt_wankeyun_client
         {
             LoginWindow lw = new LoginWindow();
             lw.ShowDialog();
-            LoadAccounts();
-            RefreshStatus();
+            if (LoginWindow.LoginSuccess)
+            {
+                LoadAccounts();
+                RefreshStatus();
+            }
         }
         async Task<bool> ListPeer(string phone)
         {
@@ -436,7 +448,7 @@ namespace imt_wankeyun_client
                     }
                     var r = resp.data as RemoteDlLoginResponse;
                     if (r.rtn == 0)
-                    {                   
+                    {
                         return true;
                     }
                     else
@@ -520,12 +532,12 @@ namespace imt_wankeyun_client
                 RefreshRemoteDlStatus();
             }
         }
-        private void StatusTimer_Tick(object sender, EventArgs e)
+        private async void StatusTimer_Tick(object sender, EventArgs e)
         {
             if (settings.autoRefresh)
             {
                 System.GC.Collect();
-                RefreshStatus();
+                await RefreshStatus();
             }
         }
         public ObservableCollection<DeviceInfoVM> deviceInfos
@@ -880,9 +892,18 @@ namespace imt_wankeyun_client
             }
             SettingHelper.WriteSettings(settings, password);
         }
-        private void Btu_refreshStatus_Click(object sender, RoutedEventArgs e)
+        private async void Btu_refreshStatus_Click(object sender, RoutedEventArgs e)
         {
-            RefreshStatus();
+            StatusTimer.Stop();
+            ld = new LoadingWindow();
+            ld.Show();
+            await RefreshStatus();
+            ld.Close();
+            ld = null;
+            if (chk_autoRefresh.IsChecked == true)
+            {
+                StatusTimer.Start();
+            }
         }
         private void link_Click(object sender, RoutedEventArgs e)
         {
