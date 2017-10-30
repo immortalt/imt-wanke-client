@@ -19,6 +19,19 @@ namespace imt_wankeyun_client.Windows
     /// </summary>
     public partial class LoginWindow : Window
     {
+        bool isLogining;
+        bool IsLogining
+        {
+            get
+            {
+                return isLogining;
+            }
+            set
+            {
+                isLogining = value;
+                grid_login.IsEnabled = !value;
+            }
+        }
         public static LoginResponse loginResponse;
         public string url_login_vali;
         public bool isShowVali = false;
@@ -92,6 +105,7 @@ namespace imt_wankeyun_client.Windows
         }
         private async Task HandleLogin()
         {
+            IsLogining = true;
             if (ApiHelper.userBasicDatas.ContainsKey(tbx_username.Text.Trim()))
             {
                 MessageBox.Show("该账号已经添加！", "提示");
@@ -114,6 +128,7 @@ namespace imt_wankeyun_client.Windows
                         {
                             MessageBox.Show("请先用app绑定玩客云设备", "错误");
                             LoginSuccess = false;
+                            IsLogining = false;
                             return;
                         }
                         LoginSuccess = true;
@@ -136,6 +151,7 @@ namespace imt_wankeyun_client.Windows
                         ShowVali(true);
                         RefreshVali();
                         Debug.WriteLine(this.url_login_vali);
+                        IsLogining = false;
                     }
                     else if (loginResponse.iRet == -122)
                     {
@@ -145,16 +161,19 @@ namespace imt_wankeyun_client.Windows
                         this.url_login_vali = loginResponse.sMsg.Replace(@"http://account.onethingpcs.com/", "");
                         RefreshVali();
                         Debug.WriteLine(this.url_login_vali);
+                        IsLogining = false;
                     }
                     else
                     {
                         LoginSuccess = true;
                         MessageBox.Show(loginResponse.sMsg, $"登陆失败({loginResponse.iRet})");
+                        IsLogining = false;
                     }
                     break;
                 default:
                     tbx_tip.Text = "";
                     MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    IsLogining = false;
                     break;
             }
         }
