@@ -40,7 +40,7 @@
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>56</ApplicationRevision>
+    <ApplicationRevision>57</ApplicationRevision>
     <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -114,6 +114,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Drawing" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -157,6 +158,7 @@
     <Compile Include="Entities\Control\RemoteDL\RemoteDlLoginResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\RemoteDLResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\TaskInfoResponse.cs" />
+    <Compile Include="Entities\Control\SetDeviceNameResponse.cs" />
     <Compile Include="Entities\HttpMessage.cs" />
     <Compile Include="Entities\Account\LoginData.cs" />
     <Compile Include="Entities\Account\CheckRegisterResponse.cs" />

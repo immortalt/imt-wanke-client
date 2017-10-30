@@ -546,6 +546,49 @@ namespace imt_wankeyun_client.Helpers
             }
             return message;
         }
+        /// <summary>
+        /// 修改设备名称
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> SetDeviceName(string phone, string device_name)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("devicename", device_name);
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("SetDeviceName-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"setDeviceName?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("SetDeviceName:" + resp.Content);
+                var root = JsonHelper.Deserialize<SetDeviceNameResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
         internal static string GetDeviceID(string phone)
         {
             if (userDevices.ContainsKey(phone) && userDevices[phone] != null)

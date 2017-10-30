@@ -51,7 +51,7 @@ namespace imt_wankeyun_client.Windows
                     }
                     else
                     {
-                        MessageBox.Show("错误的资源！无法下载", $"错误(r.rtn)");
+                        MessageBox.Show("错误的资源！无法下载", $"错误({r.rtn})");
                         Debug.WriteLine($"UrlResolve-获取数据出错{r.rtn}:{r.rtn}");
                     }
                     return null;

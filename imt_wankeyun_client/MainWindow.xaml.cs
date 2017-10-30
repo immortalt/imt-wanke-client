@@ -26,6 +26,7 @@ using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
 using System.Windows.Media.Imaging;
 using System.Deployment.Application;
+using Microsoft.VisualBasic;
 
 namespace imt_wankeyun_client
 {
@@ -461,6 +462,31 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
+        async Task<string> SetDeviceName(string phone, string device_name)
+        {
+            HttpMessage resp = await ApiHelper.SetDeviceName(phone, device_name);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return "错误！获取数据为空！";
+                    }
+                    var r = resp.data as SetDeviceNameResponse;
+                    if (r.rtn == 0)
+                    {
+                        return "0";
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"SetDeviceName-获取数据出错{r.msg}:{r.rtn}");
+                    }
+                    return r.msg;
+                default:
+                    Debug.WriteLine("SetDeviceName-网络异常错误！");
+                    return "错误！网络异常错误！";
+            }
+        }
         async Task<bool> GetUsbInfo(string phone)
         {
             HttpMessage resp = await ApiHelper.GetUSBInfo(phone);
@@ -550,6 +576,7 @@ namespace imt_wankeyun_client
                     double hisAllCoin = 0;
                     double ketiWkb = 0;
                     _deviceInfos = new ObservableCollection<DeviceInfoVM>();
+                    var DiList = new List<DeviceInfoVM>();
                     foreach (var t in ApiHelper.userBasicDatas)
                     {
                         try
@@ -597,13 +624,15 @@ namespace imt_wankeyun_client
                                 device_sn = device.device_sn,
                                 ketiWkb = wkbAccountInfo.balance.ToString(),
                             };
-                            _deviceInfos.Add(di);
+                            DiList.Add(di);
                         }
                         catch (Exception ex)
                         {
                             Debug.Write(ex.Message);
                         }
                     }
+                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                    DiList.ForEach(t => _deviceInfos.Add(t));
                     tbk_yesAllCoin.Text = yesAllCoin.ToString();
                     tbk_hisAllCoin.Text = hisAllCoin.ToString();
                     tbk_ketiWkb.Text = ketiWkb.ToString();
@@ -1068,7 +1097,6 @@ namespace imt_wankeyun_client
             wkld.Close();
             MessageBox.Show(result, "提币结果");
         }
-
         private async void btu_drawWkb_Click(object sender, RoutedEventArgs e)
         {
             var btu = sender as Button;
@@ -1088,8 +1116,7 @@ namespace imt_wankeyun_client
                 }
             }
         }
-
-        private async void remoteDlTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void remoteDlTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (remoteDlTab.SelectedIndex == 0)
             {
@@ -1102,6 +1129,29 @@ namespace imt_wankeyun_client
             if (e != null)
             {
                 e.Handled = true;
+            }
+        }
+        private async void btu_rename_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            string newname = Interaction.InputBox("请输入新的设备名称", "设置设备名称", "", -1, -1);
+            if (newname.Trim() != "")
+            {
+                string result = await SetDeviceName(phone, newname);
+                if (result == "0")
+                {
+                    MessageBox.Show("设备名称修改成功！", "恭喜");
+                    await RefreshStatus();
+                }
+                else
+                {
+                    MessageBox.Show("设备名称修改失败！您输入的名称格式有误或过长", "错误");
+                }
+            }
+            else
+            {
+                MessageBox.Show("设备名称不能为空！", "提示");
             }
         }
     }
