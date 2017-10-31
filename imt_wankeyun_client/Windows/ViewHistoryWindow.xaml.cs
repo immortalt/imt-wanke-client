@@ -1,13 +1,9 @@
-﻿using imt_wankeyun_client.Entities;
-using imt_wankeyun_client.Entities.Account;
+﻿using DevExpress.Xpf.Charts;
 using imt_wankeyun_client.Entities.WKB;
-using imt_wankeyun_client.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,21 +16,36 @@ namespace imt_wankeyun_client.Windows
     /// </summary>
     public partial class ViewHistoryWindow : Window
     {
-        List<Income> historyArr = new List<Income>();
+        List<Income> historyArr;
+        public List<double> incomeArr = new List<double>();
         public ViewHistoryWindow(IncomeHistory incomeHistory)
         {
             InitializeComponent();
             Uri iconUri = new Uri("pack://application:,,,/img/icon.ico", UriKind.RelativeOrAbsolute);
             this.Icon = BitmapFrame.Create(iconUri);
+            historyArr = new List<Income>();
             if (incomeHistory != null)
             {
-                historyArr = incomeHistory.incomeArr;
-                for (var i = 0; i < historyArr.Count; i++)
+                var ih = incomeHistory.incomeArr.OrderBy(t => t.date).ToList();
+                chart_history.DataSource = ih;
+                for (var i = 0; i < ih.Count; i++)
                 {
-                    var dtstr = historyArr[i].date;
-                    var dt = new DateTime(int.Parse(dtstr.Substring(0, 4)),
-                        int.Parse(dtstr.Substring(4, 2)), int.Parse(dtstr.Substring(6, 2)));
-                    historyArr[i].date = dt.ToLongDateString();
+                    try
+                    {
+                        var dtstr = ih[i].date;
+                        var dt = new DateTime(int.Parse(dtstr.Substring(0, 4)),
+                            int.Parse(dtstr.Substring(4, 2)), int.Parse(dtstr.Substring(6, 2)));
+                        var ic = new Income
+                        {
+                            date = dt.ToLongDateString(),
+                            num = ih[i].num
+                        };
+                        historyArr.Add(ic);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
                 }
             }
         }
