@@ -584,15 +584,19 @@ namespace imt_wankeyun_client
                             var ubd = t.Value;
                             var device = ApiHelper.userDevices[ubd.phone];
                             var userInfo = ApiHelper.userInfos[ubd.phone];
-                            var partitions = ApiHelper.usbInfoPartitions[ubd.phone];
-                            var wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
+                            List<UsbInfoPartition> partitions = new List<UsbInfoPartition>();
                             ulong cap = 0;
                             ulong used = 0;
-                            partitions.ForEach(p =>
+                            if (ApiHelper.usbInfoPartitions.ContainsKey(ubd.phone))
                             {
-                                cap += p.capacity;
-                                used += p.used;
-                            });
+                                partitions = ApiHelper.usbInfoPartitions[ubd.phone];
+                                partitions.ForEach(p =>
+                                {
+                                    cap += p.capacity;
+                                    used += p.used;
+                                });
+                            }
+                            var wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
                             string volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
                             var incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
                             yesAllCoin += userInfo.yes_wkb;
@@ -605,7 +609,7 @@ namespace imt_wankeyun_client
                                 nickname = ubd.nickname,
                                 ip = device.ip,
                                 device_name = device.device_name,
-                                status = device.status,
+                                status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "异常在线(现阶段都这样)" : device.status)),
                                 status_color = device.status == "online" ? "Green" : "Red",
                                 dcdn_upnp_status = device.dcdn_upnp_status,
                                 system_version = device.system_version,
@@ -620,7 +624,7 @@ namespace imt_wankeyun_client
                                 yes_wkb = userInfo.yes_wkb.ToString(),
                                 activate_days = userInfo.activate_days.ToString(),
                                 totalIncome = incomeHistory.totalIncome.ToString(),
-                                volume = volume,
+                                volume = device.status != "offline" ? volume : "设备离线",
                                 device_sn = device.device_sn,
                                 ketiWkb = wkbAccountInfo.balance.ToString(),
                             };

@@ -13,7 +13,7 @@
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
     <Grid>
-        <TextBlock x:Name="tbk_title" Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="收入历史"/>
+        <TextBlock x:Name="tbk_title" Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="历史收入"/>
         <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0.2,0.4" Background="White">
             <ListView x:Name="lv_incomeHistory" FontSize="14" Margin="528,0,-0.6,0.6">
                 <ListView.View>
