@@ -1,5 +1,4 @@
-﻿using DevExpress.Xpf.Charts;
-using imt_wankeyun_client.Entities.WKB;
+﻿using imt_wankeyun_client.Entities.WKB;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
