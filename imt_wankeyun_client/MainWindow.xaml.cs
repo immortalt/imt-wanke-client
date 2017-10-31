@@ -1079,7 +1079,11 @@ namespace imt_wankeyun_client
                 var r = await DrawWkb(t.phone);
                 if (r != null)
                 {
-                    tresult = $"{t.phone}:({r.iRet}){r.sMsg}";
+                    if (r.iRet == 0)
+                    {
+                        r.sMsg = "提币成功！";
+                    }
+                    tresult = $"{t.phone}:(状态码{r.iRet}){r.sMsg}";
                 }
                 else
                 {
