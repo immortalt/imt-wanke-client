@@ -51,7 +51,7 @@ namespace imt_wankeyun_client.Windows
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             lv_incomeHistory.ItemsSource = null;
-            lv_incomeHistory.ItemsSource = historyArr;
+            lv_incomeHistory.ItemsSource = historyArr.OrderByDescending(t => t.date).ToList();
             AutoHeaderWidth(lv_incomeHistory);
         }
         private void loginWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
