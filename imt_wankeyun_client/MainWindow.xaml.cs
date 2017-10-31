@@ -575,6 +575,8 @@ namespace imt_wankeyun_client
                     double yesAllCoin = 0;
                     double hisAllCoin = 0;
                     double ketiWkb = 0;
+                    int onlineCount = 0;
+                    int offlineCount = 0;
                     _deviceInfos = new ObservableCollection<DeviceInfoVM>();
                     var DiList = new List<DeviceInfoVM>();
                     foreach (var t in ApiHelper.userBasicDatas)
@@ -602,6 +604,14 @@ namespace imt_wankeyun_client
                             yesAllCoin += userInfo.yes_wkb;
                             hisAllCoin += incomeHistory.totalIncome;
                             ketiWkb += wkbAccountInfo.balance;
+                            if (device.status == "offline")
+                            {
+                                offlineCount++;
+                            }
+                            else
+                            {
+                                onlineCount++;
+                            }
                             var di = new DeviceInfoVM
                             {
                                 phone = ubd.phone,
@@ -609,8 +619,8 @@ namespace imt_wankeyun_client
                                 nickname = ubd.nickname,
                                 ip = device.ip,
                                 device_name = device.device_name,
-                                status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "异常在线(现阶段都这样)" : device.status)),
-                                status_color = device.status == "online" ? "Green" : "Red",
+                                status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
+                                status_color = device.status == "offline" ? "Red" : "Green",
                                 dcdn_upnp_status = device.dcdn_upnp_status,
                                 system_version = device.system_version,
                                 dcdn_download_speed = device.dcdn_download_speed.ToString(),
@@ -639,6 +649,8 @@ namespace imt_wankeyun_client
                     DiList.ForEach(t => _deviceInfos.Add(t));
                     tbk_yesAllCoin.Text = yesAllCoin.ToString();
                     tbk_hisAllCoin.Text = hisAllCoin.ToString();
+                    tbk_onlineCount.Text = onlineCount.ToString();
+                    tbk_offlineCount.Text = offlineCount.ToString();
                     tbk_ketiWkb.Text = ketiWkb.ToString();
                 }
                 return _deviceInfos;
