@@ -1,0 +1,46 @@
+﻿<Window x:Class="imt_wankeyun_client.Windows.ViewHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+        mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
+        Title="玩客云登陆" Height="402.356" Width="520.741" ResizeMode="NoResize" x:Name="loginWindow"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="loginWindow_MouseLeftButtonDown" Topmost="True">
+    <Window.Background>
+        <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
+    </Window.Background>
+    <Grid>
+        <TextBlock x:Name="tbk_title" Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="收入历史"/>
+        <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0.2,0.4" Background="White">
+            <Grid.RowDefinitions>
+            </Grid.RowDefinitions>
+            <ListView Name="lv_incomeHistory" FontSize="14">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="日期">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Foreground="Black" Text="{Binding Path=date}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="收入">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Foreground="Goldenrod" Text="{Binding Path=num}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="386,0,0,250.4" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
+    </Grid>
+</Window>

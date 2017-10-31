@@ -100,7 +100,10 @@
                                                         <StackPanel Orientation="Vertical">
                                                             <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
                                                             <Button x:Name="btu_drawWkb" Style="{DynamicResource SmallButton}"
-                                                    Content="提币" Margin="2" Click="btu_drawWkb_Click" Width="60"
+                                                    Content="提币" Margin="2" Click="btu_drawWkb_Click" Width="70"
+                                                    CommandParameter="{Binding Path=phone}"/>
+                                                            <Button x:Name="btu_viewHistoryIncome" Style="{DynamicResource SmallButton}"
+                                                    Content="历史收入" Margin="2" Click="btu_viewHistoryIncome_Click"  Width="70"
                                                     CommandParameter="{Binding Path=phone}"/>
                                                         </StackPanel>
                                                     </DataTemplate>

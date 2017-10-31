@@ -1154,5 +1154,21 @@ namespace imt_wankeyun_client
                 MessageBox.Show("设备名称不能为空！", "提示");
             }
         }
+
+        private void btu_viewHistoryIncome_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            if (ApiHelper.incomeHistorys.ContainsKey(phone))
+            {
+                var ih = ApiHelper.incomeHistorys[phone];
+                ViewHistoryWindow vhw = new ViewHistoryWindow(ih);
+                vhw.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("数据还没有获取成功！请刷新后重试", "提示");
+            }
+        }
     }
 }

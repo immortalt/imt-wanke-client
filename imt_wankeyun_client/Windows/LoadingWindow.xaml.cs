@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 namespace imt_wankeyun_client.Windows
 {
     /// <summary>
-    /// LoginWindow.xaml 的交互逻辑
+    /// LoadingWindow.xaml 的交互逻辑
     /// </summary>
     public partial class LoadingWindow : Window
     {
