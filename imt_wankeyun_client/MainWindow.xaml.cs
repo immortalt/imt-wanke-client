@@ -40,6 +40,7 @@ namespace imt_wankeyun_client
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
         private ObservableCollection<DlTaskVM> _dlTasks = null;
         private ObservableCollection<DlTaskVM> _dlTasks_finished = null;
+        List<Income> dayIncomes = new List<Income>();
         private ObservableCollection<FileVM> _partitions = null;
         DispatcherTimer StatusTimer;
         DispatcherTimer RemoteDlTimer;
@@ -193,6 +194,27 @@ namespace imt_wankeyun_client
                 lv_DeviceStatus.ItemsSource = deviceInfos;
                 AutoHeaderWidth(lv_DeviceStatus);
             }
+            var v = ApiHelper.incomeHistorys.Values;
+            dayIncomes = null;
+            dayIncomes = new List<Income>();
+            for (int i = 0; i < v.Count; i++)
+            {
+                var t = v.ElementAt(i);
+                var inc = t.incomeArr;
+                foreach (var c in inc)
+                {
+                    if (dayIncomes.Where(tt => tt.date == c.date).Count() == 0)
+                    {
+                        dayIncomes.Add(c);
+                    }
+                    else
+                    {
+                        var ii = dayIncomes.Find(tt => tt.date == c.date);
+                        ii.num = (Convert.ToDouble(ii.num) + Convert.ToDouble(c.num)).ToString();
+                    }
+                }
+            }
+            dayIncomes = dayIncomes.OrderBy(t => t.date).ToList();
         }
         async void RefreshRemoteDlStatus()
         {
@@ -855,6 +877,7 @@ namespace imt_wankeyun_client
         }
         async void InitLogin()
         {
+            grid_main.IsEnabled = false;
             if (settings.loginDatas != null && settings.loginDatas.Count > 0)
             {
                 ld = new LoadingWindow();
@@ -876,6 +899,7 @@ namespace imt_wankeyun_client
                 ld = null;
                 StatusTimer.Start();
             }
+            grid_main.IsEnabled = true;
         }
         async Task UserLogin(LoginData ld)
         {
@@ -1191,6 +1215,19 @@ namespace imt_wankeyun_client
                 MessageBox.Show("数据还没有获取成功！请刷新后重试", "提示");
             }
             btu.IsEnabled = true;
+        }
+
+        private void tab_account_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tab_account.SelectedIndex == 1)
+            {
+                LoadDayHistroy();
+            }
+        }
+        private void LoadDayHistroy()
+        {
+            chart_dayHistory.DataSource = null;
+            chart_dayHistory.DataSource = dayIncomes;
         }
     }
 }

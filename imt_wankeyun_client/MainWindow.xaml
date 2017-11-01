@@ -2,21 +2,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Controls="clr-namespace:Wpf.Controls;assembly=Wpf.SplitButton" mc:Ignorable="d" 
+        xmlns:Controls="clr-namespace:Wpf.Controls;assembly=Wpf.SplitButton" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" mc:Ignorable="d" 
         x:Class="imt_wankeyun_client.MainWindow" TextOptions.TextFormattingMode="Display"
-        TextOptions.TextRenderingMode="Auto" 
+        TextOptions.TextRenderingMode="Auto"
         Title="不朽玩客云客户端" Height="600" Width="900" Style="{DynamicResource NoResize_window}" 
         BorderThickness="1" BorderBrush="#FF87AFD4" MouseLeftButtonDown="Window_MouseLeftButtonDown" HorizontalContentAlignment="Center" Icon="/img/icon.ico" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="FileListItemStyle" TargetType="{x:Type ListViewItem}">
+            <EventSetter Event="Control.MouseDoubleClick" Handler="file_item_DoubleClick"/>
+        </Style>
+    </Window.Resources>
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
-    <Window.Resources>
-        <Style x:Key="FileListItemStyle" TargetType="ListViewItem">
-            <EventSetter Event="MouseDoubleClick" Handler="file_item_DoubleClick"/>
-        </Style>
-    </Window.Resources>
-    <Grid >
-        <WebBrowser Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"></WebBrowser>
+    <Grid x:Name="grid_main">
+        <WebBrowser Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"/>
         <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,18,0,2">
             <TabItem Header="账户" Margin="64,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle2}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
                 <Grid Margin="0,0,0,0">
@@ -39,7 +39,8 @@
                         <DropShadowEffect ShadowDepth="0" BlurRadius="11" Color="#FF154F87"/>
                     </Grid.Effect>
                     <Label Content="   功能列表" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Background="#FFFDFDFD" Foreground="#BB48677C" Margin="0,1,0,0"/>
-                    <TabControl Margin="0,0.4,-0.2,0.4" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" BorderBrush="{x:Null}" Background="{x:Null}">
+                    <TabControl x:Name="tab_account" Margin="0,0.4,-0.2,0.4" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" BorderBrush="{x:Null}" Background="{x:Null}"
+                                SelectionChanged="tab_account_SelectionChanged">
                         <TabItem Header="玩客云管理" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="0">
                             <TabItem.Background>
                                 <ImageBrush ImageSource="/img/file.png" Stretch="Uniform"/>
@@ -48,7 +49,7 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <ListView Name="lv_DeviceStatus" FontSize="14" Margin="0,31,0,-0.4">
+                                <ListView x:Name="lv_DeviceStatus" FontSize="14" Margin="0,31,0,-0.4">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="账号">
@@ -57,11 +58,11 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="手机:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=phone}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding phone}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="SN:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=device_sn}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding device_sn}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -73,11 +74,11 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="设备名称:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=device_name}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding device_name}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="激活状态:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=isActived}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding isActived}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -89,11 +90,11 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="IP地址:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=ip}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding ip}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="运营商:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=ip_info}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding ip_info}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -103,13 +104,13 @@
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Vertical">
-                                                            <TextBlock Foreground="Goldenrod" Text="{Binding Path=yes_wkb}"/>
+                                                            <TextBlock Foreground="Goldenrod" Text="{Binding yes_wkb}"/>
                                                             <Button x:Name="btu_drawWkb" Style="{DynamicResource SmallButton}"
                                                     Content="提币" Margin="2" Click="btu_drawWkb_Click" Width="70"
-                                                    CommandParameter="{Binding Path=phone}"/>
+                                                    CommandParameter="{Binding phone}"/>
                                                             <Button x:Name="btu_viewHistoryIncome" Style="{DynamicResource SmallButton}"
                                                     Content="历史收入" Margin="2" Click="btu_viewHistoryIncome_Click"  Width="70"
-                                                    CommandParameter="{Binding Path=phone}"/>
+                                                    CommandParameter="{Binding phone}"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
@@ -120,12 +121,12 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="可提币:"/>
-                                                                <TextBlock Text="{Binding Path=ketiWkb}"
+                                                                <TextBlock Text="{Binding ketiWkb}"
                                                                        Foreground="Goldenrod"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="总收入:"/>
-                                                                <TextBlock Foreground="Goldenrod" Text="{Binding Path=totalIncome}"/>
+                                                                <TextBlock Foreground="Goldenrod" Text="{Binding totalIncome}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -137,12 +138,12 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="在线状态:"/>
-                                                                <TextBlock Text="{Binding Path=status}"
-                                                                       Foreground="{Binding Path=status_color}"/>
+                                                                <TextBlock Text="{Binding status}"
+                                                                       Foreground="{Binding status_color}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="硬盘使用:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=volume}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding volume}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -154,11 +155,11 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="UPNP状态:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=dcdn_upnp_status}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding dcdn_upnp_status}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="UPNP消息:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=dcdn_upnp_message}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding dcdn_upnp_message}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -170,11 +171,11 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="下载:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=dcdn_download_speed}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding dcdn_download_speed}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="上传:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=dcdn_upload_speed}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding dcdn_upload_speed}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -186,7 +187,7 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="运行:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=dcdn_clients_count}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding dcdn_clients_count}"/>
                                                             </StackPanel>
                                                             <!--<StackPanel>
                                                                 <TextBlock Text="上传:"/>
@@ -202,11 +203,11 @@
                                                         <StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="版本:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=system_version}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding system_version}"/>
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="状态:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding Path=upgradeable}"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding upgradeable}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -218,10 +219,10 @@
                                                         <StackPanel Orientation="Vertical">
                                                             <Button x:Name="btu_delete" Style="{DynamicResource SmallButton}"
                                                     Content="删除" Margin="2" Click="btu_delete_Click" Width="80" Height="30"
-                                                    CommandParameter="{Binding Path=phone}"/>
+                                                    CommandParameter="{Binding phone}"/>
                                                             <Button x:Name="btu_rename" Style="{DynamicResource SmallButton}"
                                                     Content="修改名称" Margin="2" Click="btu_rename_Click" Width="80" Height="30"
-                                                    CommandParameter="{Binding Path=phone}"/>
+                                                    CommandParameter="{Binding phone}"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
@@ -237,7 +238,8 @@
                                         VerticalContentAlignment="Top" Click="Btu_refreshStatus_Click"/>
                                 <CheckBox x:Name="chk_autoRefresh" Margin="175,7,0,0" Width="75" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" Click="chk_autoRefresh_Click" IsChecked="True"
-                                          >自动刷新</CheckBox>
+                                          Content="自动刷新"
+                                          />
                                 <TextBlock Margin="256,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="在线设备："/><Run x:Name="tbk_onlineCount" Foreground="Green" Text="0"/></TextBlock>
@@ -257,16 +259,28 @@
                                 </Grid.Effect>
                                 <TextBlock Margin="26,25,0,0" Width="478" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
-                                          >昨日总收入：<Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
+                                          ><Run Text="昨日总收入："/><Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <TextBlock Margin="26,50,0,0" Width="478" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
-                                          >历史总收入：<Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod">0</Run></TextBlock>
+                                          ><Run Text="历史总收入："/><Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <TextBlock Margin="26,75,0,0" Width="478" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="可提玩客币："/><Run x:Name="tbk_ketiWkb" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <Button x:Name="btu_tibi" Content="一键提币" HorizontalAlignment="Left" Margin="26,100,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top" Click="btu_tibi_Click"/>
+                                <TextBlock Margin="0,130,0,0" Width="114" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top" TextAlignment="Center"
+                                          >每日总收入历史</TextBlock>
+                                <dxc:ChartControl x:Name="chart_dayHistory" HorizontalAlignment="Stretch" Margin="0,150,0,0" VerticalAlignment="Stretch">
+                                    <dxc:ChartControl.Legend>
+                                        <dxc:Legend/>
+                                    </dxc:ChartControl.Legend>
+                                    <dxc:XYDiagram2D>
+                                        <dxc:LineSeries2D x:Name="series_income" DisplayName="收入" ShowInLegend="False"
+                                            ArgumentDataMember="date" ValueDataMember="num"/>
+                                    </dxc:XYDiagram2D>
+                                </dxc:ChartControl>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -309,10 +323,10 @@
                                           SelectionChanged="lv_file_SelectionChanged">
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Header="名称" DisplayMemberBinding="{Binding Path=label}" />
-                                            <GridViewColumn Header="已使用" DisplayMemberBinding="{Binding Path=used}" />
-                                            <GridViewColumn Header="总容量" DisplayMemberBinding="{Binding Path=capacity}" />
-                                            <GridViewColumn Header="路径" DisplayMemberBinding="{Binding Path=path}" />
+                                            <GridViewColumn Header="名称" DisplayMemberBinding="{Binding label}" />
+                                            <GridViewColumn Header="已使用" DisplayMemberBinding="{Binding used}" />
+                                            <GridViewColumn Header="总容量" DisplayMemberBinding="{Binding capacity}" />
+                                            <GridViewColumn Header="路径" DisplayMemberBinding="{Binding path}" />
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
@@ -329,7 +343,7 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <TextBlock>尚未开发，请等待作者更新（软件会自动更新）</TextBlock>
+                                <TextBlock><Run Text="尚未开发，请等待作者更新（软件会自动更新）"/></TextBlock>
                             </Grid>
                         </TabItem>
                         <TabItem Header="下载" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
@@ -340,7 +354,7 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <TextBlock>尚未开发，请等待作者更新（软件会自动更新）</TextBlock>
+                                <TextBlock><Run Text="尚未开发，请等待作者更新（软件会自动更新）"/></TextBlock>
                                 <!--<ListBox x:Name="lbox_Download" Margin="0,0,0,0">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
@@ -365,7 +379,7 @@
                                 </Grid.Effect>
                                 <TabControl x:Name="remoteDlTab" Margin="0,31,0,-0.4" SelectionChanged="remoteDlTab_SelectionChanged">
                                     <TabItem Header="正在添加">
-                                        <ListView Name="lv_remoteDlStatus" FontSize="14">
+                                        <ListView x:Name="lv_remoteDlStatus" FontSize="14">
                                             <ListView.View>
                                                 <GridView>
                                                     <GridViewColumn Width="133" Header="状态">
@@ -374,9 +388,9 @@
                                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                                                     <StackPanel Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                         Orientation="Horizontal">
-                                                                        <Image Width="30" Height="30" Source="{Binding state_img}"></Image>
+                                                                        <Image Width="30" Height="30" Source="{Binding state_img}"/>
                                                                         <TextBlock Height="30" Margin="0,5,0,0" Foreground="{Binding state_color}" 
-                                                                       Text="{Binding Path=state}"/>
+                                                                       Text="{Binding state}"/>
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </DataTemplate>
@@ -386,7 +400,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel>
-                                                                    <TextBlock Width="310" Text="{Binding Path=name}" TextWrapping="Wrap"/>
+                                                                    <TextBlock Width="310" Text="{Binding name}" TextWrapping="Wrap"/>
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
@@ -395,7 +409,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel>
-                                                                    <TextBlock Width="100" Text="{Binding Path=speed}"/>
+                                                                    <TextBlock Width="100" Text="{Binding speed}"/>
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
@@ -404,7 +418,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel>
-                                                                    <TextBlock Width="100" Text="{Binding Path=progress}"/>
+                                                                    <TextBlock Width="100" Text="{Binding progress}"/>
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
@@ -427,7 +441,7 @@
                                         </ListView>
                                     </TabItem>
                                     <TabItem Header="已完成">
-                                        <ListView Name="lv_remoteDlStatus_finished" FontSize="14">
+                                        <ListView x:Name="lv_remoteDlStatus_finished" FontSize="14">
                                             <ListView.View>
                                                 <GridView>
                                                     <GridViewColumn Width="133" Header="状态">
@@ -436,9 +450,9 @@
                                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                                                     <StackPanel Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                         Orientation="Horizontal">
-                                                                        <Image Width="30" Height="30" Source="{Binding state_img}"></Image>
+                                                                        <Image Width="30" Height="30" Source="{Binding state_img}"/>
                                                                         <TextBlock Height="30" Margin="0,5,0,0" Foreground="{Binding state_color}" 
-                                                                       Text="{Binding Path=state}"/>
+                                                                       Text="{Binding state}"/>
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </DataTemplate>
@@ -448,7 +462,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel>
-                                                                    <TextBlock Width="310" Text="{Binding Path=name}" TextWrapping="Wrap"/>
+                                                                    <TextBlock Width="310" Text="{Binding name}" TextWrapping="Wrap"/>
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
@@ -457,7 +471,7 @@
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel>
-                                                                    <TextBlock Width="100" Text="{Binding Path=progress}"/>
+                                                                    <TextBlock Width="100" Text="{Binding progress}"/>
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
@@ -475,19 +489,20 @@
                                         VerticalContentAlignment="Top"/>
                                 <CheckBox x:Name="chk_refreshRemoteDl"  Margin="175,7,0,0" Width="77" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" IsChecked="True"
-                                          >自动刷新</CheckBox>
+                                          Content="自动刷新"
+                                          />
                                 <TextBlock Margin="256,6,0,0" Width="160" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
-                                          >云添加任务：<Run x:Name="tbx_taskCount" Foreground="Green">0</Run></TextBlock>
+                                          ><Run Text="云添加任务："/><Run x:Name="tbx_taskCount" Foreground="Green" Text="0"/></TextBlock>
                                 <TextBlock Margin="423,7,0,0" Width="160" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top"
-                                          >已完成：<Run x:Name="tbx_taskFinishedCount" Foreground="Goldenrod">0</Run></TextBlock>
+                                          ><Run Text="已完成："/><Run x:Name="tbx_taskFinishedCount" Foreground="Goldenrod" Text="0"/></TextBlock>
                             </Grid>
                         </TabItem>
                     </TabControl>
                     <ComboBox HorizontalAlignment="Left" Margin="86,14,0,0" 
                         VerticalAlignment="Top" Width="113" Height="23" x:Name="cbx_curAccount"
-                                SelectedValue="{Binding Path=/, Mode=TwoWay}"
+                                SelectedValue="{Binding /, Mode=TwoWay}"
                         VerticalContentAlignment="Top" Grid.Column="1" SelectionChanged="cbx_curAccount_SelectionChanged"/>
                     <TextBlock Margin="12,17,0,0" Width="69" Height="20" HorizontalAlignment="Left"
                         VerticalAlignment="Top" Grid.Column="1" Text="当前账号："/>
@@ -535,22 +550,21 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <TextBlock Margin="10,10,0,0" FontSize="20" Width="82" HorizontalAlignment='Left' VerticalAlignment='Top' Height="26">
-                                    更改密码</TextBlock>
+                                <TextBlock Margin="10,10,0,0" FontSize="20" Width="82" HorizontalAlignment='Left' VerticalAlignment='Top' Height="26"><Run Text="更改密码"/></TextBlock>
                                 <TextBlock Grid.Row="1" Margin="0,6.6,0,6.2" FontSize="18" Width="82" HorizontalAlignment='Right' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="24">原密码：</TextBlock>
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"><Run Text="原密码："/></TextBlock>
                                 <TextBlock Grid.Row="2" Margin="0,7.8,0,8.2" FontSize="18" Width="82" HorizontalAlignment='Right' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="24">新密码：</TextBlock>
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"><Run Text="新密码："/></TextBlock>
                                 <TextBlock Grid.Row="3" Margin="0,6.8,13,6.8" FontSize="18" Width="105" HorizontalAlignment='Right' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="24">重复新密码：</TextBlock>
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"><Run Text="重复新密码："/></TextBlock>
                                 <PasswordBox x:Name="pwd_original" Grid.Row="1" Grid.Column="1" Margin="0,6.6,0,6.2" FontSize="18" Width="231" HorizontalAlignment='Left' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="24"></PasswordBox>
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"/>
                                 <PasswordBox x:Name="pwd_new" Grid.Row="2" Grid.Column="1" Margin="0,7.8,0,8.2" FontSize="18" Width="231" HorizontalAlignment='Left' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="24"></PasswordBox>
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"/>
                                 <PasswordBox x:Name="pwd_new_confirm" Grid.Row="3" Grid.Column="1" Margin="0,6.8" FontSize="18" Width="231" HorizontalAlignment='Left' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="24"></PasswordBox>
+                                           VerticalAlignment='Center' Foreground="Black" Height="24"/>
                                 <Button x:Name="btu_changePwd" Style="{StaticResource SimpleButton}" Grid.Row="4" Grid.Column="1" Margin="0,8.2,0,0.2" FontSize="18" Width="231" HorizontalAlignment='Left' 
-                                           VerticalAlignment='Center' Foreground="Black" Height="30" Click="btu_changePwd_Click">修改密码</Button>
+                                           VerticalAlignment='Center' Foreground="Black" Height="30" Click="btu_changePwd_Click" Content="修改密码"/>
                             </Grid>
                         </TabItem>
                         <TabItem TabIndex="1" Header="请等待作者更新" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
@@ -561,7 +575,7 @@
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
-                                <TextBlock>请等待作者更新（软件会自动更新）</TextBlock>
+                                <TextBlock><Run Text="请等待作者更新（软件会自动更新）"/></TextBlock>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -577,19 +591,15 @@
             <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
         </Controls:SplitButton>
         <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
-        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102">
-        V<Run x:Name="tbk_version"></Run>
-        </TextBlock>
+        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
         <TextBlock x:Name="tbk_source" HorizontalAlignment="Right" VerticalAlignment="Top" Width="160" 
                    Margin="0,52,0,0" Height="20"
                    FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
-                                             Click="link_Click">软件源码 on Github</Hyperlink>
-        </TextBlock>
+                                             Click="link_Click"><Run Text="软件源码 on Github"/></Hyperlink></TextBlock>
         <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
                    Margin="0,52,159.8,0" Height="20"
                    FontSize="16"><Hyperlink x:Name="link_updateInfo"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/commits/master"
-                                             Click="link_Click">更新历史</Hyperlink>
-        </TextBlock>
+                                             Click="link_Click"><Run Text="更新历史"/></Hyperlink></TextBlock>
         <Button x:Name="btu_maxnormal" Content="Button" HorizontalAlignment="Right" Visibility="Collapsed" Height="24" Style="{DynamicResource MaxNormalButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_maxnormal_Click"/>
         <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
         <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
