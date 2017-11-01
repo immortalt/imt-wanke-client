@@ -35,6 +35,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool IsRefreshing = false;
         LoadingWindow ld;
         internal static string password;
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
@@ -163,6 +164,11 @@ namespace imt_wankeyun_client
         }
         async Task RefreshStatus()
         {
+            if (IsRefreshing)
+            {
+                return;
+            }
+            IsRefreshing = true;
             if (ApiHelper.userBasicDatas.Count == 0)
             {
                 deviceInfos = null;
@@ -170,6 +176,7 @@ namespace imt_wankeyun_client
                 AutoHeaderWidth(lv_DeviceStatus);
                 return;
             }
+            StatusTimer.Interval = new TimeSpan(0, 0, ApiHelper.userBasicDatas.Count * 2);
             for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
             {
                 var t = ApiHelper.userBasicDatas.ElementAt(i);
@@ -215,6 +222,10 @@ namespace imt_wankeyun_client
                 }
             }
             dayIncomes = dayIncomes.OrderBy(t => t.date).ToList();
+            lv_incomeHistory.ItemsSource = null;
+            lv_incomeHistory.ItemsSource = dayIncomes.OrderByDescending(t => t.date).ToList();
+            AutoHeaderWidth(lv_incomeHistory);
+            IsRefreshing = false;
         }
         async void RefreshRemoteDlStatus()
         {

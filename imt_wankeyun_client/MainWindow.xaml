@@ -272,15 +272,39 @@
                                 <TextBlock Margin="0,130,0,0" Width="114" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" TextAlignment="Center"
                                           >每日总收入历史</TextBlock>
-                                <dxc:ChartControl x:Name="chart_dayHistory" HorizontalAlignment="Stretch" Margin="0,150,0,0" VerticalAlignment="Stretch">
+                                <dxc:ChartControl x:Name="chart_dayHistory" HorizontalAlignment="Stretch" Margin="0,150,248,0.4" VerticalAlignment="Stretch">
                                     <dxc:ChartControl.Legend>
                                         <dxc:Legend/>
                                     </dxc:ChartControl.Legend>
                                     <dxc:XYDiagram2D>
-                                        <dxc:LineSeries2D x:Name="series_income" DisplayName="收入" ShowInLegend="False"
+                                        <dxc:BarSideBySideSeries2D x:Name="series_income" DisplayName="收入" ShowInLegend="False"
                                             ArgumentDataMember="date" ValueDataMember="num"/>
                                     </dxc:XYDiagram2D>
                                 </dxc:ChartControl>
+                                <ListView x:Name="lv_incomeHistory" FontSize="14" Margin="476,150,0,0">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="日期">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <TextBlock Foreground="Black" Text="{Binding date}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="收入">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <TextBlock Foreground="Goldenrod" Text="{Binding num}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
                             </Grid>
                         </TabItem>
                     </TabControl>
