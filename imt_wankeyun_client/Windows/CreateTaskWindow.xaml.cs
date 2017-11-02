@@ -2,6 +2,7 @@
 using imt_wankeyun_client.Entities.Account;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
 using imt_wankeyun_client.Helpers;
+using MonoTorrent.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -148,6 +149,29 @@ namespace imt_wankeyun_client.Windows
             {
                 taskInfo = await UrlResolve(MainWindow.curAccount, tbx_url.Text.Trim());
                 RefreshTaskInfo();
+            }
+        }
+
+        private void btu_urlResolveTorrent_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            ofd.Filter = "种子文件(*.torrent)|*.torrent";
+            ofd.RestoreDirectory = true;
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string filename = ofd.FileName;
+                    var MonoTorrent = Torrent.Load(filename);
+                    var url = "magnet:?xt=urn:btih:" + BitConverter.ToString(MonoTorrent.InfoHash.ToArray()).Replace("-", "");
+                    tbx_url.Text = url;
+                    MessageBox.Show("打开种子成功！", "提示");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("打开种子失败！" + ex.Message, "提示");
+                }
             }
         }
     }
