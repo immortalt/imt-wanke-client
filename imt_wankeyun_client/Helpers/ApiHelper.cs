@@ -589,6 +589,132 @@ namespace imt_wankeyun_client.Helpers
             }
             return message;
         }
+        /// <summary>
+        /// 检测固件升级
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> UpgradeProgress(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("UpgradeProgress-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"upgradeProgress?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("UpgradeProgress:" + resp.Content);
+                var root = JsonHelper.Deserialize<UpgradeResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("UpgradeProgress:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 检测固件升级内容
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> UpgradeCheck(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("UpgradeCheck-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"upgradeCheck?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("UpgradeCheck:" + resp.Content);
+                var root = JsonHelper.Deserialize<UpgradeResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("UpgradeCheck:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 开始固件升级
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> UpgradeStart(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("UpgradeStart-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"upgradeStart?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("UpgradeStart:" + resp.Content);
+                var root = JsonHelper.Deserialize<UpgradeResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("UpgradeStart:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
         internal static string GetDeviceID(string phone)
         {
             if (userDevices.ContainsKey(phone) && userDevices[phone] != null)

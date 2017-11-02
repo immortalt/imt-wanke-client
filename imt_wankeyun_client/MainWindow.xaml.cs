@@ -540,6 +540,118 @@ namespace imt_wankeyun_client
                     return "错误！网络异常错误！";
             }
         }
+        async Task<string> UpgradeProcess(string phone)
+        {
+            HttpMessage resp = await ApiHelper.UpgradeProgress(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        MessageBox.Show("获取数据为空！", "错误！");
+                    }
+                    var r = resp.data as UpgradeResponse;
+                    if (r.rtn == 0)
+                    {
+                        if (r.result != null && r.result.Count > 1)
+                        {
+                            UpgradeProgressResult upr = JsonHelper.Deserialize<UpgradeProgressResult>(r.result[1].ToString());
+                            if (upr.message != "已经准备好升级")
+                            {
+                                MessageBox.Show(upr.message, $"账号{phone}固件升级状态");
+                            }
+                            if (upr.name == "ready")
+                            {
+                                await UpgradeCheck(phone);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (r.result != null && r.result.Count > 1)
+                        {
+                            UpgradeProgressResult upr = JsonHelper.Deserialize<UpgradeProgressResult>(r.result[1].ToString());
+                            MessageBox.Show(upr.message, $"账号{phone}固件升级状态");
+                        }
+                        Debug.WriteLine($"UpgradeProcess-获取数据出错{r.msg}:{r.rtn}");
+                    }
+                    return r.msg;
+                default:
+                    Debug.WriteLine("UpgradeProcess-网络异常错误！");
+                    MessageBox.Show("固件升级-网络异常错误！", "错误");
+                    return "错误！网络异常错误！";
+            }
+        }
+        async Task<string> UpgradeCheck(string phone)
+        {
+            HttpMessage resp = await ApiHelper.UpgradeCheck(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        MessageBox.Show("获取数据为空！", "错误！");
+                    }
+                    var r = resp.data as UpgradeResponse;
+                    if (r.rtn == 0)
+                    {
+                        if (r.result != null && r.result.Count > 1)
+                        {
+                            UpgradeCheckResult ucr = JsonHelper.Deserialize<UpgradeCheckResult>(r.result[1].ToString());
+                            if (ucr.app == "")
+                            {
+                                MessageBox.Show("已经是最新版本", "提示");
+                            }
+                            else
+                            {
+                                string msg = "更新版本：" + ucr.app + Environment.NewLine;
+                                msg += "更新内容：" + ucr.description;
+                                var yes = MessageBox.Show(msg, "固件升级", MessageBoxButton.YesNo);
+                                if (yes == MessageBoxResult.Yes)
+                                {
+                                    await UpgradeStart(phone);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"UpgradeProcess-获取数据出错{r.msg}:{r.rtn}");
+                    }
+                    return r.msg;
+                default:
+                    Debug.WriteLine("UpgradeProcess-网络异常错误！");
+                    MessageBox.Show("固件升级-网络异常错误！", "错误");
+                    return "错误！网络异常错误！";
+            }
+        }
+        async Task<string> UpgradeStart(string phone)
+        {
+            HttpMessage resp = await ApiHelper.UpgradeStart(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        MessageBox.Show("获取数据为空！", "错误！");
+                    }
+                    var r = resp.data as UpgradeResponse;
+                    if (r.rtn == 0)
+                    {
+                        MessageBox.Show(JsonHelper.Serialize(r), "升级结果");
+                    }
+                    else
+                    {
+                        MessageBox.Show(JsonHelper.Serialize(r), "升级结果");
+                        Debug.WriteLine($"UpgradeStart-获取数据出错{r.msg}:{r.rtn}");
+                    }
+                    return r.msg;
+                default:
+                    Debug.WriteLine("UpgradeStart-网络异常错误！");
+                    MessageBox.Show("固件升级-网络异常错误！", "错误");
+                    return "错误！网络异常错误！";
+            }
+        }
         async Task<bool> GetUsbInfo(string phone)
         {
             HttpMessage resp = await ApiHelper.GetUSBInfo(phone);
@@ -1311,6 +1423,12 @@ namespace imt_wankeyun_client
         {
             chart_dayHistory.DataSource = null;
             chart_dayHistory.DataSource = dayIncomes;
+        }
+        private async void btu_upgrade_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            await UpgradeProcess(phone);
         }
     }
 }

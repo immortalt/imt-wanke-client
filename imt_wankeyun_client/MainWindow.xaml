@@ -217,11 +217,14 @@
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Vertical">
-                                                            <Button x:Name="btu_delete" Style="{DynamicResource SmallButton}"
-                                                    Content="删除" Margin="2" Click="btu_delete_Click" Width="80" Height="30"
+                                                            <Button x:Name="btu_upgrade" Style="{DynamicResource SmallButton}"
+                                                    Content="固件升级" Margin="2" Click="btu_upgrade_Click"  Width="80" Height="30"
                                                     CommandParameter="{Binding phone}"/>
                                                             <Button x:Name="btu_rename" Style="{DynamicResource SmallButton}"
                                                     Content="修改名称" Margin="2" Click="btu_rename_Click" Width="80" Height="30"
+                                                    CommandParameter="{Binding phone}"/>
+                                                            <Button x:Name="btu_delete" Style="{DynamicResource SmallButton}"
+                                                    Content="删除" Margin="2" Click="btu_delete_Click" Width="80" Height="30"
                                                     CommandParameter="{Binding phone}"/>
                                                         </StackPanel>
                                                     </DataTemplate>

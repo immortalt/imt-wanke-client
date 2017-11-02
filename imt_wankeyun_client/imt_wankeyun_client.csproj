@@ -35,12 +35,12 @@
     <ProductName>不朽玩客云客户端</ProductName>
     <PublisherName>不朽网</PublisherName>
     <SuiteName>不朽玩客云客户端</SuiteName>
-    <MinimumRequiredVersion>0.0.0.4</MinimumRequiredVersion>
+    <MinimumRequiredVersion>0.0.0.73</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>74</ApplicationRevision>
+    <ApplicationRevision>76</ApplicationRevision>
     <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -157,6 +157,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
+    <Compile Include="Entities\Account\UpgradeProgressResponse.cs" />
     <Compile Include="Entities\Account\UsbInfoResponse.cs" />
     <Compile Include="Entities\Control\PeerResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskInfo.cs" />
