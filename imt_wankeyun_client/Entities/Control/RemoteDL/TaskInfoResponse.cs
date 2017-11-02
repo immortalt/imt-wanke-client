@@ -17,13 +17,14 @@ namespace imt_wankeyun_client.Entities.Control.RemoteDL
         public int createTime { get; set; }
         public DcdnChannel dcdnChannel { get; set; }
         public int state { get; set; }
+        public int exist { get; set; }
         public int remainTime { get; set; }
         public int progress { get; set; }
         public string path { get; set; }
         public int type { get; set; }
         public string id { get; set; }
         public int completeTime { get; set; }
-        public int size { get; set; }
+        public long size { get; set; }
     }
 
     public class TaskInfoResponse
