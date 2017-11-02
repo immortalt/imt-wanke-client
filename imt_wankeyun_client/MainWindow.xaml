@@ -257,25 +257,34 @@
                                 <ImageBrush ImageSource="/img/coin.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="66*"/>
+                                    <RowDefinition Height="173*"/>
+                                </Grid.RowDefinitions>
                                 <Grid.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
                                 </Grid.Effect>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="239*"/>
+                                    <ColumnDefinition Width="123*"/>
+                                </Grid.ColumnDefinitions>
                                 <TextBlock Margin="26,25,0,0" Width="478" Height="20" HorizontalAlignment="Left"
-                                          VerticalAlignment="Top"
+                                          VerticalAlignment="Top" Grid.ColumnSpan="2"
                                           ><Run Text="昨日总收入："/><Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <TextBlock Margin="26,50,0,0" Width="478" Height="20" HorizontalAlignment="Left"
-                                          VerticalAlignment="Top"
+                                          VerticalAlignment="Top" Grid.ColumnSpan="2"
                                           ><Run Text="历史总收入："/><Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <TextBlock Margin="26,75,0,0" Width="478" Height="20" HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
+                                    VerticalAlignment="Top" Grid.ColumnSpan="2"
                                           ><Run Text="可提玩客币："/><Run x:Name="tbk_ketiWkb" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <Button x:Name="btu_tibi" Content="一键提币" HorizontalAlignment="Left" Margin="26,100,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top" Click="btu_tibi_Click"/>
-                                <TextBlock Margin="0,130,0,0" Width="114" Height="20" HorizontalAlignment="Left"
-                                          VerticalAlignment="Top" TextAlignment="Center"
+                                <TextBlock Margin="0,4,0,0" Width="114" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top" TextAlignment="Center" Grid.Row="1"
                                           >每日总收入历史</TextBlock>
-                                <dxc:ChartControl x:Name="chart_dayHistory" HorizontalAlignment="Stretch" Margin="0,150,248,0.4" VerticalAlignment="Stretch">
+                                <dxc:ChartControl x:Name="chart_dayHistory"  Grid.Row="1" Grid.Column="0"
+                                                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                     <dxc:ChartControl.Legend>
                                         <dxc:Legend/>
                                     </dxc:ChartControl.Legend>
@@ -284,7 +293,8 @@
                                             ArgumentDataMember="date" ValueDataMember="num"/>
                                     </dxc:XYDiagram2D>
                                 </dxc:ChartControl>
-                                <ListView x:Name="lv_incomeHistory" FontSize="14" Margin="476,150,0,0">
+                                <ListView x:Name="lv_incomeHistory" FontSize="14" Grid.Row="1" Grid.Column="1"
+                                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="日期">
