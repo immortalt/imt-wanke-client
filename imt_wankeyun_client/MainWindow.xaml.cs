@@ -168,6 +168,10 @@ namespace imt_wankeyun_client
             {
                 return;
             }
+            if (!Hand)
+            {
+                tbk_isAutoRefreshing.Text = "正在自动刷新";
+            }
             try
             {
                 if (ApiHelper.userBasicDatas.Count == 0)
@@ -177,9 +181,13 @@ namespace imt_wankeyun_client
                     AutoHeaderWidth(lv_DeviceStatus);
                     return;
                 }
-                StatusTimer.Interval = TimeSpan.FromSeconds(ApiHelper.userBasicDatas.Count * 2);
+                StatusTimer.Interval = TimeSpan.FromSeconds(ApiHelper.userBasicDatas.Count * 3);
                 for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
                 {
+                    if (!Hand)
+                    {
+                        tbk_isAutoRefreshing.Text = $"正在自动刷新({i}/{ApiHelper.userBasicDatas.Count})";
+                    }
                     var t = ApiHelper.userBasicDatas.ElementAt(i);
                     var phone = t.Key;
                     var basic = t.Value;
@@ -226,9 +234,11 @@ namespace imt_wankeyun_client
                 lv_incomeHistory.ItemsSource = null;
                 lv_incomeHistory.ItemsSource = dayIncomes.OrderByDescending(t => t.date).ToList();
                 AutoHeaderWidth(lv_incomeHistory);
+                tbk_isAutoRefreshing.Text = "";
             }
             catch (Exception ex)
             {
+                tbk_isAutoRefreshing.Text = "";
                 Debug.WriteLine("RefreshStatus error:" + ex.Message);
             }
         }
