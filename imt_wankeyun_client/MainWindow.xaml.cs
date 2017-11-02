@@ -35,7 +35,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
-        bool IsRefreshing = false;
+        bool IsHandRefreshing = false;
         LoadingWindow ld;
         internal static string password;
         private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
@@ -59,7 +59,7 @@ namespace imt_wankeyun_client
             catch (Exception ex)
             {
                 tbk_version.Text = "开发版";
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine("MainWindow error" + ex.Message);
             }
             LoadSettings();//载入设置
             StatusTimer = new DispatcherTimer();
@@ -162,70 +162,75 @@ namespace imt_wankeyun_client
                 }
             }
         }
-        async Task RefreshStatus()
+        async Task RefreshStatus(bool Hand = false)
         {
-            if (IsRefreshing)
+            if (IsHandRefreshing && (!Hand))
             {
                 return;
             }
-            IsRefreshing = true;
-            if (ApiHelper.userBasicDatas.Count == 0)
+            try
             {
-                deviceInfos = null;
-                lv_DeviceStatus.ItemsSource = deviceInfos;
-                AutoHeaderWidth(lv_DeviceStatus);
-                return;
-            }
-            StatusTimer.Interval = new TimeSpan(0, 0, ApiHelper.userBasicDatas.Count * 2);
-            for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
-            {
-                var t = ApiHelper.userBasicDatas.ElementAt(i);
-                var phone = t.Key;
-                var basic = t.Value;
-                if (ld != null)
+                if (ApiHelper.userBasicDatas.Count == 0)
                 {
-                    ld.SetTitle($"正在获取数据");
-                    ld.SetPgr(i, ApiHelper.userBasicDatas.Count);
-                    ld.SetTip($"正在获取账号{phone}的数据");
+                    deviceInfos = null;
+                    lv_DeviceStatus.ItemsSource = deviceInfos;
+                    AutoHeaderWidth(lv_DeviceStatus);
+                    return;
                 }
-                if (await ListPeer(phone))
+                StatusTimer.Interval = TimeSpan.FromSeconds(ApiHelper.userBasicDatas.Count * 2);
+                for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
                 {
-                    if (await GetUserInfo(phone))
+                    var t = ApiHelper.userBasicDatas.ElementAt(i);
+                    var phone = t.Key;
+                    var basic = t.Value;
+                    if (ld != null)
                     {
-                        await GetIncomeHistory(phone);
-                        await GetWkbAccountInfo(phone);
-                        await GetUsbInfo(phone);
+                        ld.SetTitle($"正在获取数据");
+                        ld.SetPgr(i, ApiHelper.userBasicDatas.Count);
+                        ld.SetTip($"正在获取账号{phone}的数据");
+                    }
+                    if (await ListPeer(phone))
+                    {
+                        if (await GetUserInfo(phone))
+                        {
+                            await GetIncomeHistory(phone);
+                            await GetWkbAccountInfo(phone);
+                            await GetUsbInfo(phone);
+                        }
+                    }
+                    deviceInfos = null;
+                    lv_DeviceStatus.ItemsSource = deviceInfos;
+                    AutoHeaderWidth(lv_DeviceStatus);
+                }
+                var v = ApiHelper.incomeHistorys.Values;
+                dayIncomes = null;
+                dayIncomes = new List<Income>();
+                for (int i = 0; i < v.Count; i++)
+                {
+                    var t = v.ElementAt(i);
+                    var inc = t.incomeArr;
+                    foreach (var c in inc)
+                    {
+                        if (dayIncomes.Where(tt => tt.date == c.date).Count() == 0)
+                        {
+                            dayIncomes.Add(c);
+                        }
+                        else
+                        {
+                            var ii = dayIncomes.Find(tt => tt.date == c.date);
+                            ii.num = (Convert.ToDouble(ii.num) + Convert.ToDouble(c.num)).ToString();
+                        }
                     }
                 }
-                deviceInfos = null;
-                lv_DeviceStatus.ItemsSource = deviceInfos;
-                AutoHeaderWidth(lv_DeviceStatus);
+                dayIncomes = dayIncomes.OrderBy(t => t.date).ToList();
+                lv_incomeHistory.ItemsSource = null;
+                lv_incomeHistory.ItemsSource = dayIncomes.OrderByDescending(t => t.date).ToList();
+                AutoHeaderWidth(lv_incomeHistory);
             }
-            var v = ApiHelper.incomeHistorys.Values;
-            dayIncomes = null;
-            dayIncomes = new List<Income>();
-            for (int i = 0; i < v.Count; i++)
+            catch (Exception ex)
             {
-                var t = v.ElementAt(i);
-                var inc = t.incomeArr;
-                foreach (var c in inc)
-                {
-                    if (dayIncomes.Where(tt => tt.date == c.date).Count() == 0)
-                    {
-                        dayIncomes.Add(c);
-                    }
-                    else
-                    {
-                        var ii = dayIncomes.Find(tt => tt.date == c.date);
-                        ii.num = (Convert.ToDouble(ii.num) + Convert.ToDouble(c.num)).ToString();
-                    }
-                }
+                Debug.WriteLine("RefreshStatus error:" + ex.Message);
             }
-            dayIncomes = dayIncomes.OrderBy(t => t.date).ToList();
-            lv_incomeHistory.ItemsSource = null;
-            lv_incomeHistory.ItemsSource = dayIncomes.OrderByDescending(t => t.date).ToList();
-            AutoHeaderWidth(lv_incomeHistory);
-            IsRefreshing = false;
         }
         async void RefreshRemoteDlStatus()
         {
@@ -614,69 +619,121 @@ namespace imt_wankeyun_client
                     var DiList = new List<DeviceInfoVM>();
                     foreach (var t in ApiHelper.userBasicDatas)
                     {
-                        try
+                        //try
+                        //{
+                        var ubd = t.Value;
+                        Device device = new Device
                         {
-                            var ubd = t.Value;
-                            var device = ApiHelper.userDevices[ubd.phone];
-                            var userInfo = ApiHelper.userInfos[ubd.phone];
-                            List<UsbInfoPartition> partitions = new List<UsbInfoPartition>();
-                            ulong cap = 0;
-                            ulong used = 0;
-                            if (ApiHelper.usbInfoPartitions.ContainsKey(ubd.phone))
+                            ip = "暂无数据",
+                            status = "暂无数据",
+                            device_name = "暂无数据",
+                            dcdn_upnp_status = "暂无数据",
+                            system_version = "暂无数据",
+                            dcdn_upload_speed = 0,
+                            dcdn_download_speed = 0,
+                            exception_message = "暂无数据",
+                            features = new Features
                             {
-                                partitions = ApiHelper.usbInfoPartitions[ubd.phone];
-                                partitions.ForEach(p =>
-                                {
-                                    cap += p.capacity;
-                                    used += p.used;
-                                });
-                            }
-                            var wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
-                            string volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
-                            var incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
-                            yesAllCoin += userInfo.yes_wkb;
-                            hisAllCoin += incomeHistory.totalIncome;
-                            ketiWkb += wkbAccountInfo.balance;
-                            if (device.status == "offline")
+                                onecloud_coin = 0
+                            },
+                            dcdn_clients = new List<DcdnClient>(),
+                            dcdn_upnp_message = "暂无数据",
+                            upgradeable = false,
+                            ip_info = new IpInfo
                             {
-                                offlineCount++;
-                            }
-                            else
-                            {
-                                onlineCount++;
-                            }
-                            var di = new DeviceInfoVM
-                            {
-                                phone = ubd.phone,
-                                bind_pwd = ubd.bind_pwd,
-                                nickname = ubd.nickname,
-                                ip = device.ip,
-                                device_name = device.device_name,
-                                status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
-                                status_color = device.status == "offline" ? "Red" : "Green",
-                                dcdn_upnp_status = device.dcdn_upnp_status,
-                                system_version = device.system_version,
-                                dcdn_download_speed = device.dcdn_download_speed.ToString(),
-                                dcdn_upload_speed = device.dcdn_upload_speed.ToString(),
-                                exception_message = device.exception_message,
-                                isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
-                                dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
-                                dcdn_upnp_message = device.dcdn_upnp_message,
-                                upgradeable = device.upgradeable ? "可升级" : "已最新",
-                                ip_info = $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}",
-                                yes_wkb = userInfo.yes_wkb.ToString(),
-                                activate_days = userInfo.activate_days.ToString(),
-                                totalIncome = incomeHistory.totalIncome.ToString(),
-                                volume = device.status != "offline" ? volume : "设备离线",
-                                device_sn = device.device_sn,
-                                ketiWkb = wkbAccountInfo.balance.ToString(),
-                            };
-                            DiList.Add(di);
-                        }
-                        catch (Exception ex)
+                                city = "暂无数据",
+                                country = "暂无数据",
+                                isp = "暂无数据",
+                                province = "暂无数据"
+                            },
+                            device_sn = "暂无数据",
+                        };
+                        if (ApiHelper.userDevices.ContainsKey(ubd.phone))
                         {
-                            Debug.Write(ex.Message);
+                            device = ApiHelper.userDevices[ubd.phone];
                         }
+                        UserInfo userInfo = new UserInfo
+                        {
+                            yes_wkb = 0,
+                            activate_days = 0,
+                        }; ;
+                        if (ApiHelper.userInfos.ContainsKey(ubd.phone))
+                        {
+                            userInfo = ApiHelper.userInfos[ubd.phone];
+                        }
+                        List<UsbInfoPartition> partitions = new List<UsbInfoPartition>();
+                        ulong cap = 0;
+                        ulong used = 0;
+                        if (ApiHelper.usbInfoPartitions.ContainsKey(ubd.phone))
+                        {
+                            partitions = ApiHelper.usbInfoPartitions[ubd.phone];
+                            partitions.ForEach(p =>
+                            {
+                                cap += p.capacity;
+                                used += p.used;
+                            });
+                        }
+                        WkbAccountInfo wkbAccountInfo = new WkbAccountInfo
+                        {
+                            balance = 0
+                        };
+                        if (ApiHelper.wkbAccountInfos.ContainsKey(ubd.phone))
+                        {
+                            wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
+                        }
+                        string volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
+                        IncomeHistory incomeHistory = new IncomeHistory
+                        {
+                            incomeArr = new List<Income>(),
+                            totalIncome = 0
+                        };
+                        if (ApiHelper.incomeHistorys.ContainsKey(ubd.phone))
+                        {
+                            incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
+                        }
+                        yesAllCoin += userInfo.yes_wkb;
+                        hisAllCoin += incomeHistory.totalIncome;
+                        ketiWkb += wkbAccountInfo.balance;
+                        if (device.status == "offline")
+                        {
+                            offlineCount++;
+                        }
+                        else
+                        {
+                            onlineCount++;
+                        }
+                        var di = new DeviceInfoVM
+                        {
+                            phone = ubd.phone,
+                            bind_pwd = ubd.bind_pwd,
+                            nickname = ubd.nickname,
+                            ip = device.ip,
+                            device_name = device.device_name,
+                            status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
+                            status_color = device.status == "offline" ? "Red" : "Green",
+                            dcdn_upnp_status = device.dcdn_upnp_status,
+                            system_version = device.system_version,
+                            dcdn_download_speed = device.dcdn_download_speed.ToString(),
+                            dcdn_upload_speed = device.dcdn_upload_speed.ToString(),
+                            exception_message = device.exception_message,
+                            isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
+                            dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
+                            dcdn_upnp_message = device.dcdn_upnp_message,
+                            upgradeable = device.upgradeable ? "可升级" : "已最新",
+                            ip_info = $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}",
+                            yes_wkb = userInfo.yes_wkb.ToString(),
+                            activate_days = userInfo.activate_days.ToString(),
+                            totalIncome = incomeHistory.totalIncome.ToString(),
+                            volume = device.status != "offline" ? volume : "设备离线",
+                            device_sn = device.device_sn,
+                            ketiWkb = wkbAccountInfo.balance.ToString(),
+                        };
+                        DiList.Add(di);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Debug.Write(ex.Message);
+                        //}
                     }
                     DiList = DiList.OrderBy(t => t.device_name).ToList();
                     DiList.ForEach(t => _deviceInfos.Add(t));
@@ -974,16 +1031,18 @@ namespace imt_wankeyun_client
         }
         private async void Btu_refreshStatus_Click(object sender, RoutedEventArgs e)
         {
+            IsHandRefreshing = true;
             StatusTimer.Stop();
             ld = new LoadingWindow();
             ld.Show();
-            await RefreshStatus();
+            await RefreshStatus(true);
             ld.Close();
             ld = null;
             if (chk_autoRefresh.IsChecked == true)
             {
                 StatusTimer.Start();
             }
+            IsHandRefreshing = false;
         }
         private void link_Click(object sender, RoutedEventArgs e)
         {

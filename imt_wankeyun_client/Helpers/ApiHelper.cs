@@ -82,12 +82,12 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("CheckRegister:"+resp.Content);
                 message.data = JsonHelper.Deserialize<LoginResponse>(resp.Content);
             }
             else
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("CheckRegister:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
@@ -466,7 +466,7 @@ namespace imt_wankeyun_client.Helpers
             }
             else
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("GetUSBInfo:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
@@ -488,7 +488,7 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"wkb/account-info", Method.POST);
-                Debug.WriteLine(GetParams(client, data));
+                Debug.WriteLine("GetWkbAccountInfo-GetParams(client, data)" + GetParams(client, data));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -497,13 +497,13 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("GetWkbAccountInfo" + resp.Content);
                 var root = JsonHelper.Deserialize<WkbAccountInfoResponse>(resp.Content);
                 message.data = root;
             }
             else
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("GetWkbAccountInfo" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
@@ -526,7 +526,7 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"wkb/draw", Method.POST);
-                Debug.WriteLine(GetParams(client, data));
+                Debug.WriteLine("DrawWkb-GetParams(client, data)" + GetParams(client, data));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -535,13 +535,13 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("DrawWkb "+resp.Content);
                 var root = JsonHelper.Deserialize<DrawWkbResponse>(resp.Content);
                 message.data = root;
             }
             else
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("DrawWkb "+resp.Content);
                 message.data = resp.Content;
             }
             return message;
@@ -584,7 +584,7 @@ namespace imt_wankeyun_client.Helpers
             }
             else
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("SetDeviceName:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
