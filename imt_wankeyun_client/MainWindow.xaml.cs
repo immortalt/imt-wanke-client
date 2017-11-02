@@ -219,14 +219,19 @@ namespace imt_wankeyun_client
                     var inc = t.incomeArr;
                     foreach (var c in inc)
                     {
+                        var cClone = new Income
+                        {
+                            date = c.date,
+                            num = c.num
+                        };
                         if (dayIncomes.Where(tt => tt.date == c.date).Count() == 0)
                         {
-                            dayIncomes.Add(c);
+                            dayIncomes.Add(cClone);
                         }
                         else
                         {
-                            var ii = dayIncomes.Find(tt => tt.date == c.date);
-                            ii.num = (Convert.ToDouble(ii.num) + Convert.ToDouble(c.num)).ToString();
+                            var ii = dayIncomes.Find(tt => tt.date == cClone.date);
+                            ii.num = (Convert.ToDouble(ii.num) + Convert.ToDouble(cClone.num)).ToString();
                         }
                     }
                 }
@@ -1278,7 +1283,6 @@ namespace imt_wankeyun_client
                 MessageBox.Show("设备名称不能为空！", "提示");
             }
         }
-
         private void btu_viewHistoryIncome_Click(object sender, RoutedEventArgs e)
         {
             var btu = sender as Button;
@@ -1296,7 +1300,6 @@ namespace imt_wankeyun_client
             }
             btu.IsEnabled = true;
         }
-
         private void tab_account_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (tab_account.SelectedIndex == 1)
