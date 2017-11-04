@@ -26,13 +26,13 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string dcdn_upnp_message { get; set; }
         public string upgradeable { get; set; }
         public string ip_info { get; set; }
-        public string yes_wkb { get; set; }
-        public string activate_days { get; set; }
-        public string totalIncome { get; set; }
+        public double yes_wkb { get; set; }
+        public int activate_days { get; set; }
+        public double totalIncome { get; set; }
         public string isActived { get; set; }
         public string volume { get; set; }
         public string volume_color { get; set; }
-        public string ketiWkb { get; set; }
+        public double ketiWkb { get; set; }
         public string device_sn { get; set; }
         public System.Windows.Visibility showUpgrade { get; set; }
         public string wkbAddr { get; set; }

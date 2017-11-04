@@ -32,6 +32,6 @@
         <TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,118,0,0" FontSize="12" Height="18" Width="257"><Run Text="不朽玩客云交流群(开发者是群主)："/><Run Foreground="Blue" Text="597799388"/></TextBlock>
         <Button x:Name="button" Content="Button" HorizontalAlignment="Right" Height="22" Margin="256,0,-0.4,131.6" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="button_Click"/>
         <TextBlock x:Name="textBlock_Copy6" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,137,0,0" FontSize="10" Height="18" Width="257"><Run Text="捐助贫穷的开发者一点玩客币："/></TextBlock>
-        <TextBox  FontSize="10" Margin="48,155,29.2,51.4">0xcc91d91579f1418d0221455015e1e829a87ae0f5</TextBox>
+        <TextBox  FontSize="10" Margin="48,155,29.2,51.4" IsReadOnly="True">0xcc91d91579f1418d0221455015e1e829a87ae0f5</TextBox>
     </Grid>
 </Window>

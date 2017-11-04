@@ -820,166 +820,167 @@ namespace imt_wankeyun_client
         {
             get
             {
-                if (this._deviceInfos == null)
+                try
                 {
-                    double yesAllCoin = 0;
-                    double hisAllCoin = 0;
-                    double ketiWkb = 0;
-                    int onlineCount = 0;
-                    int offlineCount = 0;
-                    _deviceInfos = new ObservableCollection<DeviceInfoVM>();
-                    var DiList = new List<DeviceInfoVM>();
-                    foreach (var t in ApiHelper.userBasicDatas)
+                    if (this._deviceInfos == null)
                     {
-                        //try
-                        //{
-                        var ubd = t.Value;
-                        Device device = new Device
+                        double yesAllCoin = 0;
+                        double hisAllCoin = 0;
+                        double ketiWkb = 0;
+                        int onlineCount = 0;
+                        int offlineCount = 0;
+                        _deviceInfos = new ObservableCollection<DeviceInfoVM>();
+                        var DiList = new List<DeviceInfoVM>();
+                        foreach (var t in ApiHelper.userBasicDatas)
                         {
-                            ip = "暂无数据",
-                            status = "暂无数据",
-                            device_name = "暂无数据",
-                            dcdn_upnp_status = "暂无数据",
-                            system_version = "暂无数据",
-                            dcdn_upload_speed = 0,
-                            dcdn_download_speed = 0,
-                            exception_message = "暂无数据",
-                            features = new Features
+                            var ubd = t.Value;
+                            Device device = new Device
                             {
-                                onecloud_coin = 0
-                            },
-                            dcdn_clients = new List<DcdnClient>(),
-                            dcdn_upnp_message = "暂无数据",
-                            upgradeable = false,
-                            ip_info = new IpInfo
+                                ip = "暂无数据",
+                                lan_ip = "暂无数据",
+                                status = "暂无数据",
+                                device_name = "暂无数据",
+                                dcdn_upnp_status = "暂无数据",
+                                system_version = "暂无数据",
+                                dcdn_upload_speed = 0,
+                                dcdn_download_speed = 0,
+                                exception_message = "暂无数据",
+                                features = new Features
+                                {
+                                    onecloud_coin = 0
+                                },
+                                dcdn_clients = new List<DcdnClient>(),
+                                dcdn_upnp_message = "暂无数据",
+                                upgradeable = false,
+                                ip_info = new IpInfo
+                                {
+                                    city = "暂无数据",
+                                    country = "暂无数据",
+                                    isp = "暂无数据",
+                                    province = "暂无数据"
+                                },
+                                device_sn = "暂无数据",
+                            };
+                            if (ApiHelper.userDevices.ContainsKey(ubd.phone))
                             {
-                                city = "暂无数据",
-                                country = "暂无数据",
-                                isp = "暂无数据",
-                                province = "暂无数据"
-                            },
-                            device_sn = "暂无数据",
-                        };
-                        if (ApiHelper.userDevices.ContainsKey(ubd.phone))
-                        {
-                            device = ApiHelper.userDevices[ubd.phone];
-                        }
-                        UserInfo userInfo = new UserInfo
-                        {
-                            yes_wkb = 0,
-                            activate_days = 0,
-                        }; ;
-                        if (ApiHelper.userInfos.ContainsKey(ubd.phone))
-                        {
-                            userInfo = ApiHelper.userInfos[ubd.phone];
-                        }
-                        List<UsbInfoPartition> partitions = new List<UsbInfoPartition>();
-                        ulong cap = 0;
-                        ulong used = 0;
-                        string volume = "";
-                        string volume_color = "Blue";
-                        if (ApiHelper.usbInfoPartitions.ContainsKey(ubd.phone))
-                        {
-                            partitions = ApiHelper.usbInfoPartitions[ubd.phone];
-                            partitions.ForEach(p =>
-                            {
-                                cap += p.capacity;
-                                used += p.used;
-                            });
-                            volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
-                            if (used == 0 && cap == 0)
-                            {
-                                volume = "无硬盘";
-                                volume_color = "Red";
+                                device = ApiHelper.userDevices[ubd.phone];
                             }
+                            UserInfo userInfo = new UserInfo
+                            {
+                                yes_wkb = 0,
+                                activate_days = 0,
+                            }; ;
+                            if (ApiHelper.userInfos.ContainsKey(ubd.phone))
+                            {
+                                userInfo = ApiHelper.userInfos[ubd.phone];
+                            }
+                            List<UsbInfoPartition> partitions = new List<UsbInfoPartition>();
+                            ulong cap = 0;
+                            ulong used = 0;
+                            string volume = "";
+                            string volume_color = "Blue";
+                            if (ApiHelper.usbInfoPartitions.ContainsKey(ubd.phone))
+                            {
+                                partitions = ApiHelper.usbInfoPartitions[ubd.phone];
+                                partitions.ForEach(p =>
+                                {
+                                    cap += p.capacity;
+                                    used += p.used;
+                                });
+                                volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
+                                if (used == 0 && cap == 0)
+                                {
+                                    volume = "无硬盘";
+                                    volume_color = "Red";
+                                }
+                            }
+                            else
+                            {
+                                volume = "暂无数据";
+                                volume_color = "Green";
+                            }
+                            WkbAccountInfo wkbAccountInfo = new WkbAccountInfo
+                            {
+                                balance = 0,
+                                addr = "暂无数据"
+                            };
+                            if (ApiHelper.wkbAccountInfos.ContainsKey(ubd.phone))
+                            {
+                                wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
+                            }
+                            IncomeHistory incomeHistory = new IncomeHistory
+                            {
+                                incomeArr = new List<Income>(),
+                                totalIncome = 0
+                            };
+                            if (ApiHelper.incomeHistorys.ContainsKey(ubd.phone))
+                            {
+                                incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
+                            }
+                            yesAllCoin += userInfo.yes_wkb;
+                            hisAllCoin += incomeHistory.totalIncome;
+                            ketiWkb += wkbAccountInfo.balance;
+                            if (device.status == "offline")
+                            {
+                                offlineCount++;
+                            }
+                            else
+                            {
+                                onlineCount++;
+                            }
+                            var di = new DeviceInfoVM
+                            {
+                                phone = ubd.phone != null ? ubd.phone : "暂无数据",
+                                nickname = ubd.nickname != null ? ubd.nickname : "暂无数据",
+                                ip = device.ip != null ? device.ip : "暂无数据",
+                                lan_ip = device.lan_ip != null ? device.lan_ip : "暂无数据",
+                                device_name = device.device_name != null ? device.device_name : "暂无数据",
+                                status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
+                                status_color = device.status == "offline" ? "Red" : "Green",
+                                dcdn_upnp_status = device.dcdn_upnp_status != null ? device.dcdn_upnp_status : "暂无数据",
+                                system_version = device.system_version != null ? device.system_version : "暂无数据",
+                                dcdn_download_speed = UtilHelper.ConvertToSpeedString(device.dcdn_download_speed),
+                                dcdn_upload_speed = UtilHelper.ConvertToSpeedString(device.dcdn_upload_speed),
+                                exception_message = device.exception_message != null ? device.exception_message : "暂无数据",
+                                isActived = (device.features != null ? device.features.onecloud_coin : 0).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
+                                dcdn_clients_count = (device.dcdn_clients != null ? device.dcdn_clients.Count : 0).ToString(),
+                                dcdn_upnp_message = device.dcdn_upnp_message != null ? device.dcdn_upnp_message : "暂无数据",
+                                upgradeable = device.upgradeable ? "可升级" : "已最新！",
+                                ip_info = device.ip_info != null ? $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}" : "暂无数据",
+                                yes_wkb = userInfo.yes_wkb,
+                                activate_days = userInfo.activate_days,
+                                totalIncome = incomeHistory.totalIncome,
+                                volume = device.status != "offline" ? volume : "设备离线",
+                                device_sn = device.device_sn != null ? device.device_sn : "暂无数据",
+                                ketiWkb = wkbAccountInfo.balance,
+                                wkbAddr = wkbAccountInfo.addr != null ? wkbAccountInfo.addr : "暂无",
+                                showUpgrade = device.upgradeable ? Visibility.Visible : Visibility.Collapsed,
+                                volume_color = volume_color,
+                            };
+                            DiList.Add(di);
+                        }
+                        DiList = DiList.OrderBy(t => t.device_name).ToList();
+                        DiList.ForEach(t => _deviceInfos.Add(t));
+                        tbk_yesAllCoin.Text = yesAllCoin.ToString();
+                        tbk_hisAllCoin.Text = hisAllCoin.ToString();
+                        tbk_onlineCount.Text = onlineCount.ToString();
+                        tbk_offlineCount.Text = offlineCount.ToString();
+                        if (offlineCount > 0)
+                        {
+                            notifyIcon.Icon = offlineIcon;
+                            notifyIcon.Text = "离线设备数量：" + offlineCount.ToString();
                         }
                         else
                         {
-                            volume = "暂无数据";
-                            volume_color = "Green";
+                            notifyIcon.Icon = onlineIcon;
+                            notifyIcon.Text = "所有" + onlineCount.ToString() + "设备正常在线";
                         }
-                        WkbAccountInfo wkbAccountInfo = new WkbAccountInfo
-                        {
-                            balance = 0
-                        };
-                        if (ApiHelper.wkbAccountInfos.ContainsKey(ubd.phone))
-                        {
-                            wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
-                        }
-                        IncomeHistory incomeHistory = new IncomeHistory
-                        {
-                            incomeArr = new List<Income>(),
-                            totalIncome = 0
-                        };
-                        if (ApiHelper.incomeHistorys.ContainsKey(ubd.phone))
-                        {
-                            incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
-                        }
-                        yesAllCoin += userInfo.yes_wkb;
-                        hisAllCoin += incomeHistory.totalIncome;
-                        ketiWkb += wkbAccountInfo.balance;
-                        if (device.status == "offline")
-                        {
-                            offlineCount++;
-                        }
-                        else
-                        {
-                            onlineCount++;
-                        }
-                        var di = new DeviceInfoVM
-                        {
-                            phone = ubd.phone,
-                            bind_pwd = ubd.bind_pwd,
-                            nickname = ubd.nickname,
-                            ip = device.ip,
-                            lan_ip = device.lan_ip,
-                            device_name = device.device_name,
-                            status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
-                            status_color = device.status == "offline" ? "Red" : "Green",
-                            dcdn_upnp_status = device.dcdn_upnp_status,
-                            system_version = device.system_version,
-                            dcdn_download_speed = device.dcdn_download_speed.ToString(),
-                            dcdn_upload_speed = device.dcdn_upload_speed.ToString(),
-                            exception_message = device.exception_message,
-                            isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
-                            dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
-                            dcdn_upnp_message = device.dcdn_upnp_message,
-                            upgradeable = device.upgradeable ? "可升级" : "已最新！",
-                            ip_info = $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}",
-                            yes_wkb = userInfo.yes_wkb.ToString(),
-                            activate_days = userInfo.activate_days.ToString(),
-                            totalIncome = incomeHistory.totalIncome.ToString(),
-                            volume = device.status != "offline" ? volume : "设备离线",
-                            device_sn = device.device_sn,
-                            ketiWkb = wkbAccountInfo.balance.ToString(),
-                            wkbAddr = wkbAccountInfo.addr != null ? wkbAccountInfo.addr : "暂无",
-                            showUpgrade = device.upgradeable ? Visibility.Visible : Visibility.Collapsed,
-                            volume_color = volume_color,
-                        };
-                        DiList.Add(di);
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    Debug.Write(ex.Message);
-                        //}
+                        tbk_ketiWkb.Text = ketiWkb.ToString();
                     }
-                    DiList = DiList.OrderBy(t => t.device_name).ToList();
-                    DiList.ForEach(t => _deviceInfos.Add(t));
-                    tbk_yesAllCoin.Text = yesAllCoin.ToString();
-                    tbk_hisAllCoin.Text = hisAllCoin.ToString();
-                    tbk_onlineCount.Text = onlineCount.ToString();
-                    tbk_offlineCount.Text = offlineCount.ToString();
-                    if (offlineCount > 0)
-                    {
-                        notifyIcon.Icon = offlineIcon;
-                        notifyIcon.Text = "离线设备数量：" + offlineCount.ToString();
-                    }
-                    else
-                    {
-                        notifyIcon.Icon = onlineIcon;
-                        notifyIcon.Text = "所有" + onlineCount.ToString() + "设备正常在线";
-                    }
-                    tbk_ketiWkb.Text = ketiWkb.ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Source + ex.StackTrace + ex.InnerException + ex.Message);
                 }
                 return _deviceInfos;
             }
