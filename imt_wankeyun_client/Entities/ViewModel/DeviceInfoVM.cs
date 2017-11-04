@@ -31,6 +31,7 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string totalIncome { get; set; }
         public string isActived { get; set; }
         public string volume { get; set; }
+        public string volume_color { get; set; }
         public string ketiWkb { get; set; }
         public string device_sn { get; set; }
         public System.Windows.Visibility showUpgrade { get; set; }

@@ -143,7 +143,8 @@
                                                             </StackPanel>
                                                             <StackPanel>
                                                                 <TextBlock Text="硬盘使用:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding volume}"/>
+                                                                <TextBlock Text="{Binding volume}"
+                                                                           Foreground="{Binding volume_color}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -225,6 +226,20 @@
                                                     CommandParameter="{Binding phone}"/>
                                                             <Button x:Name="btu_delete" Style="{DynamicResource SmallButton}"
                                                     Content="删除" Margin="2" Click="btu_delete_Click" Width="80" Height="30"
+                                                    CommandParameter="{Binding phone}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="设备">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Vertical">
+                                                            <Button x:Name="btu_reboot" Style="{DynamicResource SmallButton}"
+                                                    Content="重启" Margin="2" Click="btu_reboot_Click"  Width="100" Height="30"
+                                                    CommandParameter="{Binding phone}"/>
+                                                            <Button x:Name="btu_umountUSBDisk" Style="{DynamicResource SmallButton}"
+                                                    Content="安全弹出硬盘" Margin="2" Click="btu_umountUSBDisk_Click"  Width="100" Height="30"
                                                     CommandParameter="{Binding phone}"/>
                                                         </StackPanel>
                                                     </DataTemplate>

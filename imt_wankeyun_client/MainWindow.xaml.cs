@@ -162,13 +162,13 @@ namespace imt_wankeyun_client
                 }
             }
         }
-        async Task RefreshStatus(bool Hand = false)
+        async Task RefreshStatus(string singlePhone = null, bool Hand = false)
         {
             if (IsHandRefreshing && (!Hand))
             {
                 return;
             }
-            if (!Hand)
+            if (!Hand && singlePhone == null)
             {
                 tbk_isAutoRefreshing.Text = "正在自动刷新";
             }
@@ -181,16 +181,20 @@ namespace imt_wankeyun_client
                     AutoHeaderWidth(lv_DeviceStatus);
                     return;
                 }
-                StatusTimer.Interval = TimeSpan.FromSeconds(ApiHelper.userBasicDatas.Count * 3);
+                StatusTimer.Interval = TimeSpan.FromSeconds((ApiHelper.userBasicDatas.Count * 3) + 3);
                 for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
                 {
-                    if (!Hand)
+                    if (!Hand && singlePhone == null)
                     {
-                        tbk_isAutoRefreshing.Text = $"正在自动刷新({i}/{ApiHelper.userBasicDatas.Count})";
+                        tbk_isAutoRefreshing.Text = $"正在自动刷新({i + 1}/{ApiHelper.userBasicDatas.Count})";
                     }
                     var t = ApiHelper.userBasicDatas.ElementAt(i);
                     var phone = t.Key;
                     var basic = t.Value;
+                    if (singlePhone != null && phone != singlePhone)
+                    {
+                        continue;
+                    }
                     if (ld != null)
                     {
                         ld.SetTitle($"正在获取数据");
@@ -540,6 +544,40 @@ namespace imt_wankeyun_client
                     return "错误！网络异常错误！";
             }
         }
+        async Task<string> DeviceReboot(string phone)
+        {
+            HttpMessage resp = await ApiHelper.DeviceReboot(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return "错误！获取数据为空！";
+                    }
+                    var r = resp.data as SimpleResponse;
+                    return r.msg;
+                default:
+                    Debug.WriteLine("DeviceReboot-网络异常错误！");
+                    return "错误！网络异常错误！";
+            }
+        }
+        async Task<string> UmountUSBDisk(string phone)
+        {
+            HttpMessage resp = await ApiHelper.UmountUSBDisk(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return "错误！获取数据为空！";
+                    }
+                    var r = resp.data as SimpleResponse;
+                    return r.msg;
+                default:
+                    Debug.WriteLine("UmountUSBDisk-网络异常错误！");
+                    return "错误！网络异常错误！";
+            }
+        }
         async Task<string> UpgradeProcess(string phone)
         {
             HttpMessage resp = await ApiHelper.UpgradeProgress(phone);
@@ -809,6 +847,12 @@ namespace imt_wankeyun_client
                             wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
                         }
                         string volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
+                        string volume_color = "Blue";
+                        if (used == 0 && cap == 0)
+                        {
+                            volume = "无硬盘";
+                            volume_color = "Red";
+                        }
                         IncomeHistory incomeHistory = new IncomeHistory
                         {
                             incomeArr = new List<Income>(),
@@ -857,6 +901,7 @@ namespace imt_wankeyun_client
                             ketiWkb = wkbAccountInfo.balance.ToString(),
                             wkbAddr = wkbAccountInfo.addr != null ? wkbAccountInfo.addr : "暂无",
                             showUpgrade = device.upgradeable ? Visibility.Visible : Visibility.Collapsed,
+                            volume_color = volume_color,
                         };
                         DiList.Add(di);
                         //}
@@ -1165,7 +1210,7 @@ namespace imt_wankeyun_client
             StatusTimer.Stop();
             ld = new LoadingWindow();
             ld.Show();
-            await RefreshStatus(true);
+            await RefreshStatus(null, true);
             ld.Close();
             ld = null;
             if (chk_autoRefresh.IsChecked == true)
@@ -1432,6 +1477,30 @@ namespace imt_wankeyun_client
             var btu = sender as Button;
             var phone = btu.CommandParameter as string;
             await UpgradeProcess(phone);
+        }
+        private async void btu_reboot_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            var result = MessageBox.Show($"确定重启账号{phone}的设备?", "提示", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                var resp = await DeviceReboot(phone);
+                MessageBox.Show(resp == "success" ? "重启指令发送成功！请等待设备重启" : resp, "提示");
+                await RefreshStatus(phone);
+            }
+        }
+        private async void btu_umountUSBDisk_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var phone = btu.CommandParameter as string;
+            var result = MessageBox.Show($"确定安全弹出账号{phone}设备的硬盘?", "提示", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                var resp = await UmountUSBDisk(phone);
+                MessageBox.Show(resp == "success" ? "安全弹出硬盘成功！可以拔掉硬盘了" : resp, "提示");
+                await RefreshStatus(phone);
+            }
         }
     }
 }

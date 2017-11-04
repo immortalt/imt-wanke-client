@@ -82,7 +82,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine("CheckRegister:"+resp.Content);
+                Debug.WriteLine("CheckRegister:" + resp.Content);
                 message.data = JsonHelper.Deserialize<LoginResponse>(resp.Content);
             }
             else
@@ -535,13 +535,13 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine("DrawWkb "+resp.Content);
+                Debug.WriteLine("DrawWkb " + resp.Content);
                 var root = JsonHelper.Deserialize<DrawWkbResponse>(resp.Content);
                 message.data = root;
             }
             else
             {
-                Debug.WriteLine("DrawWkb "+resp.Content);
+                Debug.WriteLine("DrawWkb " + resp.Content);
                 message.data = resp.Content;
             }
             return message;
@@ -585,6 +585,90 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("SetDeviceName:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 设备重启
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> DeviceReboot(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("DeviceReboot-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"deviceReboot?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("DeviceReboot:" + resp.Content);
+                var root = JsonHelper.Deserialize<SimpleResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("DeviceReboot:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 安全弹出硬盘
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> UmountUSBDisk(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("UmountUSBDisk-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"umountUSBDisk?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("UmountUSBDisk:" + resp.Content);
+                var root = JsonHelper.Deserialize<SimpleResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("UmountUSBDisk:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
