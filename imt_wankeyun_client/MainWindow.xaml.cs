@@ -35,6 +35,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        private System.Windows.Forms.NotifyIcon notifyIcon;
         bool IsHandRefreshing = false;
         LoadingWindow ld;
         internal static string password;
@@ -49,9 +50,32 @@ namespace imt_wankeyun_client
         internal static string curAccount = null;
         ObservableCollection<string> userList;
         Rect rcnormal;//定义一个全局rect记录还原状态下窗口的位置和大小
+        System.Drawing.Icon onlineIcon;
+        System.Drawing.Icon offlineIcon;
         public MainWindow()
         {
             InitializeComponent();
+            onlineIcon = Properties.Resources.online;
+            offlineIcon = Properties.Resources.offline;
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon();
+            this.notifyIcon.BalloonTipText = "系统运行中……";
+            this.notifyIcon.ShowBalloonTip(2000);
+            this.notifyIcon.Text = "系统运行中……";
+            this.notifyIcon.Icon = onlineIcon;
+            this.notifyIcon.Visible = true;
+            //打开菜单项
+            System.Windows.Forms.MenuItem open = new System.Windows.Forms.MenuItem("打开主面板");
+            open.Click += new EventHandler(Show);
+            //退出菜单项
+            System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("退出程序");
+            exit.Click += new EventHandler(Close);
+            //关联托盘控件
+            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { open, exit };
+            notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(childen);
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler((o, e) =>
+            {
+                if (e.Button == System.Windows.Forms.MouseButtons.Left) this.Show(o, e);
+            });
             try
             {
                 tbk_version.Text = GetEdition();
@@ -68,6 +92,17 @@ namespace imt_wankeyun_client
             RemoteDlTimer = new DispatcherTimer();
             RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
+        }
+        private void Show(object sender, EventArgs e)
+        {
+            //Visibility = Visibility.Visible;
+            Opacity = 1;
+            ShowInTaskbar = true;
+            Activate();
+        }
+        private void Close(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
         public static string GetEdition()
         {
@@ -138,7 +173,9 @@ namespace imt_wankeyun_client
         }
         private void ___Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            //this.WindowState = WindowState.Minimized;
+            ShowInTaskbar = false;
+            Opacity = 0;
         }
         private void s_Click(object sender, RoutedEventArgs e)
         {
@@ -829,6 +866,8 @@ namespace imt_wankeyun_client
                         List<UsbInfoPartition> partitions = new List<UsbInfoPartition>();
                         ulong cap = 0;
                         ulong used = 0;
+                        string volume = "";
+                        string volume_color = "Blue";
                         if (ApiHelper.usbInfoPartitions.ContainsKey(ubd.phone))
                         {
                             partitions = ApiHelper.usbInfoPartitions[ubd.phone];
@@ -837,6 +876,17 @@ namespace imt_wankeyun_client
                                 cap += p.capacity;
                                 used += p.used;
                             });
+                            volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
+                            if (used == 0 && cap == 0)
+                            {
+                                volume = "无硬盘";
+                                volume_color = "Red";
+                            }
+                        }
+                        else
+                        {
+                            volume = "暂无数据";
+                            volume_color = "Green";
                         }
                         WkbAccountInfo wkbAccountInfo = new WkbAccountInfo
                         {
@@ -845,13 +895,6 @@ namespace imt_wankeyun_client
                         if (ApiHelper.wkbAccountInfos.ContainsKey(ubd.phone))
                         {
                             wkbAccountInfo = ApiHelper.wkbAccountInfos[ubd.phone];
-                        }
-                        string volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
-                        string volume_color = "Blue";
-                        if (used == 0 && cap == 0)
-                        {
-                            volume = "无硬盘";
-                            volume_color = "Red";
                         }
                         IncomeHistory incomeHistory = new IncomeHistory
                         {
@@ -916,6 +959,16 @@ namespace imt_wankeyun_client
                     tbk_hisAllCoin.Text = hisAllCoin.ToString();
                     tbk_onlineCount.Text = onlineCount.ToString();
                     tbk_offlineCount.Text = offlineCount.ToString();
+                    if (offlineCount > 0)
+                    {
+                        notifyIcon.Icon = offlineIcon;
+                        notifyIcon.Text = "离线设备数量：" + offlineCount.ToString();
+                    }
+                    else
+                    {
+                        notifyIcon.Icon = onlineIcon;
+                        notifyIcon.Text = "所有" + onlineCount.ToString() + "设备正常在线";
+                    }
                     tbk_ketiWkb.Text = ketiWkb.ToString();
                 }
                 return _deviceInfos;

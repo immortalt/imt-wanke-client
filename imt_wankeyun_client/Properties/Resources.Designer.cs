@@ -59,5 +59,25 @@ namespace imt_wankeyun_client.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Icon offline {
+            get {
+                object obj = ResourceManager.GetObject("offline", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Icon online {
+            get {
+                object obj = ResourceManager.GetObject("online", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
