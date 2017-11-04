@@ -93,8 +93,8 @@
                                                                 <TextBlock Foreground="Black" Text="{Binding ip}"/>
                                                             </StackPanel>
                                                             <StackPanel>
-                                                                <TextBlock Text="运营商:"/>
-                                                                <TextBlock Foreground="Black" Text="{Binding ip_info}"/>
+                                                                <TextBlock Text="内网IP:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding lan_ip}"/>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
@@ -226,6 +226,22 @@
                                                             <Button x:Name="btu_delete" Style="{DynamicResource SmallButton}"
                                                     Content="删除" Margin="2" Click="btu_delete_Click" Width="80" Height="30"
                                                     CommandParameter="{Binding phone}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="其他">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="网络运营商:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding ip_info}"/>
+                                                            </StackPanel>
+                                                            <StackPanel>
+                                                                <TextBlock Text="绑定的钱包地址:"/>
+                                                                <TextBlock Foreground="Black" Text="{Binding wkbAddr}"/>
+                                                            </StackPanel>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>

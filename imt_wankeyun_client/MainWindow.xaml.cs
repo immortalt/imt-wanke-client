@@ -835,6 +835,7 @@ namespace imt_wankeyun_client
                             bind_pwd = ubd.bind_pwd,
                             nickname = ubd.nickname,
                             ip = device.ip,
+                            lan_ip = device.lan_ip,
                             device_name = device.device_name,
                             status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
                             status_color = device.status == "offline" ? "Red" : "Green",
@@ -854,6 +855,7 @@ namespace imt_wankeyun_client
                             volume = device.status != "offline" ? volume : "设备离线",
                             device_sn = device.device_sn,
                             ketiWkb = wkbAccountInfo.balance.ToString(),
+                            wkbAddr = wkbAccountInfo.addr != null ? wkbAccountInfo.addr : "暂无",
                             showUpgrade = device.upgradeable ? Visibility.Visible : Visibility.Collapsed,
                         };
                         DiList.Add(di);

@@ -13,6 +13,7 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string nickname { get; set; }
         public string device_name { get; set; }
         public string ip { get; set; }
+        public string lan_ip { get; set; }       
         public string status { get; set; }
         public string status_color { get; set; }
         public string dcdn_upnp_status { get; set; }
@@ -33,7 +34,7 @@ namespace imt_wankeyun_client.Entities.ViewModel
         public string ketiWkb { get; set; }
         public string device_sn { get; set; }
         public System.Windows.Visibility showUpgrade { get; set; }
-
+        public string wkbAddr { get; set; }
 
     }
 }
