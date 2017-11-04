@@ -14,6 +14,7 @@ using imt_wankeyun_client.Entities.Control;
 using imt_wankeyun_client.Entities.Account.Activate;
 using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
+using System.Windows;
 
 namespace imt_wankeyun_client.Helpers
 {

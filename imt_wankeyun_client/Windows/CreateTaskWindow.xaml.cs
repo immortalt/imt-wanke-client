@@ -61,7 +61,7 @@ namespace imt_wankeyun_client.Windows
                     return null;
             }
         }
-        async Task<int> CreateTask(string phone, CreateTaskInfo cti)
+        async Task<string> CreateTask(string phone, CreateTaskInfo cti)
         {
             HttpMessage resp = await ApiHelper.CreateTask(phone, cti);
             switch (resp.statusCode)
@@ -69,21 +69,37 @@ namespace imt_wankeyun_client.Windows
                 case HttpStatusCode.OK:
                     if (resp.data == null)
                     {
-                        return -1;
+                        return "添加失败！服务器返回的数据为空";
                     }
                     var r = resp.data as CreateTaskResponse;
                     if (r.rtn == 0)
                     {
-                        return 0;
+                        if (r.tasks != null && r.tasks.Count > 0)
+                        {
+                            var t = r.tasks[0];
+                            if (t.result == 0)
+                            {
+                                return $"任务{t.name}添加成功！";
+                            }
+                            else
+                            {
+                                var tmsg = t.msg == "repeat_task" ? "已经存在相同的任务！无法重复添加" : t.msg;
+                                return $"添加失败！\n错误码:{t.result}\n错误原因:{tmsg}";
+                            }
+                        }
+                        else
+                        {
+                            return "添加失败！服务器返回的结果为空";
+                        }
                     }
                     else
                     {
                         Debug.WriteLine($"CreateTask-出错({r.rtn})");
+                        return "添加失败！网络请求错误";
                     }
-                    return r.rtn;
                 default:
                     Debug.WriteLine("CreateTask-网络异常错误！");
-                    return -1;
+                    return "添加失败！网络异常错误"; ;
             }
         }
         private async void btu_createTask_Click(object sender, RoutedEventArgs e)
@@ -105,16 +121,8 @@ namespace imt_wankeyun_client.Windows
                         }
                     };
                     var ctk = await CreateTask(MainWindow.curAccount, cti);
-                    if (ctk == 0)
-                    {
-                        Close();
-                        MessageBox.Show("添加成功！", "提示");
-                    }
-                    else
-                    {
-                        Close();
-                        MessageBox.Show("添加失败！", $"错误({ctk})");
-                    }
+                    Close();
+                    MessageBox.Show(ctk, "提示");
                 }
             }
         }
