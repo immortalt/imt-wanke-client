@@ -846,7 +846,7 @@ namespace imt_wankeyun_client
                             isActived = (device.features.onecloud_coin).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
                             dcdn_clients_count = (device.dcdn_clients.Count).ToString(),
                             dcdn_upnp_message = device.dcdn_upnp_message,
-                            upgradeable = device.upgradeable ? "可升级" : "已最新",
+                            upgradeable = device.upgradeable ? "可升级" : "已最新！",
                             ip_info = $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}",
                             yes_wkb = userInfo.yes_wkb.ToString(),
                             activate_days = userInfo.activate_days.ToString(),
@@ -854,6 +854,7 @@ namespace imt_wankeyun_client
                             volume = device.status != "offline" ? volume : "设备离线",
                             device_sn = device.device_sn,
                             ketiWkb = wkbAccountInfo.balance.ToString(),
+                            showUpgrade = device.upgradeable ? Visibility.Visible : Visibility.Collapsed,
                         };
                         DiList.Add(di);
                         //}
