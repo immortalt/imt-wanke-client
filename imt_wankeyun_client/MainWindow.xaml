@@ -5,7 +5,7 @@
         xmlns:Controls="clr-namespace:Wpf.Controls;assembly=Wpf.SplitButton" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" mc:Ignorable="d" 
         x:Class="imt_wankeyun_client.MainWindow" TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="Auto"
-        Title="不朽玩客云客户端" Height="600" Width="900" Style="{DynamicResource NoResize_window}" 
+        Title="不朽玩客云客户端" Height="600" Width="900" MinHeight="600" MinWidth="900" Style="{DynamicResource NoResize_window}" 
         BorderThickness="1" BorderBrush="#FF87AFD4" MouseLeftButtonDown="Window_MouseLeftButtonDown" HorizontalContentAlignment="Center" Icon="/img/icon.ico" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="FileListItemStyle" TargetType="{x:Type ListViewItem}">
@@ -17,6 +17,37 @@
     </Window.Background>
     <Grid x:Name="grid_main">
         <WebBrowser Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"/>
+        <Rectangle HorizontalAlignment="Left" Height="54" StrokeThickness="0" VerticalAlignment="Top" Width="54" Margin="7,12,0,0">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="img\icon.png" Stretch="UniformToFill"/>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Controls:SplitButton x:Name="mainmenu" Content="-" HorizontalAlignment="Right" Margin="0,-1,210,0" VerticalAlignment="Top" Width="20" Mode="Dropdown" Height="21" RenderTransformOrigin="-11.24,0.99" Visibility="Hidden">
+            <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
+        </Controls:SplitButton>
+        <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
+        <TextBlock x:Name="tbk_source" HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
+                   Margin="0,52,0,0" Height="20"
+                   FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
+                                             Click="link_Click"><Run Text="软件源码"/></Hyperlink></TextBlock>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
+                   Margin="0,52,76,0" Height="20"
+                   FontSize="16"><Hyperlink x:Name="link_updateInfo"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/commits/master"
+                                             Click="link_Click"><Run Text="更新历史"/></Hyperlink></TextBlock>
+        <Button x:Name="btu_maxnormal" Content="Button" HorizontalAlignment="Right" Visibility="Collapsed" Height="24" Style="{DynamicResource MaxNormalButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_maxnormal_Click"/>
+        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
+        <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
+        <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
+        <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="71" 
+            Margin="0,52,152,0" Height="20"
+            FontSize="16" RenderTransformOrigin="0.177,0.573"><Hyperlink x:Name="link_updateInfo1"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/issues"
+                Click="link_Click"><Run Text="反馈Bug"/></Hyperlink></TextBlock>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" 
+            Margin="0,52,230,0" Height="20"
+            FontSize="16"><Hyperlink x:Name="link_showQQ"  Foreground="Purple"
+                Click="link_showQQ_Click"><Run Text="QQ群讨论与赞助"/></Hyperlink></TextBlock>
         <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,18,0,2">
             <TabItem Header="账户" Margin="64,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle2}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
                 <Grid Margin="0,0,0,0">
@@ -316,7 +347,7 @@
                                         VerticalContentAlignment="Top" Click="btu_tibi_Click"/>
                                 <TextBlock Margin="0,4,0,0" Width="114" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" TextAlignment="Center" Grid.Row="1"
-                                          >每日总收入历史</TextBlock>
+                                          ><Run Text="每日总收入历史"/></TextBlock>
                                 <dxc:ChartControl x:Name="chart_dayHistory"  Grid.Row="1" Grid.Column="0"
                                                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                     <dxc:ChartControl.Legend>
@@ -653,36 +684,24 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Rectangle HorizontalAlignment="Left" Height="54" StrokeThickness="0" VerticalAlignment="Top" Width="54" Margin="7,12,0,0">
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="img\icon.png" Stretch="UniformToFill"/>
-            </Rectangle.Fill>
-        </Rectangle>
-        <Controls:SplitButton x:Name="mainmenu" Content="-" HorizontalAlignment="Right" Margin="0,-1,210,0" VerticalAlignment="Top" Width="20" Mode="Dropdown" Height="21" RenderTransformOrigin="-11.24,0.99" Visibility="Hidden">
-            <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
-        </Controls:SplitButton>
-        <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
-        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
-        <TextBlock x:Name="tbk_source" HorizontalAlignment="Right" VerticalAlignment="Top" Width="160" 
-                   Margin="0,52,0,0" Height="20"
-                   FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
-                                             Click="link_Click"><Run Text="软件源码 on Github"/></Hyperlink></TextBlock>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
-                   Margin="0,52,159.8,0" Height="20"
-                   FontSize="16"><Hyperlink x:Name="link_updateInfo"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/commits/master"
-                                             Click="link_Click"><Run Text="更新历史"/></Hyperlink></TextBlock>
-        <Button x:Name="btu_maxnormal" Content="Button" HorizontalAlignment="Right" Visibility="Collapsed" Height="24" Style="{DynamicResource MaxNormalButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_maxnormal_Click"/>
-        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
-        <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
-        <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
-        <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="71" 
-            Margin="0,52,235.8,0" Height="20"
-            FontSize="16"><Hyperlink x:Name="link_updateInfo1"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/issues"
-                Click="link_Click"><Run Text="反馈Bug"/></Hyperlink></TextBlock>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
-            Margin="0,52,309.8,0" Height="20"
-            FontSize="16"><Hyperlink x:Name="link_showQQ"  Foreground="Purple"
-                Click="link_showQQ_Click"><Run Text="QQ群讨论"/></Hyperlink></TextBlock>
+        <Border Name="ResizeBottomRight" MouseMove="ResizePressed"
+                    MouseDown="ResizePressed" Height="15" Width="15" 
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,3,3" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="88.182"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Border.RenderTransform>
+            <Border.Background>
+                <DrawingBrush>
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Geometry="M96,128 L896,928 96,128 z M352,384 L128,160 172.19048,160 352,160 352,384 z M608,640 L384,416 608,416 608,640 z M608,384 L384,384 384,160 608,160 608,384 z M864,896 L640,672 864,672 864,896 z M864,640 L640,640 640,416 864,416 864,640 z M864,384 L640,384 640,160 864,160 864,384 z" Brush="#888888"></GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Border.Background>
+        </Border>
     </Grid>
 </Window>
