@@ -79,5 +79,35 @@ namespace imt_wankeyun_client.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   查找类似 &lt;tr&gt;
+        ///&lt;td&gt;title&lt;/td&gt;
+        ///&lt;td&gt;value&lt;/td&gt;
+        ///&lt;/tr&gt; 的本地化字符串。
+        /// </summary>
+        internal static string TableContent {
+            get {
+                return ResourceManager.GetString("TableContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &lt;/table&gt; 的本地化字符串。
+        /// </summary>
+        internal static string TableEnd {
+            get {
+                return ResourceManager.GetString("TableEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &lt;table border=&quot;1&quot;&gt; 的本地化字符串。
+        /// </summary>
+        internal static string TableStart {
+            get {
+                return ResourceManager.GetString("TableStart", resourceCulture);
+            }
+        }
     }
 }

@@ -38,6 +38,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool CanOpenNotify = false;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         bool IsHandRefreshing = false;
         LoadingWindow ld;
@@ -55,6 +56,7 @@ namespace imt_wankeyun_client
         Rect rcnormal;//定义一个全局rect记录还原状态下窗口的位置和大小
         System.Drawing.Icon onlineIcon;
         System.Drawing.Icon offlineIcon;
+        private Dictionary<string, bool> OnlineStatus = new Dictionary<string, bool>();
         public MainWindow()
         {
             InitializeComponent();
@@ -831,9 +833,9 @@ namespace imt_wankeyun_client
                         int offlineCount = 0;
                         _deviceInfos = new ObservableCollection<DeviceInfoVM>();
                         var DiList = new List<DeviceInfoVM>();
-                        foreach (var t in ApiHelper.userBasicDatas)
+                        for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
                         {
-                            var ubd = t.Value;
+                            var ubd = ApiHelper.userBasicDatas.Values.ElementAt(i);
                             Device device = new Device
                             {
                                 ip = "暂无数据",
@@ -958,6 +960,26 @@ namespace imt_wankeyun_client
                                 volume_color = volume_color,
                             };
                             DiList.Add(di);
+                            //确保获取到了设备的状态的情况下
+                            if (ApiHelper.userDevices.ContainsKey(ubd.phone))
+                            {
+                                //检测并记录设备在线状态
+                                if (!OnlineStatus.ContainsKey(di.phone))
+                                {
+                                    //初始化设备在线状态
+                                    OnlineStatus.Add(di.phone, di.status == "在线");
+                                }
+                                else
+                                {
+                                    //如果设备在线状态发生了变更
+                                    if (OnlineStatus[di.phone] != (di.status == "在线"))
+                                    {
+                                        Debug.WriteLine(di.phone + "在线状态发生了变更");
+                                        OnlineStatus[di.phone] = (di.status == "在线");
+                                        SendNotifyMail(di);
+                                    }
+                                }
+                            }
                         }
                         DiList = DiList.OrderBy(t => t.device_name).ToList();
                         DiList.ForEach(t => _deviceInfos.Add(t));
@@ -989,6 +1011,7 @@ namespace imt_wankeyun_client
                 this._deviceInfos = value;
             }
         }
+
         public ObservableCollection<DlTaskVM> dlTasks
         {
             get
@@ -1151,6 +1174,14 @@ namespace imt_wankeyun_client
                     SetPasswordWindow spw = new SetPasswordWindow();
                     spw.ShowDialog();
                     SettingHelper.DeleteOldSettings();
+                    if (settings.mailAccount.port == 0)
+                    {
+                        settings.mailAccount.port = 25;
+                    }
+                    if (settings.mailAccount.smtpServer == null)
+                    {
+                        settings.mailAccount.smtpServer = "smtp.qq.com";
+                    }
                     InitLogin();
                     return;
                 }
@@ -1166,6 +1197,15 @@ namespace imt_wankeyun_client
                 aw.ShowDialog();
                 if (settings != null)//如果验证通过，读取新配置文件成功
                 {
+                    //MessageBox.Show(JsonHelper.Serialize(settings));
+                    if (settings.mailAccount.port == 0)
+                    {
+                        settings.mailAccount.port = 25;
+                    }
+                    if (settings.mailAccount.smtpServer == null)
+                    {
+                        settings.mailAccount.smtpServer = "smtp.qq.com";
+                    }
                     InitLogin();
                 }
                 else//如果读取配置文件失败
@@ -1184,6 +1224,17 @@ namespace imt_wankeyun_client
         }
         async void InitLogin()
         {
+            grid_mailNotify.DataContext = settings.mailAccount;
+            tbx_mailPwd.Password = settings.mailAccount.password;
+            if (settings.mailNotify)
+            {
+                btu_mailNotify.Content = "关闭提醒";
+            }
+            else
+            {
+                btu_mailNotify.Content = "开启提醒";
+            }
+
             grid_main.IsEnabled = false;
             if (settings.loginDatas != null && settings.loginDatas.Count > 0)
             {
@@ -1601,6 +1652,120 @@ namespace imt_wankeyun_client
         private void ResizeWindow(ResizeDirection direction)
         {
             SendMessage(_HwndSource.Handle, WM_SYSCOMMAND, (IntPtr)(61440 + direction), IntPtr.Zero);
+        }
+
+        private void btu_mailNotify_Click(object sender, RoutedEventArgs e)
+        {
+            if (!settings.mailNotify)
+            {
+                if (!CanOpenNotify)
+                {
+                    MessageBox.Show("请先发送测试邮件然后保存设置，\n确认可以发送成功，才能开启提醒", "提示");
+                    return;
+                }
+            }
+            settings.mailNotify = !settings.mailNotify;
+            SettingHelper.WriteSettings(settings, password);
+            if (settings.mailNotify)
+            {
+                btu_mailNotify.Content = "关闭提醒";
+            }
+            else
+            {
+                btu_mailNotify.Content = "开启提醒";
+            }
+        }
+
+        private void btu_saveMail_Click(object sender, RoutedEventArgs e)
+        {
+            settings.mailAccount.password = tbx_mailPwd.Password;
+            SettingHelper.WriteSettings(settings, password);
+            MessageBox.Show("设置保存成功！", "提示");
+        }
+        private async void btu_sendTestMail_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (tbx_mailUsername.Text.Trim() == "")
+                {
+                    MessageBox.Show("用户名不能为空！", "提示");
+                    return;
+                }
+                if (tbx_mailPwd.Password.Trim() == "")
+                {
+                    MessageBox.Show("密码不能为空！", "提示");
+                    return;
+                }
+                if (tbx_smtpServer.Text.Trim() == "")
+                {
+                    MessageBox.Show("SMTP服务器不能为空！", "提示");
+                    return;
+                }
+                if (tbx_mailPort.Text.Trim() == "")
+                {
+                    MessageBox.Show("SMTP服务器端口不能为空！", "提示");
+                    return;
+                }
+                MailHelper.username = tbx_mailUsername.Text.Trim();
+                MailHelper.password = tbx_mailPwd.Password.Trim();
+                MailHelper.smtpServer = tbx_smtpServer.Text.Trim();
+                MailHelper.port = Convert.ToInt32(tbx_mailPort.Text.Trim());
+                var ct = "这是一封测试邮件，测试提醒邮件能不能发送<br/>测试时间：" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
+                var result = await MailHelper.SendEmail(MailHelper.username, "测试邮件-不朽玩客云客户端", ct);
+                MessageBox.Show(result, "提示");
+                if (result == "发送成功")
+                {
+                    CanOpenNotify = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("错误！" + ex.Message, "提示");
+            }
+        }
+        private async void SendNotifyMail(DeviceInfoVM di)
+        {
+            if (settings.mailNotify)
+            {
+                MailHelper.username = settings.mailAccount.username;
+                MailHelper.password = settings.mailAccount.password;
+                MailHelper.smtpServer = settings.mailAccount.smtpServer;
+                MailHelper.port = settings.mailAccount.port;
+                var title = di.status == "在线" ? $"{di.phone}设备恢复在线-不朽玩客云客户端" : $"{di.phone}设备离线-不朽玩客云客户端";
+                var result = await MailHelper.SendEmail(MailHelper.username, title, GetNotifyHtml(di));
+                Debug.WriteLine($"SendNotifyMail {di.phone}:" + result);
+            }
+        }
+        string GetNotifyHtml(DeviceInfoVM di)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<html>");
+            var status = di.status == "在线" ? $"恢复在线" : $"离线";
+            sb.Append($"<h5>账号{di.phone}的设备{status}</h5>");
+            sb.Append($"<br/>");
+            sb.Append($"设备详情：");
+            sb.Append($"<br/>");
+            sb.Append(Properties.Resources.TableStart);
+            sb.Append(Properties.Resources.TableContent.Replace("title", "名称").Replace("value", di.device_name));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "SN").Replace("value", di.device_sn));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "激活状态").Replace("value", di.isActived));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "内网IP").Replace("value", di.lan_ip));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "外网IP").Replace("value", di.ip));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "昨日挖矿").Replace("value", di.yes_wkb.ToString()));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "固件版本").Replace("value", di.system_version));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "绑定的玩客币地址").Replace("value", di.wkbAddr));
+            sb.Append(Properties.Resources.TableEnd);
+            sb.Append("</html>");
+            return sb.ToString();
         }
     }
 }

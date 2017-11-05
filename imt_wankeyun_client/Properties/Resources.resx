@@ -124,4 +124,16 @@
   <data name="online" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\online.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TableContent" xml:space="preserve">
+    <value>&lt;tr&gt;
+&lt;td&gt;title&lt;/td&gt;
+&lt;td&gt;value&lt;/td&gt;
+&lt;/tr&gt;</value>
+  </data>
+  <data name="TableEnd" xml:space="preserve">
+    <value>&lt;/table&gt;</value>
+  </data>
+  <data name="TableStart" xml:space="preserve">
+    <value>&lt;table border="1"&gt;</value>
+  </data>
 </root>

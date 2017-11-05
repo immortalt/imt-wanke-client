@@ -62,7 +62,6 @@ namespace imt_wankeyun_client.Windows
             else
             {
                 var settings = new WankeSettings();//新建设置
-                settings.loginDatas = new List<LoginData>();
                 settings.autoRefresh = true;
                 SettingHelper.WriteSettings(settings, password);
                 MainWindow.settings = settings;
