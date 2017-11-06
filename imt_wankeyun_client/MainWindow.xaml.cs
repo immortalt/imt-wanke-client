@@ -48,6 +48,7 @@ namespace imt_wankeyun_client
         private ObservableCollection<DlTaskVM> _dlTasks_finished = null;
         List<Income> dayIncomes = new List<Income>();
         private ObservableCollection<FileVM> _partitions = null;
+        DispatcherTimer NotifyTimer;
         DispatcherTimer StatusTimer;
         DispatcherTimer RemoteDlTimer;
         internal static WankeSettings settings;
@@ -97,13 +98,16 @@ namespace imt_wankeyun_client
                 tbk_version.Text = "开发版";
                 Debug.WriteLine("MainWindow error" + ex.Message);
             }
-            LoadSettings();//载入设置
+            NotifyTimer = new DispatcherTimer();
+            NotifyTimer.Interval = TimeSpan.FromMinutes(1);
+            NotifyTimer.Tick += NotifyTimer_Tick;
             StatusTimer = new DispatcherTimer();
             StatusTimer.Interval = TimeSpan.FromSeconds(15);
             StatusTimer.Tick += StatusTimer_Tick;
             RemoteDlTimer = new DispatcherTimer();
             RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
+            LoadSettings();//载入设置
         }
         private void Show(object sender, EventArgs e)
         {
@@ -1224,11 +1228,17 @@ namespace imt_wankeyun_client
         }
         async void InitLogin()
         {
+            if (settings.mailAccount.mailTo == null)
+            {
+                settings.mailAccount.mailTo = settings.mailAccount.username;
+                SettingHelper.WriteSettings(settings, password);
+            }
             grid_mailNotify.DataContext = settings.mailAccount;
             tbx_mailPwd.Password = settings.mailAccount.password;
             if (settings.mailNotify)
             {
                 btu_mailNotify.Content = "关闭提醒";
+                NotifyTimer.Start();
             }
             else
             {
@@ -1258,6 +1268,10 @@ namespace imt_wankeyun_client
                 StatusTimer.Start();
             }
             grid_main.IsEnabled = true;
+            if (settings.mailNotify)
+            {
+                SendDailyNotifyMail();
+            }
         }
         async Task UserLogin(LoginData ld)
         {
@@ -1669,10 +1683,13 @@ namespace imt_wankeyun_client
             if (settings.mailNotify)
             {
                 btu_mailNotify.Content = "关闭提醒";
+                NotifyTimer.Start();
+                SendDailyNotifyMail();
             }
             else
             {
                 btu_mailNotify.Content = "开启提醒";
+                NotifyTimer.Stop();
             }
         }
 
@@ -1732,7 +1749,7 @@ namespace imt_wankeyun_client
                 MailHelper.smtpServer = settings.mailAccount.smtpServer;
                 MailHelper.port = settings.mailAccount.port;
                 var title = di.status == "在线" ? $"{di.phone}设备恢复在线-不朽玩客云客户端" : $"{di.phone}设备离线-不朽玩客云客户端";
-                var result = await MailHelper.SendEmail(MailHelper.username, title, GetNotifyHtml(di));
+                var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, title, GetNotifyHtml(di));
                 Debug.WriteLine($"SendNotifyMail {di.phone}:" + result);
             }
         }
@@ -1741,7 +1758,9 @@ namespace imt_wankeyun_client
             StringBuilder sb = new StringBuilder();
             sb.Append("<html>");
             var status = di.status == "在线" ? $"恢复在线" : $"离线";
-            sb.Append($"<h5>账号{di.phone}的设备{status}</h5>");
+            sb.Append($"账号{di.phone}的设备{status}");
+            sb.Append($"<br/>");
+            sb.Append($"时间：{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}");
             sb.Append($"<br/>");
             sb.Append($"设备详情：");
             sb.Append($"<br/>");
@@ -1764,6 +1783,74 @@ namespace imt_wankeyun_client
             sb.Append(Properties.Resources.TableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
             sb.Append(Properties.Resources.TableContent.Replace("title", "绑定的玩客币地址").Replace("value", di.wkbAddr));
             sb.Append(Properties.Resources.TableEnd);
+            sb.Append("</html>");
+            return sb.ToString();
+        }
+        private void NotifyTimer_Tick(object sender, EventArgs e)
+        {
+            if (settings.mailNotify)
+            {
+                if (DateTime.Now.Hour == 12 && DateTime.Now.Minute == 17)
+                {
+                    SendDailyNotifyMail();
+                }
+            }
+        }
+        private async void SendDailyNotifyMail()
+        {
+            MailHelper.username = settings.mailAccount.username;
+            MailHelper.password = settings.mailAccount.password;
+            MailHelper.smtpServer = settings.mailAccount.smtpServer;
+            MailHelper.port = settings.mailAccount.port;
+            var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, $"{DateTime.Now.ToShortDateString()}汇报-不朽玩客云客户端", GetDailyNotifyHtml(deviceInfos));
+            Debug.WriteLine($"SendDailyNotifyMail:" + result);
+        }
+        private string GetDailyNotifyHtml(ObservableCollection<DeviceInfoVM> dis)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<html>");
+            sb.Append("<head>");
+            sb.Append("<title>每日汇报-不朽玩客云客户端</title>");
+            sb.Append("</head>");
+            sb.Append($"<br/>");
+            sb.Append($"时间：{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}");
+            sb.Append($"<br/>");
+            sb.Append($"在线设备数量：{tbk_onlineCount.Text}");
+            sb.Append($"<br/>");
+            sb.Append($"离线设备数量：{tbk_offlineCount.Text}");
+            sb.Append($"<br/>");
+            sb.Append($"昨日总收入：{tbk_yesAllCoin.Text}");
+            sb.Append($"<br/>");
+            sb.Append($"历史总收入：{tbk_hisAllCoin.Text}");
+            sb.Append($"<br/>");
+            sb.Append($"可提玩客币：{tbk_ketiWkb.Text}");
+            sb.Append($"<br/>");
+            foreach (var di in dis)
+            {
+                sb.Append($"账号{di.phone}的设备 {di.status}");
+                sb.Append($"<br/>");
+                sb.Append($"设备详情：");
+                sb.Append($"<br/>");
+                sb.Append(Properties.Resources.TableStart);
+                sb.Append(Properties.Resources.TableContent.Replace("title", "名称").Replace("value", di.device_name));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "SN").Replace("value", di.device_sn));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "激活状态").Replace("value", di.isActived));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "内网IP").Replace("value", di.lan_ip));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "外网IP").Replace("value", di.ip));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "昨日挖矿").Replace("value", di.yes_wkb.ToString()));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "固件版本").Replace("value", di.system_version));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
+                sb.Append(Properties.Resources.TableContent.Replace("title", "绑定的玩客币地址").Replace("value", di.wkbAddr));
+                sb.Append(Properties.Resources.TableEnd);
+            }
             sb.Append("</html>");
             return sb.ToString();
         }

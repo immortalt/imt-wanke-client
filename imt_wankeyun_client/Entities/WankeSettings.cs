@@ -28,5 +28,6 @@ namespace imt_wankeyun_client.Entities
         public string password { get; set; }
         public string smtpServer { get; set; }
         public int port { get; set; }
+        public string mailTo { get; set; }
     }
 }

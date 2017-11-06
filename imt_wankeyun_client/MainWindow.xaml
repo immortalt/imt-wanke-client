@@ -402,23 +402,23 @@
                                 <PasswordBox x:Name="tbx_mailPwd" HorizontalAlignment="Left" Margin="138,66,0,0" VerticalAlignment="Top" Width="230"/>
                                 <TextBox x:Name="tbx_smtpServer" HorizontalAlignment="Left" Height="23" Margin="138,92,0,0" TextWrapping="Wrap" Text="{Binding smtpServer,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
                                 <TextBox x:Name="tbx_mailPort" HorizontalAlignment="Left" Height="23" Margin="138,120,0,0" TextWrapping="Wrap" Text="{Binding port,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
-                                <Button x:Name="btu_saveMail" Content="保存设置" HorizontalAlignment="Left" Margin="293,157,0,0" 
+                                <Button x:Name="btu_saveMail" Content="保存设置" HorizontalAlignment="Left" Margin="293,185,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_saveMail_Click"/>
                                 <Button x:Name="btu_mailNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="76,7,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_mailNotify_Click"/>
-                                <Button x:Name="btu_sendTestMail" Content="发送测试邮件" HorizontalAlignment="Left" Margin="138,157,0,0" 
+                                <Button x:Name="btu_sendTestMail" Content="发送测试邮件" HorizontalAlignment="Left" Margin="138,185,0,0" 
                                     VerticalAlignment="Top" Width="100" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_sendTestMail_Click"/>
-                                <TextBlock Height="278" Width="726" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" TextWrapping="Wrap" Margin="10,190,0,0">
-                                    <Run Text="       一旦开启设备状态提醒，当本软件运行时，监测到设备的异常状态，会进行邮件提醒。"/>
+                                <TextBlock Height="248" Width="726" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" TextWrapping="Wrap" Margin="10,230,0,0">
+                                    <Run Text="       一旦开启设备状态提醒，当本软件运行时，监测到设备的状态变化，会进行邮件提醒，同时每次启动和每天早日09：01，会发邮件汇报昨日收入。"/>
                                     <LineBreak/>
                                     <Run Text="       即你用本软件登陆自己的邮箱，自己给自己发邮件。"/>
                                     <LineBreak/>
                                 <Run Foreground="Green" Text="       一切为了安全！这样的提醒方式是目前最容易实现并且安全好用的。"/>
                                     <LineBreak/>
-                                <Run Foreground="Black" Text="       实测支持QQ邮箱和网易邮箱，只要去邮箱设置开启“POP3/SMTP”功能，所有邮箱应该都可以支持。"/>
+                                <Run Foreground="Black" Text="       实测支持QQ邮箱和网易邮箱，只要去邮箱设置开启'POP3\SMTP'功能，所有邮箱应该都可以支持。"/>
                                     <LineBreak/>
                                 <Run Foreground="Black" Text="       网易163邮箱SMTP服务器地址：smtp.163.com"/>
                                     <LineBreak/>
@@ -428,6 +428,8 @@
                                     <LineBreak/>
                                 <Run Text="       当然也可以加入短信提醒，但是那样就需要短信资费了。"/>
                                 </TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,148,0,0" Foreground="Black"><Run Text="收件人邮箱"/></TextBlock>
+                                <TextBox x:Name="tbx_mailTo" HorizontalAlignment="Left" Height="23" Margin="138,148,0,0" TextWrapping="Wrap" Text="{Binding mailTo, Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
                             </Grid>
                         </TabItem>
 
