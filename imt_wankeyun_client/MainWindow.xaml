@@ -27,6 +27,7 @@
         </Controls:SplitButton>
         <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
         <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
+        <TextBlock  HorizontalAlignment="Left" Margin="376,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="14" FontFamily="Georgia" Width="120" Foreground="Red" FontWeight="Bold"><Run />本软件永久免费</TextBlock>
         <TextBlock x:Name="tbk_source" HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
                    Margin="0,52,0,0" Height="20"
                    FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
@@ -44,10 +45,10 @@
             Margin="0,52,152,0" Height="20"
             FontSize="16" RenderTransformOrigin="0.177,0.573"><Hyperlink x:Name="link_updateInfo1"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/issues"
                 Click="link_Click"><Run Text="反馈Bug"/></Hyperlink></TextBlock>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="120" 
-            Margin="0,52,230,0" Height="20"
-            FontSize="16"><Hyperlink x:Name="link_showQQ"  Foreground="Purple"
-                Click="link_showQQ_Click"><Run Text="QQ群讨论与赞助"/></Hyperlink></TextBlock>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="132" 
+            Margin="0,50,240,0" Height="20"
+            FontSize="18"><Hyperlink x:Name="link_showQQ"  Foreground="Blue"
+                Click="link_showQQ_Click"><Run Text="官方QQ群与赞助"/></Hyperlink></TextBlock>
         <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,18,0,2">
             <TabItem Header="账户" Margin="64,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle2}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
                 <Grid Margin="0,0,0,0">

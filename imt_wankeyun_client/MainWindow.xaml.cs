@@ -78,11 +78,14 @@ namespace imt_wankeyun_client
             //打开菜单项
             System.Windows.Forms.MenuItem open = new System.Windows.Forms.MenuItem("打开主面板");
             open.Click += new EventHandler(Show);
+            //彻底隐藏菜单项
+            System.Windows.Forms.MenuItem hide = new System.Windows.Forms.MenuItem("彻底隐藏");
+            hide.Click += new EventHandler(TotallyHide);
             //退出菜单项
             System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("退出程序");
             exit.Click += new EventHandler(Close);
             //关联托盘控件
-            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { open, exit };
+            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { open, hide, exit };
             notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(childen);
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler((o, e) =>
             {
@@ -108,6 +111,15 @@ namespace imt_wankeyun_client
             RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
             LoadSettings();//载入设置
+        }
+        private void TotallyHide(object sender, EventArgs e)
+        {
+            var r = MessageBox.Show("是否彻底隐藏？\n彻底隐藏后请通过任务管理器来结束本程序(imt_wankeyun_client.exe)", "确认", MessageBoxButton.YesNo);
+            if (r == MessageBoxResult.Yes)
+            {
+                this.Hide();
+                notifyIcon.Visible = false;
+            }
         }
         private void Show(object sender, EventArgs e)
         {
