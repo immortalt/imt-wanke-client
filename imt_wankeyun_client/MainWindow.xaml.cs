@@ -1728,7 +1728,7 @@ namespace imt_wankeyun_client
                 MailHelper.smtpServer = tbx_smtpServer.Text.Trim();
                 MailHelper.port = Convert.ToInt32(tbx_mailPort.Text.Trim());
                 var ct = "这是一封测试邮件，测试提醒邮件能不能发送<br/>测试时间：" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
-                var result = await MailHelper.SendEmail(MailHelper.username, "测试邮件-不朽玩客云客户端", ct);
+                var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, "测试邮件-不朽玩客云客户端", ct);
                 MessageBox.Show(result, "提示");
                 if (result == "发送成功")
                 {
@@ -1790,7 +1790,7 @@ namespace imt_wankeyun_client
         {
             if (settings.mailNotify)
             {
-                if (DateTime.Now.Hour == 12 && DateTime.Now.Minute == 17)
+                if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
                 {
                     SendDailyNotifyMail();
                 }
