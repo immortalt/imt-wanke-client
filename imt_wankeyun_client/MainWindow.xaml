@@ -16,7 +16,7 @@
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
     <Grid x:Name="grid_main">
-        <WebBrowser Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"/>
+        <WebBrowser x:Name="web_tongji" Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"/>
         <Rectangle HorizontalAlignment="Left" Height="54" StrokeThickness="0" VerticalAlignment="Top" Width="54" Margin="7,12,0,0">
             <Rectangle.Fill>
                 <ImageBrush ImageSource="img\icon.png" Stretch="UniformToFill"/>

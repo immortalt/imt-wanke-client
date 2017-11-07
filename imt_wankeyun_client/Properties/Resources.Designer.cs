@@ -82,9 +82,23 @@ namespace imt_wankeyun_client.Properties {
         
         /// <summary>
         ///   查找类似 &lt;tr&gt;
-        ///&lt;td&gt;title&lt;/td&gt;
-        ///&lt;td&gt;value&lt;/td&gt;
-        ///&lt;/tr&gt; 的本地化字符串。
+        ///&lt;th style=&quot;color:#fff;
+        ///    text-shadow:1px 1px 1px #568F23;
+        ///    background-color:#9DD929;
+        ///    border:1px solid #93CE37;
+        ///    border-right:3px solid #9ED929;
+        ///    padding:0px 10px;
+        ///    background:-webkit-gradient(
+        ///        linear,
+        ///        left bottom,
+        ///        right top,
+        ///        color-stop(0.02, rgb(158,217,41)),
+        ///        color-stop(0.51, rgb(139,198,66)),
+        ///        color-stop(0.87, rgb(123,192,67))
+        ///        );
+        ///    background: -moz-linear-gradient(
+        ///        left bottom,
+        ///        rgb(158,217,41) 2 [字符串的其余部分被截断]&quot;; 的本地化字符串。
         /// </summary>
         internal static string TableContent {
             get {
@@ -102,7 +116,12 @@ namespace imt_wankeyun_client.Properties {
         }
         
         /// <summary>
-        ///   查找类似 &lt;table border=&quot;1&quot;&gt; 的本地化字符串。
+        ///   查找类似 &lt;table style=&quot;font-family: &quot;Trebuchet MS&quot;, sans-serif;
+        ///    font-size: 16px;
+        ///    font-weight: bold;
+        ///    line-height: 1.4em;
+        ///    font-style: normal;
+        ///    border-collapse:separate;&quot;&gt; 的本地化字符串。
         /// </summary>
         internal static string TableStart {
             get {

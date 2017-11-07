@@ -1770,7 +1770,7 @@ namespace imt_wankeyun_client
             StringBuilder sb = new StringBuilder();
             sb.Append("<html>");
             var status = di.status == "在线" ? $"恢复在线" : $"离线";
-            sb.Append($"账号{di.phone}的设备{status}");
+            sb.Append($"<p style='display:inline;'>账号{di.phone}的设备</p><p style='display:inline;color:{(di.status == "在线" ? "green" : "red")};'>{status}</p>");
             sb.Append($"<br/>");
             sb.Append($"时间：{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}");
             sb.Append($"<br/>");
@@ -1805,6 +1805,7 @@ namespace imt_wankeyun_client
                 if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
                 {
                     SendDailyNotifyMail();
+                    web_tongji.Refresh();//确保一直挂机检测的客户端也可以做到每日统计一次访问量，而不是只统计第一次打开那天的访问，从而保证访问统计真实性
                 }
             }
         }
@@ -1821,27 +1822,20 @@ namespace imt_wankeyun_client
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<html>");
-            sb.Append("<head>");
-            sb.Append("<title>每日汇报-不朽玩客云客户端</title>");
-            sb.Append("</head>");
-            sb.Append($"<br/>");
-            sb.Append($"时间：{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}");
-            sb.Append($"<br/>");
-            sb.Append($"在线设备数量：{tbk_onlineCount.Text}");
-            sb.Append($"<br/>");
-            sb.Append($"离线设备数量：{tbk_offlineCount.Text}");
-            sb.Append($"<br/>");
-            sb.Append($"昨日总收入：{tbk_yesAllCoin.Text}");
-            sb.Append($"<br/>");
-            sb.Append($"历史总收入：{tbk_hisAllCoin.Text}");
-            sb.Append($"<br/>");
-            sb.Append($"可提玩客币：{tbk_ketiWkb.Text}");
-            sb.Append($"<br/>");
+            sb.Append("<body>");
+            sb.Append($"<p style='font-weight:bold;'>今日总览</p>");
+            sb.Append(Properties.Resources.TableStart);
+            sb.Append(Properties.Resources.TableContent.Replace("title", "统计时间").Replace("value", DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "在线设备数量").Replace("value", tbk_onlineCount.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "离线设备数量").Replace("value", tbk_offlineCount.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "昨日总收入").Replace("value", tbk_yesAllCoin.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "历史总收入").Replace("value", tbk_hisAllCoin.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "可提玩客币").Replace("value", tbk_ketiWkb.Text));
+            sb.Append(Properties.Resources.TableEnd);
+            sb.Append($"<p style='font-weight:bold;'>设备详情</p>");
             foreach (var di in dis)
             {
-                sb.Append($"账号{di.phone}的设备 {di.status}");
-                sb.Append($"<br/>");
-                sb.Append($"设备详情：");
+                sb.Append($"<p style='display:inline;'>账号{di.phone}的设备</p><p style='display:inline;color:{(di.status == "在线" ? "green" : "red")};'>{di.status}</p>");
                 sb.Append($"<br/>");
                 sb.Append(Properties.Resources.TableStart);
                 sb.Append(Properties.Resources.TableContent.Replace("title", "名称").Replace("value", di.device_name));
@@ -1863,6 +1857,7 @@ namespace imt_wankeyun_client
                 sb.Append(Properties.Resources.TableContent.Replace("title", "绑定的玩客币地址").Replace("value", di.wkbAddr));
                 sb.Append(Properties.Resources.TableEnd);
             }
+            sb.Append("</body>");
             sb.Append("</html>");
             return sb.ToString();
         }
