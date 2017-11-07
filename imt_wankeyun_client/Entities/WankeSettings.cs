@@ -19,6 +19,8 @@ namespace imt_wankeyun_client.Entities
         }
         public bool autoRefresh { get; set; }
         public bool mailNotify { get; set; }
+        public bool serverchanNotify { get; set; }
+        public string SCKEY { get; set; }
         public List<LoginData> loginDatas { get; set; }
         public MailAccount mailAccount { get; set; }
     }

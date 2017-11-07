@@ -15,6 +15,7 @@ using imt_wankeyun_client.Entities.Account.Activate;
 using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
 using System.Windows;
+using imt_wankeyun_client.Entities.ServerChan;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -27,6 +28,7 @@ namespace imt_wankeyun_client.Helpers
         static string apiAccountUrl = "https://account.onethingpcs.com";
         static string apiControlUrl = "https://control.onethingpcs.com";
         static string apiRemoteDlUrl = "http://control.remotedl.onethingpcs.com";
+        internal static RestClient serverchanClient = new RestClient();
         internal static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, RestClient> DlClients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
@@ -796,6 +798,35 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("UpgradeStart:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// ServerChan推送
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> ServerChanNotify(string sckey, string text, string desp)
+        {
+            var client = serverchanClient;
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri("https://sc.ftqq.com");
+                var request = new RestRequest($"{sckey}.send?text={text}&desp={desp}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("ServerChanNotify:" + resp.Content);
+                var root = JsonHelper.Deserialize<ServerChanResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("ServerChanNotify:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;

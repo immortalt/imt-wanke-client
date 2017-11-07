@@ -61,6 +61,27 @@ namespace imt_wankeyun_client.Properties {
         }
         
         /// <summary>
+        ///   查找类似 &lt;tr&gt;
+        ///&lt;th&gt;title&lt;/th&gt;
+        ///&lt;td&gt;value&lt;/td&gt;
+        ///&lt;/tr&gt; 的本地化字符串。
+        /// </summary>
+        internal static string MdTableContent {
+            get {
+                return ResourceManager.GetString("MdTableContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &lt;table border=&quot;1&quot;&gt; 的本地化字符串。
+        /// </summary>
+        internal static string MdTableStart {
+            get {
+                return ResourceManager.GetString("MdTableStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
         /// </summary>
         internal static System.Drawing.Icon offline {

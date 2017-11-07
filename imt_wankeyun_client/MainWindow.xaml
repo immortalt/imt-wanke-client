@@ -387,38 +387,34 @@
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,66,0,0" Foreground="Black">邮箱密码/授权码</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,92,0,0" Foreground="Black">邮箱SMTP服务器</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,120,0,0" Foreground="Black">SMTP服务器端口</TextBlock>
-                                <TextBox x:Name="tbx_mailUsername" HorizontalAlignment="Left" Height="23" Margin="138,38,0,0" TextWrapping="Wrap" Text="{Binding username,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
+                                <TextBox x:Name="tbx_mailUsername" HorizontalAlignment="Left" Height="23" Margin="138,38,0,0" Text="{Binding username,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
                                 <PasswordBox x:Name="tbx_mailPwd" HorizontalAlignment="Left" Margin="138,66,0,0" VerticalAlignment="Top" Width="230"/>
-                                <TextBox x:Name="tbx_smtpServer" HorizontalAlignment="Left" Height="23" Margin="138,92,0,0" TextWrapping="Wrap" Text="{Binding smtpServer,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
-                                <TextBox x:Name="tbx_mailPort" HorizontalAlignment="Left" Height="23" Margin="138,120,0,0" TextWrapping="Wrap" Text="{Binding port,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
+                                <TextBox x:Name="tbx_smtpServer" HorizontalAlignment="Left" Height="23" Margin="138,92,0,0" Text="{Binding smtpServer,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
+                                <TextBox x:Name="tbx_mailPort" HorizontalAlignment="Left" Height="23" Margin="138,120,0,0" Text="{Binding port,Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
                                 <Button x:Name="btu_saveMail" Content="保存设置" HorizontalAlignment="Left" Margin="293,185,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_saveMail_Click"/>
-                                <Button x:Name="btu_mailNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="76,7,0,0" 
+                                <Button x:Name="btu_mailNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="75,7,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_mailNotify_Click"/>
                                 <Button x:Name="btu_sendTestMail" Content="发送测试邮件" HorizontalAlignment="Left" Margin="138,185,0,0" 
                                     VerticalAlignment="Top" Width="100" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_sendTestMail_Click"/>
-                                <TextBlock Height="248" Width="726" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" TextWrapping="Wrap" Margin="10,230,0,0">
-                                    <Run Text="       一旦开启设备状态提醒，当本软件运行时，监测到设备的状态变化，会进行邮件提醒，同时每次启动和每天早日09：01，会发邮件汇报昨日收入。"/>
-                                    <LineBreak/>
-                                    <Run Text="       即你用本软件登陆自己的邮箱，自己给自己发邮件。"/>
-                                    <LineBreak/>
-                                <Run Foreground="Green" Text="       一切为了安全！这样的提醒方式是目前最容易实现并且安全好用的。"/>
-                                    <LineBreak/>
-                                <Run Foreground="Black" Text="       实测支持QQ邮箱和网易邮箱，只要去邮箱设置开启'POP3\SMTP'功能，所有邮箱应该都可以支持。"/>
-                                    <LineBreak/>
-                                <Run Foreground="Black" Text="       网易163邮箱SMTP服务器地址：smtp.163.com"/>
-                                    <LineBreak/>
-                                <Run Foreground="Black" Text="       QQ邮箱SMTP服务器地址：smtp.qq.com"/>
-                                    <LineBreak/>
-                                <Run Foreground="Black" Text="       测试可用SMTP服务器端口：25"/>
-                                    <LineBreak/>
-                                <Run Text="       当然也可以加入短信提醒，但是那样就需要短信资费了。"/>
-                                </TextBlock>
+                                <TextBlock Height="130" Width="726" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" TextWrapping="Wrap" Margin="0,215,0,0"><Run Text="       一旦开启设备状态提醒，当本软件运行时，监测到设备的状态变化，会进行邮件提醒，同时每次启动和每天早日09：01，会发邮件汇报昨日收入。即你用本软件登陆自己的邮箱，自己给自己发邮件。"/><LineBreak/><Run Foreground="Green" Text="       一切为了安全！这样的提醒方式是目前最容易实现并且安全好用的。"/><LineBreak/><Run Foreground="Black" Text="       实测支持QQ邮箱和网易邮箱，只要去邮箱设置开启'POP3\SMTP'功能，所有邮箱应该都可以支持。"/><LineBreak/><Run Foreground="Black" Text="       网易163邮箱SMTP服务器地址：smtp.163.com"/><LineBreak/><Run Foreground="Black" Text="       QQ邮箱SMTP服务器地址：smtp.qq.com"/><LineBreak/><Run Foreground="Black" Text="       测试可用SMTP服务器端口：25"/><LineBreak/></TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,148,0,0" Foreground="Black"><Run Text="收件人邮箱"/></TextBlock>
                                 <TextBox x:Name="tbx_mailTo" HorizontalAlignment="Left" Height="23" Margin="138,148,0,0" TextWrapping="Wrap" Text="{Binding mailTo, Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
+                                <Grid x:Name="grid_serverchan" VerticalAlignment="Top" HorizontalAlignment="Left" Height="133" Margin="0,345,-0.4,0" Width="746">
+                                    <TextBox x:Name="tbx_serverchan" HorizontalAlignment="Left" Height="23" Text="{Binding SCKEY, Mode=TwoWay}" VerticalAlignment="Top" Width="466" Margin="135,38,0,0"/>
+                                    <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="7,38,0,0" Foreground="Black"><Run Text="Server酱SCKEY"/></TextBlock>
+                                    <TextBlock Height="20" Width="207" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,13,0,0"><Run Text="Server酱(ServerChan)提醒"/></TextBlock>
+                                    <Button x:Name="btu_serverchanNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="180,10,0,0" 
+                                    VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                    VerticalContentAlignment="Top" Click="btu_serverchanNotify_Click"/>
+                                    <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,430,0,0">
+                                        <Hyperlink Foreground="Purple" NavigateUri="https://http://sc.ftqq.com" Click="link_Click">去Server酱官网绑定账号实现微信推送</Hyperlink></TextBlock>
+                                    <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,66,0,0"><Hyperlink Foreground="Purple" NavigateUri="https://http://sc.ftqq.com" Click="link_Click"><Run Text="去Server酱官网绑定账号实现微信推送"/></Hyperlink></TextBlock>
+                                    <TextBlock Height="47" Width="693" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,86,0,0"><Run Text="Server酱消息内容最长只支持64KB，故每日汇报无法显示设备详情。"/><LineBreak/><Run Text="如果需要每日汇报设备详情，或者更精美的表格界面，建议还是选择邮件提醒。"/></TextBlock>
+                                </Grid>
                             </Grid>
                         </TabItem>
 
