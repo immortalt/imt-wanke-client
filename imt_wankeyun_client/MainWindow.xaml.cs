@@ -1962,7 +1962,7 @@ namespace imt_wankeyun_client
         {
             if (settings.serverchanNotify)
             {
-                var title = di.status == "在线" ? $"{di.phone}设备恢复在线-不朽玩客云客户端" : $"{di.phone}设备离线-不朽玩客云客户端";
+                var title = di.status == "在线" ? $"{di.phone}设备恢复在线-不朽玩客云客户端" : $"{di.phone}设备离线-不朽玩客云客户端 {DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}";
                 var result = await ServerChanNotify(settings.SCKEY, title, GetNotifyMarkdown(di));
                 Debug.WriteLine($"SendNotifyServerChan {di.phone}:" + result);
             }
