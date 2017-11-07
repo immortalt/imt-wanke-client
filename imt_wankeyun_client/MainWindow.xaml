@@ -25,9 +25,9 @@
         <Controls:SplitButton x:Name="mainmenu" Content="-" HorizontalAlignment="Right" Margin="0,-1,210,0" VerticalAlignment="Top" Width="20" Mode="Dropdown" Height="21" RenderTransformOrigin="-11.24,0.99" Visibility="Hidden">
             <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
         </Controls:SplitButton>
-        <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,7,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="Georgia" FontWeight="Bold"/>
-        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="Georgia" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
-        <TextBlock  HorizontalAlignment="Left" Margin="376,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="14" FontFamily="Georgia" Width="120" Foreground="Red" FontWeight="Bold"><Run />本软件永久免费</TextBlock>
+        <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,6,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="微软雅黑" FontWeight="Bold"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="微软雅黑" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
+        <TextBlock  HorizontalAlignment="Left" Margin="376,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="14" Width="120" Foreground="Red" FontWeight="Bold"><Run />本软件永久免费</TextBlock>
         <TextBlock x:Name="tbk_source" HorizontalAlignment="Right" VerticalAlignment="Top" Width="76" 
                    Margin="0,52,0,0" Height="20"
                    FontSize="16"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client"
@@ -625,7 +625,7 @@
                         </TabItem>
                     </TabControl>
                     <ComboBox HorizontalAlignment="Left" Margin="86,14,0,0" 
-                        VerticalAlignment="Top" Width="113" Height="23" x:Name="cbx_curAccount"
+                        VerticalAlignment="Top" Width="124" Height="23" x:Name="cbx_curAccount"
                                 SelectedValue="{Binding /, Mode=TwoWay}"
                         VerticalContentAlignment="Top" Grid.Column="1" SelectionChanged="cbx_curAccount_SelectionChanged"/>
                     <TextBlock Margin="12,17,0,0" Width="69" Height="20" HorizontalAlignment="Left"
