@@ -67,9 +67,6 @@
                             <GradientStop Color="White" Offset="0.002"/>
                         </LinearGradientBrush>
                     </Grid.Background>
-                    <Grid.Effect>
-                        <DropShadowEffect ShadowDepth="0" BlurRadius="11" Color="#FF154F87"/>
-                    </Grid.Effect>
                     <Label Content="   功能列表" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Background="#FFFDFDFD" Foreground="#BB48677C" Margin="0,1,0,0"/>
                     <TabControl x:Name="tab_account" Margin="0,0.4,-0.2,0.4" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" BorderBrush="{x:Null}" Background="{x:Null}"
                                 SelectionChanged="tab_account_SelectionChanged">
@@ -78,9 +75,6 @@
                                 <ImageBrush ImageSource="/img/file.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <ListView x:Name="lv_DeviceStatus" FontSize="14" Margin="0,31,0,-0.4">
                                     <ListView.View>
                                         <GridView>
@@ -327,9 +321,6 @@
                                     <RowDefinition Height="66*"/>
                                     <RowDefinition Height="173*"/>
                                 </Grid.RowDefinitions>
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="239*"/>
                                     <ColumnDefinition Width="123*"/>
@@ -391,9 +382,6 @@
                                 <ImageBrush ImageSource="/img/mail.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White" x:Name="grid_mailNotify">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">邮件提醒</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,38,0,0" Foreground="Black">邮箱用户名</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,66,0,0" Foreground="Black">邮箱密码/授权码</TextBlock>
@@ -454,9 +442,6 @@
                             <GradientStop Color="White" Offset="0.002"/>
                         </LinearGradientBrush>
                     </Grid.Background>
-                    <Grid.Effect>
-                        <DropShadowEffect ShadowDepth="0" BlurRadius="11" Color="#FF154F87"/>
-                    </Grid.Effect>
                     <Label Content="   功能列表" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" 
                            Background="#FFFDFDFD" Foreground="#BB48677C" Margin="0,1,0,0"/>
                     <TabControl x:Name="tbc_fileList" Margin="0,0.4,-0.2,0" Grid.ColumnSpan="2" Grid.Row="1" 
@@ -467,9 +452,6 @@
                                 <ImageBrush ImageSource="img\2.png" Stretch="UniformToFill"/>
                             </TabItem.Background>
                             <Grid Background="White" Margin="0">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <ListView FontSize="14" x:Name="lv_file" Margin="0,31,0,-0.4" ItemContainerStyle="{StaticResource FileListItemStyle}"
                                           SelectionChanged="lv_file_SelectionChanged">
                                     <ListView.View>
@@ -491,9 +473,6 @@
                                 <ImageBrush ImageSource="img\upload.png" Stretch="UniformToFill"/>
                             </TabItem.Background>
                             <Grid Background="White" Margin="0">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <TextBlock><Run Text="尚未开发，请等待作者更新（软件会自动更新）"/></TextBlock>
                             </Grid>
                         </TabItem>
@@ -502,9 +481,6 @@
                                 <ImageBrush ImageSource="img\3.png" Stretch="UniformToFill"/>
                             </TabItem.Background>
                             <Grid Background="White" Margin="0">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <TextBlock><Run Text="尚未开发，请等待作者更新（软件会自动更新）"/></TextBlock>
                                 <!--<ListBox x:Name="lbox_Download" Margin="0,0,0,0">
                                     <ListBox.ItemTemplate>
@@ -525,9 +501,6 @@
                                 <ImageBrush ImageSource="img\cloud.png" Stretch="UniformToFill"/>
                             </TabItem.Background>
                             <Grid Background="White" Margin="0">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <TabControl x:Name="remoteDlTab" Margin="0,31,0,-0.4" SelectionChanged="remoteDlTab_SelectionChanged">
                                     <TabItem Header="正在添加">
                                         <ListView x:Name="lv_remoteDlStatus" FontSize="14">
@@ -676,9 +649,6 @@
                             <GradientStop Color="White" Offset="0.002"/>
                         </LinearGradientBrush>
                     </Grid.Background>
-                    <Grid.Effect>
-                        <DropShadowEffect ShadowDepth="0" BlurRadius="11" Color="#FF154F87"/>
-                    </Grid.Effect>
                     <Label Content="   功能列表" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Background="#FFFDFDFD" Foreground="#BB48677C" Margin="0,1,0,0"/>
                     <TabControl Margin="0,0.4,-0.2,0.4" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource TabControlStyle}" BorderThickness="0,1,0,0" BorderBrush="{x:Null}" Background="{x:Null}">
                         <TabItem TabIndex="0" Header="配置文件" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
@@ -698,9 +668,7 @@
                                     <RowDefinition Height="38*"/>
                                     <RowDefinition Height="279*"/>
                                 </Grid.RowDefinitions>
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
+
                                 <TextBlock Margin="10,10,0,0" FontSize="20" Width="82" HorizontalAlignment='Left' VerticalAlignment='Top' Height="26"><Run Text="更改密码"/></TextBlock>
                                 <TextBlock Grid.Row="1" Margin="0,6.6,0,6.2" FontSize="18" Width="82" HorizontalAlignment='Right' 
                                            VerticalAlignment='Center' Foreground="Black" Height="24"><Run Text="原密码："/></TextBlock>
@@ -723,9 +691,6 @@
                                 <ImageBrush ImageSource="img\settings.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White">
-                                <Grid.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#FF5C8185" Opacity="0.25" Direction="225"/>
-                                </Grid.Effect>
                                 <TextBlock><Run Text="请等待作者更新（软件会自动更新）"/></TextBlock>
                             </Grid>
                         </TabItem>

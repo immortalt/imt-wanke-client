@@ -53,14 +53,14 @@
                 <ColumnDefinition Width="0.74*"/>
             </Grid.ColumnDefinitions>
             <Path Data="M105.01307,0.48640087 L134.94873,0.48640087 C137.6913,0.48640087 139.91458,2.6640915 139.91458,5.3504106 L139.91458,30.416592 C139.91458,30.584487 139.90589,30.750395 139.88893,30.913909 L139.88751,30.923049 139.88042,35.280603 5.49658417,35.280603 5.4894877,30.923049 5.4880636,30.913909 C5.4711105,30.750395 5.4624258,30.584487 5.4624264,30.416592 L5.4624264,5.3504106 C5.4624258,2.6640915 7.6857088,0.48640087 10.428267,0.48640087 L39.363929,0.48640087 z" Fill="White" Margin="0" Stretch="None" Stroke="White" Grid.ColumnSpan="2" StrokeThickness="1" >
-                <Path.Effect>
+                <!--<Path.Effect>
                     <DropShadowEffect ShadowDepth="0" Color="#FF6A6A6A"/>
-                </Path.Effect>
+                </Path.Effect>-->
             </Path>
             <ContentPresenter x:Name="Content" ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <ContentPresenter.Effect>
+                <!--<ContentPresenter.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="2" Color="#FFA7A7A7"/>
-                </ContentPresenter.Effect>
+                </ContentPresenter.Effect>-->
             </ContentPresenter>
             <Rectangle IsEnabled ="{TemplateBinding IsSelected}" Margin="8,5.5,0,4.833" RadiusX="0" Stroke="{x:Null}" StrokeThickness="0" HorizontalAlignment="Stretch" Width="Auto">
                 <Rectangle.Fill>
