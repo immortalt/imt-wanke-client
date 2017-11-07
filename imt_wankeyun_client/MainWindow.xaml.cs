@@ -830,7 +830,6 @@ namespace imt_wankeyun_client
         {
             if (settings.autoRefresh)
             {
-                System.GC.Collect();
                 await RefreshStatus();
             }
         }
