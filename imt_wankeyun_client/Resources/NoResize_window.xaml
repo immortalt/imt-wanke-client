@@ -15,9 +15,9 @@
                 <Grid>  
                     <Rectangle Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"  
                                RadiusX="5" RadiusY="5" Stroke="#FF474747" Margin="0">  
-                        <Rectangle.Effect>  
+                        <!--<Rectangle.Effect>  
                             <DropShadowEffect BlurRadius="10" ShadowDepth="0"/>  
-                        </Rectangle.Effect>  
+                        </Rectangle.Effect>-->  
                     </Rectangle>  
                     <Border Background="{TemplateBinding Background}"  
                             BorderBrush="{TemplateBinding BorderBrush}"  
