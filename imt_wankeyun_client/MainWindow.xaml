@@ -410,14 +410,11 @@
                                     <Button x:Name="btu_serverchanNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="180,10,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_serverchanNotify_Click"/>
-                                    <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,430,0,0">
-                                        <Hyperlink Foreground="Purple" NavigateUri="https://http://sc.ftqq.com" Click="link_Click">去Server酱官网绑定账号实现微信推送</Hyperlink></TextBlock>
-                                    <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,66,0,0"><Hyperlink Foreground="Purple" NavigateUri="https://http://sc.ftqq.com" Click="link_Click"><Run Text="去Server酱官网绑定账号实现微信推送"/></Hyperlink></TextBlock>
+                                    <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,66,0,0"><Hyperlink Foreground="Purple" NavigateUri="https://sc.ftqq.com" Click="link_Click"><Run Text="去Server酱官网绑定账号实现微信推送"/></Hyperlink></TextBlock>
                                     <TextBlock Height="47" Width="693" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,86,0,0"><Run Text="Server酱消息内容最长只支持64KB，故每日汇报无法显示设备详情。"/><LineBreak/><Run Text="如果需要每日汇报设备详情，或者更精美的表格界面，建议还是选择邮件提醒。"/></TextBlock>
                                 </Grid>
                             </Grid>
                         </TabItem>
-
                     </TabControl>
                 </Grid>
             </TabItem>
