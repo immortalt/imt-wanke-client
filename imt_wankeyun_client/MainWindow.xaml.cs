@@ -742,7 +742,14 @@ namespace imt_wankeyun_client
                     var r = resp.data as UpgradeResponse;
                     if (r.rtn == 0)
                     {
-                        MessageBox.Show(JsonHelper.Serialize(r), "升级结果");
+                        if (r.msg == "success")
+                        {
+                            MessageBox.Show("升级成功！请等待设备重启升级", "升级结果");
+                        }
+                        else
+                        {
+                            MessageBox.Show(JsonHelper.Serialize(r), "升级结果");
+                        }
                     }
                     else
                     {
@@ -1537,6 +1544,7 @@ namespace imt_wankeyun_client
                 {
                     result += tresult;
                 }
+                Thread.Sleep(3 * 1000);//防止提币过快引起风控
             }
             wkld.Close();
             MessageBox.Show(result, "提币结果");
