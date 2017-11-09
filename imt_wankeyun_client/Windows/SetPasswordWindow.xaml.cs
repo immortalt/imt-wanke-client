@@ -39,6 +39,11 @@ namespace imt_wankeyun_client.Windows
 
         private void btu_submit_Click(object sender, RoutedEventArgs e)
         {
+            if (tbx_password.Password == "")
+            {
+                MessageBox.Show("密码不能为空！", "错误");
+                return;
+            }
             if (tbx_password.Password.Length > 32)
             {
                 MessageBox.Show("密码的长度不能超过32位", "错误");

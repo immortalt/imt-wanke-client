@@ -1823,13 +1823,9 @@ namespace imt_wankeyun_client
             StringBuilder sb = new StringBuilder();
             var br = "  " + Environment.NewLine;
             var status = di.status == "在线" ? $"恢复在线" : $"离线";
-            sb.Append($"账号{di.phone}的设备{status}");
+            sb.Append($"账号{di.phone}的设备" + $"** { status } **");
             sb.Append(br);
-            sb.Append($"时间：{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}");
-            sb.Append(br);
-            sb.Append($"设备详情：");
-            sb.Append(br);
-            sb.Append(Properties.Resources.MdTableStart);
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", $"时间：").Replace("value", DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "名称").Replace("value", di.device_name));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "SN").Replace("value", di.device_sn));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "激活状态").Replace("value", di.isActived));
@@ -1847,7 +1843,6 @@ namespace imt_wankeyun_client
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "绑定的玩客币地址").Replace("value", di.wkbAddr));
-            sb.Append(Properties.Resources.TableEnd);
             return sb.ToString();
         }
         private void NotifyTimer_Tick(object sender, EventArgs e)
@@ -1930,16 +1925,43 @@ namespace imt_wankeyun_client
         {
             StringBuilder sb = new StringBuilder();
             var br = "  " + Environment.NewLine;
-            sb.Append($"今日总览");
+            sb.Append($"### 今日总览");
             sb.Append(br);
-            sb.Append(Properties.Resources.MdTableStart);
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "统计时间").Replace("value", DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()));
+            sb.Append(br);
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "在线设备数量").Replace("value", tbk_onlineCount.Text));
+            sb.Append(br);
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "离线设备数量").Replace("value", tbk_offlineCount.Text));
+            sb.Append(br);
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "昨日总收入").Replace("value", tbk_yesAllCoin.Text));
+            sb.Append(br);
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "历史总收入").Replace("value", tbk_hisAllCoin.Text));
+            sb.Append(br);
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "可提玩客币").Replace("value", tbk_ketiWkb.Text));
-            sb.Append(Properties.Resources.TableEnd);
+            sb.Append($"### 设备详情");
+            sb.Append(br);
+            foreach (var di in dis)
+            {
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", $"账号{di.phone}的设备").Replace("value", $"** {di.status} **"));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "名称").Replace("value", di.device_name));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "SN").Replace("value", di.device_sn));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "激活状态").Replace("value", di.isActived));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "内网IP").Replace("value", di.lan_ip));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "外网IP").Replace("value", di.ip));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "昨日挖矿").Replace("value", di.yes_wkb.ToString()));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件版本").Replace("value", di.system_version));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
+                sb.Append(Properties.Resources.MdTableContent.Replace("title", "绑定的玩客币地址").Replace("value", di.wkbAddr));
+                sb.Append(br);
+            }
             return sb.ToString();
         }
         async Task<string> ServerChanNotify(string sckey, string text, string desp)

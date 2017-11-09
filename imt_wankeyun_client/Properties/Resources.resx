@@ -178,12 +178,7 @@
     border-collapse:separate;"&gt;</value>
   </data>
   <data name="MdTableContent" xml:space="preserve">
-    <value>&lt;tr&gt;
-&lt;th&gt;title&lt;/th&gt;
-&lt;td&gt;value&lt;/td&gt;
-&lt;/tr&gt;</value>
-  </data>
-  <data name="MdTableStart" xml:space="preserve">
-    <value>&lt;table border="1"&gt;</value>
+    <value>title：value  
+</value>
   </data>
 </root>

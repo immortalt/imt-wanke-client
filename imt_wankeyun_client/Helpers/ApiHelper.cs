@@ -813,8 +813,9 @@ namespace imt_wankeyun_client.Helpers
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri("https://sc.ftqq.com");
-                var request = new RestRequest($"{sckey}.send?text={text}&desp={desp}", Method.GET);
+                var request = new RestRequest($"{sckey}.send", Method.POST);
                 request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("application/x-www-form-urlencoded", $"text={text}&desp={desp}", ParameterType.RequestBody);
                 return client.Execute(request);
             });
             var message = new HttpMessage { statusCode = resp.StatusCode };
