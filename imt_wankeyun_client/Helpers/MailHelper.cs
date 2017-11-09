@@ -12,7 +12,6 @@ namespace imt_wankeyun_client.Helpers
         internal static string username = ""; //登陆用户名
         internal static string password = "";//登陆密码
         internal static int port = 25;//登陆密码
-        static SmtpClient smtpClient;
         /// <summary>
         /// 发送邮件
         /// </summary>
@@ -25,8 +24,7 @@ namespace imt_wankeyun_client.Helpers
             return Task.Run(() =>
             {
                 // 邮件服务设置
-                smtpClient = null;
-                smtpClient = new SmtpClient();
+                SmtpClient smtpClient = new SmtpClient();
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
                 smtpClient.Host = smtpServer; //指定SMTP服务器
                 smtpClient.Port = port;
