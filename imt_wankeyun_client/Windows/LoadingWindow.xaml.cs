@@ -34,7 +34,7 @@ namespace imt_wankeyun_client.Windows
         }
         private void btu_close_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Environment.Exit(0);
         }
         internal void SetTitle(string title)
         {

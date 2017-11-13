@@ -247,7 +247,13 @@ namespace imt_wankeyun_client
                     AutoHeaderWidth(lv_DeviceStatus);
                     return;
                 }
-                StatusTimer.Interval = TimeSpan.FromSeconds((ApiHelper.userBasicDatas.Count * 3) + 3);
+                if (settings.refresh_allSpan <= 0)
+                {
+                    settings.refresh_allSpan = (ApiHelper.userBasicDatas.Count * 3) + 3;
+                    SettingHelper.WriteSettings(settings, password);
+                    tbx_refresh_allSpan.Text = settings.refresh_allSpan.ToString();
+                }
+                StatusTimer.Interval = TimeSpan.FromSeconds(settings.refresh_allSpan);
                 for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
                 {
                     if (!Hand && singlePhone == null)
@@ -265,7 +271,14 @@ namespace imt_wankeyun_client
                     {
                         ld.SetTitle($"正在获取数据");
                         ld.SetPgr(i, ApiHelper.userBasicDatas.Count);
-                        ld.SetTip($"正在获取账号{phone}的数据");
+                        if (settings.refresh_singleSpan == 0)
+                        {
+                            ld.SetTip($"正在获取账号{phone}的数据");
+                        }
+                        else
+                        {
+                            ld.SetTip($"正在获取账号{phone}的数据(延迟{settings.refresh_singleSpan}秒)");
+                        }
                     }
                     if (await ListPeer(phone))
                     {
@@ -279,6 +292,10 @@ namespace imt_wankeyun_client
                     deviceInfos = null;
                     lv_DeviceStatus.ItemsSource = deviceInfos;
                     AutoHeaderWidth(lv_DeviceStatus);
+                    if (settings.refresh_singleSpan > 0)
+                    {
+                        Thread.Sleep(1000 * settings.refresh_singleSpan);
+                    }
                 }
                 var v = ApiHelper.incomeHistorys.Values;
                 dayIncomes = null;
@@ -1255,6 +1272,7 @@ namespace imt_wankeyun_client
             }
             grid_mailNotify.DataContext = settings.mailAccount;
             grid_serverchan.DataContext = settings;
+            grid_refreshSetting.DataContext = settings;
             tbx_mailPwd.Password = settings.mailAccount.password;
             if (settings.mailNotify)
             {
@@ -2027,6 +2045,38 @@ namespace imt_wankeyun_client
                 settings.serverchanNotify = false;
                 SettingHelper.WriteSettings(settings, password);
                 btu_serverchanNotify.Content = "开启推送";
+            }
+        }
+
+        private void btu_saveRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var st = Convert.ToInt32(tbx_refresh_singleSpan.Text);
+                var at = Convert.ToInt32(tbx_refresh_allSpan.Text);
+                if (st <= 0 || at <= 0)
+                {
+                    MessageBox.Show("时间间隔不能小于0！", "错误");
+                    return;
+                }
+                settings.refresh_singleSpan = st;
+                settings.refresh_allSpan = at;
+                SettingHelper.WriteSettings(settings, password);
+                MessageBox.Show("保存设置成功！", "提示");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "错误");
+            }
+        }
+
+        private async void menu__device_refresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (lv_DeviceStatus.SelectedValue != null)
+            {
+                DeviceInfoVM device = lv_DeviceStatus.SelectedValue as DeviceInfoVM;
+                await RefreshStatus(device.phone);
+                MessageBox.Show($"刷新{device.phone}成功", "提示");
             }
         }
     }

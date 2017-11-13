@@ -23,6 +23,8 @@ namespace imt_wankeyun_client.Entities
         public string SCKEY { get; set; }
         public List<LoginData> loginDatas { get; set; }
         public MailAccount mailAccount { get; set; }
+        public int refresh_allSpan { get; set; }
+        public int refresh_singleSpan { get; set; }
     }
     public class MailAccount
     {

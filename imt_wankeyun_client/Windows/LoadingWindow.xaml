@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
-        Title="玩客云登陆" Height="197.561" Width="386.341" ResizeMode="NoResize" x:Name="loginWindow"
+        Title="玩客云登陆" Height="197.561" Width="448.019" ResizeMode="NoResize" x:Name="loginWindow"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="loginWindow_MouseLeftButtonDown" Topmost="True">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
@@ -20,9 +20,9 @@
                 <RowDefinition Height="64*"/>
                 <RowDefinition Height="13*"/>
             </Grid.RowDefinitions>
-            <TextBlock x:Name="tbk_tip" Text="tip" Grid.Row="1" Width="300" Height="30" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <ProgressBar x:Name="pgr" Grid.Row="2" Height="30" Width="300"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="42,11.2,41.8,22.8"/>
+            <TextBlock x:Name="tbk_tip" Text="tip" Grid.Row="1" Width="394" Height="30" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <ProgressBar x:Name="pgr" Grid.Row="2" Height="30" Width="350"  HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
-        <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="386,0,0,250.4" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
+        <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
     </Grid>
 </Window>

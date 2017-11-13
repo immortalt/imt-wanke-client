@@ -126,56 +126,15 @@
   </data>
   <data name="TableContent" xml:space="preserve">
     <value>&lt;tr&gt;
-&lt;th style="color:#fff;
-    text-shadow:1px 1px 1px #568F23;
-    background-color:#9DD929;
-    border:1px solid #93CE37;
-    border-right:3px solid #9ED929;
-    padding:0px 10px;
-    background:-webkit-gradient(
-        linear,
-        left bottom,
-        right top,
-        color-stop(0.02, rgb(158,217,41)),
-        color-stop(0.51, rgb(139,198,66)),
-        color-stop(0.87, rgb(123,192,67))
-        );
-    background: -moz-linear-gradient(
-        left bottom,
-        rgb(158,217,41) 2%,
-        rgb(139,198,66) 51%,
-        rgb(123,192,67) 87%
-        );
-    -moz-border-radius:5px 0px 0px 5px;
-    -webkit-border-top-left-radius:5px;
-    -webkit-border-bottom-left-radius:5px;
-    border-top-left-radius:5px;
-    border-bottom-left-radius:5px;"&gt;title&lt;/th&gt;
-&lt;td style="color: #9CD009;
-    text-align:center;
-    padding:10px 0px;
-    text-shadow:1px 1px 1px #444;
-	padding:10px;
-    text-align:center;
-    background-color:#DEF3CA;
-    border: 2px solid #E7EFE0;
-    -moz-border-radius:2px;
-    -webkit-border-radius:2px;
-    border-radius:2px;
-    color:#666;
-    text-shadow:1px 1px 1px #fff;"&gt;value&lt;/td&gt;
+&lt;th&gt;title&lt;/th&gt;
+&lt;td&gt;value&lt;/td&gt;
 &lt;/tr&gt;</value>
   </data>
   <data name="TableEnd" xml:space="preserve">
     <value>&lt;/table&gt;</value>
   </data>
   <data name="TableStart" xml:space="preserve">
-    <value>&lt;table style="font-family: "Trebuchet MS", sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 1.4em;
-    font-style: normal;
-    border-collapse:separate;"&gt;</value>
+    <value>&lt;table&gt;</value>
   </data>
   <data name="MdTableContent" xml:space="preserve">
     <value>title：value  

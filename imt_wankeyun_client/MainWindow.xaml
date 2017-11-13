@@ -11,6 +11,9 @@
         <Style x:Key="FileListItemStyle" TargetType="{x:Type ListViewItem}">
             <EventSetter Event="Control.MouseDoubleClick" Handler="file_item_DoubleClick"/>
         </Style>
+        <ContextMenu x:Key="ContextMenu_device">
+            <MenuItem Header="刷新" Click="menu__device_refresh_Click" />
+        </ContextMenu>
     </Window.Resources>
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
@@ -37,10 +40,6 @@
                    FontSize="16"><Hyperlink x:Name="link_updateInfo"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/commits/master"
                                              Click="link_Click"><Run Text="更新历史"/></Hyperlink></TextBlock>
         <Button x:Name="btu_maxnormal" Content="Button" HorizontalAlignment="Right" Visibility="Collapsed" Height="24" Style="{DynamicResource MaxNormalButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_maxnormal_Click"/>
-        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
-        <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
-        <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
-        <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
         <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Width="71" 
             Margin="0,52,152,0" Height="20"
             FontSize="16" RenderTransformOrigin="0.177,0.573"><Hyperlink x:Name="link_updateInfo1"  Foreground="Purple" NavigateUri="https://github.com/Immortalt/imt-wanke-client/issues"
@@ -75,7 +74,7 @@
                                 <ImageBrush ImageSource="/img/file.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White">
-                                <ListView x:Name="lv_DeviceStatus" FontSize="14" Margin="0,31,0,-0.4">
+                                <ListView x:Name="lv_DeviceStatus" FontSize="14" Margin="0,31,0,-0.4" ContextMenu="{StaticResource ContextMenu_device}">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="账号">
@@ -337,9 +336,6 @@
                                 <Button x:Name="btu_tibi" Content="一键提币" HorizontalAlignment="Left" Margin="26,100,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top" Click="btu_tibi_Click"/>
-                                <TextBlock Margin="0,4,0,0" Width="114" Height="20" HorizontalAlignment="Left"
-                                          VerticalAlignment="Top" TextAlignment="Center" Grid.Row="1"
-                                          ><Run Text="每日总收入历史"/></TextBlock>
                                 <dxc:ChartControl x:Name="chart_dayHistory"  Grid.Row="1" Grid.Column="0"
                                                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                     <dxc:ChartControl.Legend>
@@ -679,12 +675,18 @@
                                            VerticalAlignment='Center' Foreground="Black" Height="30" Click="btu_changePwd_Click" Content="修改密码"/>
                             </Grid>
                         </TabItem>
-                        <TabItem TabIndex="1" Header="请等待作者更新" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
+                        <TabItem TabIndex="1" Header="刷新频率" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
                             <TabItem.Background>
                                 <ImageBrush ImageSource="img\settings.png" Stretch="Uniform"/>
                             </TabItem.Background>
-                            <Grid Background="White">
-                                <TextBlock><Run Text="请等待作者更新（软件会自动更新）"/></TextBlock>
+                            <Grid Background="White" x:Name="grid_refreshSetting">
+                                <TextBox x:Name="tbx_refresh_allSpan" HorizontalAlignment="Left" Height="23" Text="{Binding refresh_allSpan}" VerticalAlignment="Top" Width="103" Margin="10,34,0,0"/>
+                                <TextBlock Height="20" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" Foreground="Black" Margin="10,9,0,0"><Run Text="自动刷新账号列表-总体时间间隔(秒)"/></TextBlock>
+                                <TextBlock Height="20" Width="260" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" Foreground="Black" Margin="10,62,0,0"><Run Text="自动刷新账号列表-单个延时时间间隔(秒)"/></TextBlock>
+                                <TextBox x:Name="tbx_refresh_singleSpan" HorizontalAlignment="Left" Height="23" Text="{Binding refresh_singleSpan}" VerticalAlignment="Top" Width="103" Margin="10,87,0,0"/>
+                                <Button x:Name="btu_saveRefresh" Content="保存设置" HorizontalAlignment="Left" 
+                                    VerticalAlignment="Top" Width="83" Height="23" Style="{DynamicResource SmallButton}" 
+                                    VerticalContentAlignment="Top" Click="btu_saveRefresh_Click"  Margin="10,119,0,0"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -710,5 +712,9 @@
                 </DrawingBrush>
             </Border.Background>
         </Border>
+        <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
+        <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
+        <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
+        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
     </Grid>
 </Window>

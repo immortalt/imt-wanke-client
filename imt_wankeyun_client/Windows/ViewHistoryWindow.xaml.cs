@@ -31,12 +31,9 @@ namespace imt_wankeyun_client.Windows
                 {
                     try
                     {
-                        var dtstr = ih[i].date;
-                        var dt = new DateTime(int.Parse(dtstr.Substring(0, 4)),
-                            int.Parse(dtstr.Substring(4, 2)), int.Parse(dtstr.Substring(6, 2)));
                         var ic = new Income
                         {
-                            date = dt.ToLongDateString(),
+                            date = ih[i].date,
                             num = ih[i].num
                         };
                         historyArr.Add(ic);
