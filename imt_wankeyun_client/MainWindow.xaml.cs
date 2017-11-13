@@ -271,14 +271,7 @@ namespace imt_wankeyun_client
                     {
                         ld.SetTitle($"正在获取数据");
                         ld.SetPgr(i, ApiHelper.userBasicDatas.Count);
-                        if (settings.refresh_singleSpan == 0)
-                        {
-                            ld.SetTip($"正在获取账号{phone}的数据");
-                        }
-                        else
-                        {
-                            ld.SetTip($"正在获取账号{phone}的数据(延迟{settings.refresh_singleSpan}秒)");
-                        }
+                        ld.SetTip($"正在获取账号{phone}的数据");
                     }
                     if (await ListPeer(phone))
                     {
@@ -292,10 +285,6 @@ namespace imt_wankeyun_client
                     deviceInfos = null;
                     lv_DeviceStatus.ItemsSource = deviceInfos;
                     AutoHeaderWidth(lv_DeviceStatus);
-                    if (settings.refresh_singleSpan > 0)
-                    {
-                        Thread.Sleep(1000 * settings.refresh_singleSpan);
-                    }
                 }
                 var v = ApiHelper.incomeHistorys.Values;
                 dayIncomes = null;
@@ -401,7 +390,19 @@ namespace imt_wankeyun_client
                             if (pr.result[1] != null)
                             {
                                 Devices devices = JsonHelper.Deserialize<Devices>(pr.result[1].ToString());
-                                var device = devices.devices[0];
+                                Device device;
+                                if (devices.devices.Count > 0)
+                                {
+                                    device = devices.devices[0];
+                                }
+                                else
+                                {
+                                    device = new Device
+                                    {
+                                        device_sn = "未绑定设备",
+                                        device_name = "未绑定设备"
+                                    };
+                                }
                                 if (device != null)
                                 {
                                     if (!ApiHelper.userDevices.ContainsKey(phone))
@@ -1270,6 +1271,7 @@ namespace imt_wankeyun_client
                 settings.mailAccount.mailTo = settings.mailAccount.username;
                 SettingHelper.WriteSettings(settings, password);
             }
+            cbx_autoTibi.SelectedIndex = settings.autoTibi;
             grid_mailNotify.DataContext = settings.mailAccount;
             grid_serverchan.DataContext = settings;
             grid_refreshSetting.DataContext = settings;
@@ -1277,7 +1279,6 @@ namespace imt_wankeyun_client
             if (settings.mailNotify)
             {
                 btu_mailNotify.Content = "关闭提醒";
-                NotifyTimer.Start();
             }
             else
             {
@@ -1286,7 +1287,6 @@ namespace imt_wankeyun_client
             if (settings.serverchanNotify)
             {
                 btu_serverchanNotify.Content = "关闭提醒";
-                NotifyTimer.Start();
             }
             else
             {
@@ -1323,6 +1323,7 @@ namespace imt_wankeyun_client
             {
                 SendDailyNotifyServerChan();
             }
+            NotifyTimer.Start();
         }
         async Task UserLogin(LoginData ld)
         {
@@ -1411,23 +1412,27 @@ namespace imt_wankeyun_client
             var result = MessageBox.Show($"确定删除账号{phone}?", "提示", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
-                ApiHelper.clients.Remove(phone);
-                ApiHelper.userBasicDatas.Remove(phone);
-                ApiHelper.userDevices.Remove(phone);
-                ApiHelper.userInfos.Remove(phone);
-                ApiHelper.incomeHistorys.Remove(phone);
-                ApiHelper.usbInfoPartitions.Remove(phone);
-                ApiHelper.wkbAccountInfos.Remove(phone);
-                settings.loginDatas = settings.loginDatas.Where(t => t.phone != phone).ToList();
-                if (curAccount == phone)
-                {
-                    cbx_curAccount.SelectedIndex = 0;
-                }
-                LoadAccounts();
-                RefreshStatus();
-                SettingHelper.WriteSettings(settings, password);
-                MessageBox.Show($"删除账号{phone}成功", "提示");
+                DeleteDevice(phone);
             }
+        }
+        void DeleteDevice(string phone)
+        {
+            ApiHelper.clients.Remove(phone);
+            ApiHelper.userBasicDatas.Remove(phone);
+            ApiHelper.userDevices.Remove(phone);
+            ApiHelper.userInfos.Remove(phone);
+            ApiHelper.incomeHistorys.Remove(phone);
+            ApiHelper.usbInfoPartitions.Remove(phone);
+            ApiHelper.wkbAccountInfos.Remove(phone);
+            settings.loginDatas = settings.loginDatas.Where(t => t.phone != phone).ToList();
+            if (curAccount == phone)
+            {
+                cbx_curAccount.SelectedIndex = 0;
+            }
+            LoadAccounts();
+            RefreshStatus();
+            SettingHelper.WriteSettings(settings, password);
+            MessageBox.Show($"删除账号{phone}成功", "提示");
         }
         private void tbc_fileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1735,7 +1740,6 @@ namespace imt_wankeyun_client
             if (settings.mailNotify)
             {
                 btu_mailNotify.Content = "关闭提醒";
-                NotifyTimer.Start();
                 SendDailyNotifyMail();
             }
             else
@@ -1879,6 +1883,43 @@ namespace imt_wankeyun_client
                 {
                     SendDailyNotifyServerChan();
                     web_tongji.Refresh();//确保一直挂机检测的客户端也可以做到每日统计一次访问量，而不是只统计第一次打开那天的访问，从而保证访问统计真实性
+                }
+            }
+            if (settings.autoTibi != 0)
+            {
+                string dt;
+                int week = -1;
+                dt = DateTime.Today.DayOfWeek.ToString();
+                switch (dt)
+                {
+                    case "Monday":
+                        week = 1;
+                        break;
+                    case "Tuesday":
+                        week = 2;
+                        break;
+                    case "Wednesday":
+                        week = 3;
+                        break;
+                    case "Thursday":
+                        week = 4;
+                        break;
+                    case "Friday":
+                        week = 5;
+                        break;
+                    case "Saturday":
+                        week = 6;
+                        break;
+                    case "Sunday":
+                        week = 7;
+                        break;
+                }
+                if (week == settings.autoTibi)
+                {
+                    if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
+                    {
+                        DrawAllWkb();
+                    }
                 }
             }
         }
@@ -2052,15 +2093,14 @@ namespace imt_wankeyun_client
         {
             try
             {
-                var st = Convert.ToInt32(tbx_refresh_singleSpan.Text);
                 var at = Convert.ToInt32(tbx_refresh_allSpan.Text);
-                if (st <= 0 || at <= 0)
+                if (at <= 0)
                 {
                     MessageBox.Show("时间间隔不能小于0！", "错误");
                     return;
                 }
-                settings.refresh_singleSpan = st;
                 settings.refresh_allSpan = at;
+                StatusTimer.Interval = TimeSpan.FromSeconds(settings.refresh_allSpan);
                 SettingHelper.WriteSettings(settings, password);
                 MessageBox.Show("保存设置成功！", "提示");
             }
@@ -2070,13 +2110,48 @@ namespace imt_wankeyun_client
             }
         }
 
-        private async void menu__device_refresh_Click(object sender, RoutedEventArgs e)
+        private async void menu_device_refresh_Click(object sender, RoutedEventArgs e)
         {
             if (lv_DeviceStatus.SelectedValue != null)
             {
                 DeviceInfoVM device = lv_DeviceStatus.SelectedValue as DeviceInfoVM;
                 await RefreshStatus(device.phone);
                 MessageBox.Show($"刷新{device.phone}成功", "提示");
+            }
+        }
+
+        private void menu_device_delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (lv_DeviceStatus.SelectedValue != null)
+            {
+                DeviceInfoVM device = lv_DeviceStatus.SelectedValue as DeviceInfoVM;
+                var result = MessageBox.Show($"确定删除账号{device.phone}?", "提示", MessageBoxButton.OKCancel);
+                if (result == MessageBoxResult.OK)
+                {
+                    DeleteDevice(device.phone);
+                }
+            }
+        }
+        private void cbx_autoTibi_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            settings.autoTibi = cbx_autoTibi.SelectedIndex;
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        async void DrawAllWkb()
+        {
+            for (int i = 0; i < settings.loginDatas.Count; i++)
+            {
+                var t = settings.loginDatas[i];
+                var r = await DrawWkb(t.phone);
+                if (r != null)
+                {
+                    if (r.iRet == 0)
+                    {
+                        r.sMsg = "提币成功！";
+                    }
+                }
+                Thread.Sleep(3 * 1000);//防止提币过快引起风控
             }
         }
     }

@@ -24,7 +24,7 @@ namespace imt_wankeyun_client.Entities
         public List<LoginData> loginDatas { get; set; }
         public MailAccount mailAccount { get; set; }
         public int refresh_allSpan { get; set; }
-        public int refresh_singleSpan { get; set; }
+        public int autoTibi { get; set; }
     }
     public class MailAccount
     {

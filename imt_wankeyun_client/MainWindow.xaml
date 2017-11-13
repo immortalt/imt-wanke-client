@@ -12,7 +12,8 @@
             <EventSetter Event="Control.MouseDoubleClick" Handler="file_item_DoubleClick"/>
         </Style>
         <ContextMenu x:Key="ContextMenu_device">
-            <MenuItem Header="刷新" Click="menu__device_refresh_Click" />
+            <MenuItem Header="刷新" Click="menu_device_refresh_Click" />
+            <MenuItem Header="删除" Click="menu_device_delete_Click" />
         </ContextMenu>
     </Window.Resources>
     <Window.Background>
@@ -324,14 +325,14 @@
                                     <ColumnDefinition Width="239*"/>
                                     <ColumnDefinition Width="123*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Margin="26,25,0,0" Width="478" Height="20" HorizontalAlignment="Left"
-                                          VerticalAlignment="Top" Grid.ColumnSpan="2"
+                                <TextBlock Margin="26,25,0,0" Width="242" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
                                           ><Run Text="昨日总收入："/><Run x:Name="tbk_yesAllCoin" Foreground="Goldenrod" Text="0"/></TextBlock>
-                                <TextBlock Margin="26,50,0,0" Width="478" Height="20" HorizontalAlignment="Left"
-                                          VerticalAlignment="Top" Grid.ColumnSpan="2"
+                                <TextBlock Margin="26,50,0,0" Width="242" Height="20" HorizontalAlignment="Left"
+                                          VerticalAlignment="Top"
                                           ><Run Text="历史总收入："/><Run x:Name="tbk_hisAllCoin" Foreground="Goldenrod" Text="0"/></TextBlock>
-                                <TextBlock Margin="26,75,0,0" Width="478" Height="20" HorizontalAlignment="Left"
-                                    VerticalAlignment="Top" Grid.ColumnSpan="2"
+                                <TextBlock Margin="26,75,0,0" Width="242" Height="20" HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
                                           ><Run Text="可提玩客币："/><Run x:Name="tbk_ketiWkb" Foreground="Goldenrod" Text="0"/></TextBlock>
                                 <Button x:Name="btu_tibi" Content="一键提币" HorizontalAlignment="Left" Margin="26,100,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
@@ -371,6 +372,20 @@
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
+                                <TextBlock Margin="294,25,0,0" Width="76" Height="20" HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                          ><Run Text="自动提币："/></TextBlock>
+                                <ComboBox x:Name="cbx_autoTibi" SelectionChanged="cbx_autoTibi_SelectionChanged" Height="25" Width="80" Margin="370,25,42,82">
+                                    <ComboBoxItem Content="不设置"/>
+                                    <ComboBoxItem Content="周一"/>
+                                    <ComboBoxItem Content="周二"/>
+                                    <ComboBoxItem Content="周三"/>
+                                    <ComboBoxItem Content="周四"/>
+                                    <ComboBoxItem Content="周五"/>
+                                </ComboBox>
+                                <TextBlock Margin="294,55,0,0" Width="340" Height="40" HorizontalAlignment="Left"
+                                    VerticalAlignment="Top" Grid.ColumnSpan="2" TextWrapping="Wrap"
+                                          ><Run Text="自动提币会在设定日期的09:01提取所有账号的玩客币到你绑定的玩客币钱包"/></TextBlock>
                             </Grid>
                         </TabItem>
                         <TabItem Header="设备状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="0">
@@ -681,12 +696,10 @@
                             </TabItem.Background>
                             <Grid Background="White" x:Name="grid_refreshSetting">
                                 <TextBox x:Name="tbx_refresh_allSpan" HorizontalAlignment="Left" Height="23" Text="{Binding refresh_allSpan}" VerticalAlignment="Top" Width="103" Margin="10,34,0,0"/>
-                                <TextBlock Height="20" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" Foreground="Black" Margin="10,9,0,0"><Run Text="自动刷新账号列表-总体时间间隔(秒)"/></TextBlock>
-                                <TextBlock Height="20" Width="260" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" Foreground="Black" Margin="10,62,0,0"><Run Text="自动刷新账号列表-单个延时时间间隔(秒)"/></TextBlock>
-                                <TextBox x:Name="tbx_refresh_singleSpan" HorizontalAlignment="Left" Height="23" Text="{Binding refresh_singleSpan}" VerticalAlignment="Top" Width="103" Margin="10,87,0,0"/>
+                                <TextBlock Height="20" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" Foreground="Black" Margin="10,9,0,0"><Run Text="自动刷新状态时间间隔(秒)"/></TextBlock>
                                 <Button x:Name="btu_saveRefresh" Content="保存设置" HorizontalAlignment="Left" 
                                     VerticalAlignment="Top" Width="83" Height="23" Style="{DynamicResource SmallButton}" 
-                                    VerticalContentAlignment="Top" Click="btu_saveRefresh_Click"  Margin="10,119,0,0"/>
+                                    VerticalContentAlignment="Top" Click="btu_saveRefresh_Click"  Margin="10,62,0,0"/>
                             </Grid>
                         </TabItem>
                     </TabControl>

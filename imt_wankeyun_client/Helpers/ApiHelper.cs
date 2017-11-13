@@ -171,7 +171,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                Debug.WriteLine(resp.Content);
+                Debug.WriteLine("ListPeer:" + resp.Content);
                 var root = JsonHelper.Deserialize<PeerResponse>(resp.Content);
                 message.data = root;
             }
