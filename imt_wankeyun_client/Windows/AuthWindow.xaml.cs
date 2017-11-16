@@ -46,7 +46,7 @@ namespace imt_wankeyun_client.Windows
             {
                 MainWindow.password = password;
                 MainWindow.settings = settings;
-                MessageBox.Show("验证成功！", "恭喜");
+                //MessageBox.Show("验证成功！", "恭喜");
                 isAuthed = true;
                 Close();
             }
