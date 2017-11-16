@@ -31,6 +31,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Windows.Media;
 using imt_wankeyun_client.Entities.ServerChan;
+using System.Reflection;
+using System.Windows.Navigation;
 
 namespace imt_wankeyun_client
 {
@@ -62,6 +64,8 @@ namespace imt_wankeyun_client
         public MainWindow()
         {
             InitializeComponent();
+            web_tongji.Navigating += WebBrowser_Navigating;
+            web_tongji.Source = new Uri("http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html");
             this.SourceInitialized += delegate (object sender, EventArgs e)//执行拖拽
             {
                 this._HwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
@@ -1222,7 +1226,7 @@ namespace imt_wankeyun_client
                     }
                     if (settings.mailAccount.smtpServer == null)
                     {
-                        settings.mailAccount.smtpServer = "smtp.qq.com";
+                        settings.mailAccount.smtpServer = "smtp.163.com";
                     }
                     InitLogin();
                     return;
@@ -1907,14 +1911,8 @@ namespace imt_wankeyun_client
                     case "Friday":
                         week = 5;
                         break;
-                    case "Saturday":
-                        week = 6;
-                        break;
-                    case "Sunday":
-                        week = 7;
-                        break;
                 }
-                if (week == settings.autoTibi)
+                if (week == settings.autoTibi || settings.autoTibi == 6)
                 {
                     if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
                     {
@@ -2153,6 +2151,25 @@ namespace imt_wankeyun_client
                 }
                 Thread.Sleep(3 * 1000);//防止提币过快引起风控
             }
+        }
+        private void WebBrowser_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            SetWebBrowserSilent(sender as WebBrowser, true);
+        }
+        /// <summary>  
+        /// 设置浏览器静默，不弹错误提示框  
+        /// </summary>  
+        /// <param name="webBrowser">要设置的WebBrowser控件浏览器</param>  
+        /// <param name="silent">是否静默</param>  
+        private void SetWebBrowserSilent(WebBrowser webBrowser, bool silent)
+        {
+            FieldInfo fiComWebBrowser = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (fiComWebBrowser == null) return;
+
+            object objComWebBrowser = fiComWebBrowser.GetValue(webBrowser);
+            if (objComWebBrowser == null) return;
+
+            objComWebBrowser.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { silent });
         }
     }
 }

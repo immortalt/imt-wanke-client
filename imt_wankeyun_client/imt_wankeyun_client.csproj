@@ -35,12 +35,12 @@
     <ProductName>不朽玩客云客户端</ProductName>
     <PublisherName>不朽网</PublisherName>
     <SuiteName>不朽玩客云客户端</SuiteName>
-    <MinimumRequiredVersion>0.0.0.73</MinimumRequiredVersion>
+    <MinimumRequiredVersion>0.0.1.5</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>0.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>

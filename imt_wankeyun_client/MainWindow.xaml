@@ -20,7 +20,7 @@
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
     <Grid x:Name="grid_main">
-        <WebBrowser x:Name="web_tongji" Height="10" Width="10" Source="http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html"/>
+        <WebBrowser x:Name="web_tongji" Height="10" Width="10" Visibility="Collapsed"/>
         <Rectangle HorizontalAlignment="Left" Height="54" StrokeThickness="0" VerticalAlignment="Top" Width="54" Margin="7,12,0,0">
             <Rectangle.Fill>
                 <ImageBrush ImageSource="img\icon.png" Stretch="UniformToFill"/>
@@ -372,16 +372,17 @@
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
-                                <TextBlock Margin="294,25,0,0" Width="76" Height="20" HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
+                                <TextBlock Margin="294,25,0,0" Width="76" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top"
                                           ><Run Text="自动提币："/></TextBlock>
-                                <ComboBox x:Name="cbx_autoTibi" SelectionChanged="cbx_autoTibi_SelectionChanged" Height="25" Width="80" Margin="370,25,42,82">
+                                <ComboBox x:Name="cbx_autoTibi" SelectionChanged="cbx_autoTibi_SelectionChanged" Height="25" Width="80" Margin="370,25,42,82"
+                                          HorizontalAlignment="Left" VerticalAlignment="Top">
                                     <ComboBoxItem Content="不设置"/>
                                     <ComboBoxItem Content="周一"/>
                                     <ComboBoxItem Content="周二"/>
                                     <ComboBoxItem Content="周三"/>
                                     <ComboBoxItem Content="周四"/>
                                     <ComboBoxItem Content="周五"/>
+                                    <ComboBoxItem Content="每天"/>
                                 </ComboBox>
                                 <TextBlock Margin="294,55,0,0" Width="340" Height="40" HorizontalAlignment="Left"
                                     VerticalAlignment="Top" Grid.ColumnSpan="2" TextWrapping="Wrap"
@@ -411,7 +412,7 @@
                                 <Button x:Name="btu_sendTestMail" Content="发送测试邮件" HorizontalAlignment="Left" Margin="138,185,0,0" 
                                     VerticalAlignment="Top" Width="100" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_sendTestMail_Click"/>
-                                <TextBlock Height="130" Width="726" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" TextWrapping="Wrap" Margin="0,215,0,0"><Run Text="       一旦开启设备状态提醒，当本软件运行时，监测到设备的状态变化，会进行邮件提醒，同时每次启动和每天早日09：01，会发邮件汇报昨日收入。即你用本软件登陆自己的邮箱，自己给自己发邮件。"/><LineBreak/><Run Foreground="Green" Text="       一切为了安全！这样的提醒方式是目前最容易实现并且安全好用的。"/><LineBreak/><Run Foreground="Black" Text="       实测支持QQ邮箱和网易邮箱，QQ邮箱要用独立密码，网易邮箱要用授权码，只要去邮箱设置开启'POP3\SMTP'功能，所有邮箱应该都可以支持。测试QQ邮箱、163邮箱可用SMTP服务器端口：25"/><LineBreak/><Run Foreground="Black" Text="       网易163邮箱SMTP服务器地址：smtp.163.com"/><LineBreak/><Run Foreground="Black" Text="       QQ邮箱SMTP服务器地址：smtp.qq.com"/><LineBreak/></TextBlock>
+                                <TextBlock Height="130" Width="726" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Left" TextWrapping="Wrap" Margin="0,215,0,0"><Run Text="       一旦开启设备状态提醒，当本软件运行时，监测到设备的状态变化，会进行邮件提醒，同时每次启动和每天早日09：01，会发邮件汇报昨日收入。即你用本软件登陆自己的邮箱，自己给自己发邮件。"/><LineBreak/><Run Foreground="Green" Text="       一切为了安全！这样的提醒方式是目前最容易实现并且安全好用的。"/><LineBreak/><Run Foreground="Black" Text="       实测支持网易163邮箱，网易163邮箱要去邮箱设置，设置授权码、开启'POP3\SMTP'功能。测试163邮箱可用SMTP服务器端口：25"/><LineBreak/><Run Foreground="Black" Text="       网易163邮箱SMTP服务器地址：smtp.163.com"/><LineBreak/></TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,148,0,0" Foreground="Black"><Run Text="收件人邮箱地址"/></TextBlock>
                                 <TextBox x:Name="tbx_mailTo" HorizontalAlignment="Left" Height="23" Margin="138,148,0,0" TextWrapping="Wrap" Text="{Binding mailTo, Mode=TwoWay}" VerticalAlignment="Top" Width="230"/>
                                 <Grid x:Name="grid_serverchan" VerticalAlignment="Top" HorizontalAlignment="Left" Height="133" Margin="0,345,-0.4,0" Width="746">
