@@ -2171,5 +2171,11 @@ namespace imt_wankeyun_client
 
             objComWebBrowser.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { silent });
         }
+
+        private void Btu_AddManyAccount_Click(object sender, RoutedEventArgs e)
+        {
+            LoginManyWindow lmw = new LoginManyWindow();
+            lmw.ShowDialog();
+        }
     }
 }

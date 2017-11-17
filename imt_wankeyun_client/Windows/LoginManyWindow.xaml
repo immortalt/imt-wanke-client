@@ -1,4 +1,4 @@
-﻿<Window x:Class="imt_wankeyun_client.Windows.LoadingWindow"
+﻿<Window x:Class="imt_wankeyun_client.Windows.LoginManyWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,22 +6,24 @@
         xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
-        Title="加载中" Height="197.561" Width="448.019" ResizeMode="NoResize" x:Name="loginWindow"
+        Title="批量登陆" Height="500" Width="700" ResizeMode="NoResize" x:Name="window"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="loginWindow_MouseLeftButtonDown" Topmost="True">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
     <Grid>
-        <TextBlock x:Name="tbk_title" Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="标题"/>
+        <TextBlock x:Name="tbk_title" Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="批量登陆"/>
         <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0.2,0.4" Background="White">
             <Grid.RowDefinitions>
-                <RowDefinition Height="16*"/>
-                <RowDefinition Height="61*"/>
-                <RowDefinition Height="64*"/>
-                <RowDefinition Height="13*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="42*"/>
+                <RowDefinition Height="459*"/>
+                <RowDefinition Height="46*"/>
             </Grid.RowDefinitions>
-            <TextBlock x:Name="tbk_tip" Text="tip" Grid.Row="1" Width="394" Height="30" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <ProgressBar x:Name="pgr" Grid.Row="2" Height="30" Width="350"  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock FontSize="18" Grid.Row="1" Margin="0,1.6,-0.6,7">请按照 <Run Foreground="Blue">账号=密码</Run> 的格式批量填入账号密码，每个账号一行，不要有多余的空格</TextBlock>
+            <TextBox  FontSize="16"  AcceptsReturn="True" TextWrapping="Wrap" x:Name="tbx_loginMany" Grid.Row="2" Margin="5,5,4.4,5.2" Foreground="Blue"/>
+            <Button x:Name="btu_loginMany" Click="btu_loginMany_Click" Grid.Row="3"
+                    Style="{DynamicResource SimpleButton}" Margin="199,4.8,198.4,4.8">批量登陆</Button>
         </Grid>
         <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
     </Grid>

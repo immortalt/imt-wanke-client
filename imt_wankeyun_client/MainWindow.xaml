@@ -293,22 +293,25 @@
                                 <Button x:Name="Btu_AddAccount" Content="添加账号" HorizontalAlignment="Left" Margin="10,3,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top" Click="Btu_AddAccount_Click"/>
-                                <Button x:Name="Btu_refreshStatus" Content="刷新" HorizontalAlignment="Left" Margin="90,3,0,0" 
+                                <Button x:Name="Btu_refreshStatus" Content="刷新" HorizontalAlignment="Left" Margin="167,3,0,0" 
                                         VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                         VerticalContentAlignment="Top" Click="Btu_refreshStatus_Click"/>
-                                <CheckBox x:Name="chk_autoRefresh" Margin="175,7,0,0" Width="75" Height="20" HorizontalAlignment="Left"
+                                <CheckBox x:Name="chk_autoRefresh" Margin="252,7,0,0" Width="75" Height="20" HorizontalAlignment="Left"
                                           VerticalAlignment="Top" Click="chk_autoRefresh_Click" IsChecked="True"
                                           Content="自动刷新"
                                           />
-                                <TextBlock Margin="256,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="333,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="在线设备："/><Run x:Name="tbk_onlineCount" Foreground="Green" Text="0"/></TextBlock>
-                                <TextBlock Margin="392,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="469,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="离线设备："/><Run x:Name="tbk_offlineCount" Foreground="Red" Text="0"/></TextBlock>
                                 <TextBlock Margin="528,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run x:Name="tbk_isAutoRefreshing" Foreground="Green" Text=""/></TextBlock>
+                                <Button x:Name="Btu_AddManyAccount" Content="批量登陆" HorizontalAlignment="Left" Margin="88,3,0,0" 
+                                    VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                    VerticalContentAlignment="Top" Click="Btu_AddManyAccount_Click"/>
 
                             </Grid>
                         </TabItem>
