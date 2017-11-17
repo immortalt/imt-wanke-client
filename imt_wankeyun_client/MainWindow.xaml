@@ -306,7 +306,7 @@
                                 <TextBlock Margin="469,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="离线设备："/><Run x:Name="tbk_offlineCount" Foreground="Red" Text="0"/></TextBlock>
-                                <TextBlock Margin="528,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="608,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run x:Name="tbk_isAutoRefreshing" Foreground="Green" Text=""/></TextBlock>
                                 <Button x:Name="Btu_AddManyAccount" Content="批量登陆" HorizontalAlignment="Left" Margin="88,3,0,0" 
