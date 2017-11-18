@@ -33,6 +33,7 @@ using System.Windows.Media;
 using imt_wankeyun_client.Entities.ServerChan;
 using System.Reflection;
 using System.Windows.Navigation;
+using imt_wankeyun_client.Entities.Monitor;
 
 namespace imt_wankeyun_client
 {
@@ -41,6 +42,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        WkbInfo wkbInfo;
         bool CanOpenNotify = false;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         bool IsHandRefreshing = false;
@@ -378,6 +380,29 @@ namespace imt_wankeyun_client
             {
                 LoadAccounts();
                 RefreshStatus();
+            }
+        }
+        async Task<bool> WkbInfoQuery()
+        {
+            HttpMessage resp = await ApiHelper.WkbInfoQuery();
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var r = resp.data as WkbInfoQueryResponse;
+                    if (r.iRet == 0 && r.sMsg == "ok")
+                    {
+                        wkbInfo = r.data;
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("获取数据出错！");
+                    }
+                    return false;
+                default:
+                    Debug.WriteLine("网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
             }
         }
         async Task<bool> ListPeer(string phone)
@@ -1655,6 +1680,25 @@ namespace imt_wankeyun_client
             if (tab_account.SelectedIndex == 1)
             {
                 LoadDayHistroy();
+            }
+            else if (tab_account.SelectedIndex == 2)
+            {
+                LoadWkbInfo();
+            }
+        }
+        private async void LoadWkbInfo()
+        {
+            var s = await WkbInfoQuery();
+            if (s)
+            {
+                grid_wkbInfo.DataContext = null;
+                grid_wkbInfo.DataContext = wkbInfo;
+                lv_topWkb.ItemsSource = null;
+                lv_topWkb.ItemsSource = wkbInfo.topN_wkb;
+                lv_topBandwidth.ItemsSource = null;
+                lv_topBandwidth.ItemsSource = wkbInfo.topN_bandwidth;
+                lv_topDisk.ItemsSource = null;
+                lv_topDisk.ItemsSource = wkbInfo.topN_disk;
             }
         }
         private void LoadDayHistroy()

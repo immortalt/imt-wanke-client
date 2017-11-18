@@ -16,6 +16,7 @@ using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
 using System.Windows;
 using imt_wankeyun_client.Entities.ServerChan;
+using imt_wankeyun_client.Entities.Monitor;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -29,6 +30,7 @@ namespace imt_wankeyun_client.Helpers
         static string apiControlUrl = "https://control.onethingpcs.com";
         static string apiRemoteDlUrl = "http://control.remotedl.onethingpcs.com";
         internal static RestClient serverchanClient = new RestClient();
+        internal static RestClient monitorClient = new RestClient();
         internal static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, RestClient> DlClients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
@@ -828,6 +830,41 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("ServerChanNotify:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 查询玩客币信息
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> WkbInfoQuery()
+        {
+            var client = monitorClient;
+            client.BaseUrl = new Uri("http://account.onethingpcs.com/info/query");
+            var resp = await Task.Run(() =>
+            {
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
+                request.AddHeader("accept-encoding", "gzip, deflate");
+                request.AddHeader("referer", "http://red.xunlei.com/index.php?r=site/coin");
+                request.AddHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36");
+                request.AddHeader("origin", "http://red.xunlei.com");
+                request.AddHeader("accept", "application/json, text/javascript, */*; q=0.01");
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("WkbInfoQuery:" + resp.Content);
+                var root = JsonHelper.Deserialize<WkbInfoQueryResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("WkbInfoQuery:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;

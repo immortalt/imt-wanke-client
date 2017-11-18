@@ -392,7 +392,92 @@
                                           ><Run Text="自动提币会在设定日期的09:01提取所有账号的玩客币到你绑定的玩客币钱包"/></TextBlock>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="设备状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="0">
+                        <TabItem Header="区块链信息" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="2">
+                            <TabItem.Background>
+                                <ImageBrush ImageSource="/img/monitor.png" Stretch="Uniform"/>
+                            </TabItem.Background>
+                            <Grid Background="White">
+                                <Grid x:Name="grid_wkbInfo" Margin="0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="480" Width="740">
+                                    <Image Source="/img/wkbInfoBack.png" Height="480" Width="740"></Image>
+                                    <TextBlock Margin="27,79,559.6,365.4" Text="{Binding wkb_num}" Foreground="White" FontSize="25" TextAlignment="Center"></TextBlock>
+                                    <TextBlock Margin="188,79,398.6,365.4" Text="{Binding block_num}" Foreground="White" FontSize="25" TextAlignment="Center"></TextBlock>
+                                    <TextBlock Margin="398,81,300,369.6" Text="{Binding average_onlinetime}" Foreground="White" FontSize="25" TextAlignment="Right"></TextBlock>
+                                    <TextBlock Margin="500,81,197.6,369.4" Text="{Binding average_bandwidth}" Foreground="White" FontSize="25" TextAlignment="Right"></TextBlock>
+                                    <TextBlock Margin="591,81,81.6,369.4" Text="{Binding average_disk}" Foreground="White" FontSize="25" TextAlignment="Right"></TextBlock>
+                                    <ListView Name="lv_topWkb" Margin="36,274,503,10">
+                                        <ListView.Resources>
+                                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </ListView.Resources>
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridView.Columns>
+                                                    <GridViewColumn Header="">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Top" Margin="0,0,0,10">
+                                                                    <TextBlock Text="{Binding phone}"></TextBlock>
+                                                                    <TextBlock Margin="5,0,0,0"><Run Text="{Binding wkb}"></Run><Run>币</Run></TextBlock>
+                                                                    <TextBlock Margin="5,0,0,0"><Run>ID：</Run><Run Text="{Binding user_id}"></Run></TextBlock>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                </GridView.Columns>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    <ListView x:Name="lv_topBandwidth" Margin="286,274,253,10">
+                                        <ListView.Resources>
+                                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </ListView.Resources>
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Top" Margin="0,0,0,10">
+                                                                <TextBlock Text="{Binding phone}"/>
+                                                                <TextBlock Margin="5,0,0,0"><Run Text="{Binding bandwidth}"/><Run Text="Mbps"/></TextBlock>
+                                                                <TextBlock Margin="5,0,0,0"><Run Text="{Binding wkb}"/><Run Text="币"/></TextBlock>
+                                                                <TextBlock Margin="5,0,0,0"><Run Text="ID："/><Run Text="{Binding user_id}"/></TextBlock>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    <ListView x:Name="lv_topDisk" Margin="536,274,3,10">
+                                        <ListView.Resources>
+                                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </ListView.Resources>
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Top" Margin="0,0,0,10">
+                                                                <TextBlock Text="{Binding phone}"/>
+                                                                <TextBlock Margin="5,0,0,0"><Run Text="{Binding disk}"/><Run Text="GB"/></TextBlock>
+                                                                <TextBlock Margin="5,0,0,0"><Run Text="{Binding wkb}"/><Run Text="币"/></TextBlock>
+                                                                <TextBlock Margin="5,0,0,0"><Run Text="ID："/><Run Text="{Binding user_id}"/></TextBlock>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </Grid>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="设备状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="3">
                             <TabItem.Background>
                                 <ImageBrush ImageSource="/img/mail.png" Stretch="Uniform"/>
                             </TabItem.Background>
