@@ -41,6 +41,16 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Dictionary<string, bool> priceAbove = new Dictionary<string, bool>()
+        {
+            {"uyulin",false },
+            {"suiqiu",false },
+        };
+        private Dictionary<string, bool> priceBelow = new Dictionary<string, bool>()
+        {
+            {"uyulin",false },
+            {"suiqiu",false },
+        };
         int priceRefTime;//距离上一次刷新的时间
         double uyulinLastPrice;
         double suiqiuLastPrice;
@@ -148,6 +158,84 @@ namespace imt_wankeyun_client
         {
             GetSuiqiuWkcPrice();
             GetUyulinPrice();
+            if (settings.priceAbove > 0)
+            {
+                //悠雨林
+                if (uyulinLastPrice >= settings.priceAbove && !priceAbove["uyulin"])
+                {
+                    priceAbove["uyulin"] = true;
+                    var msg = "上涨提醒-悠雨林最新交易价格" + uyulinLastPrice + "元";
+                    if (settings.mailNotify)
+                    {
+                        SendMail(msg);
+                    }
+                    if (settings.serverchanNotify)
+                    {
+                        SendServerChan(msg);
+                    }
+                }
+                if (uyulinLastPrice < settings.priceAbove)
+                {
+                    priceAbove["uyulin"] = false;
+                }
+
+                //随求
+                if (suiqiuLastPrice >= settings.priceAbove && !priceAbove["suiqiu"])
+                {
+                    priceAbove["suiqiu"] = true;
+                    var msg = "上涨提醒-随求最新交易价格" + suiqiuLastPrice + "元";
+                    if (settings.mailNotify)
+                    {
+                        SendMail(msg);
+                    }
+                    if (settings.serverchanNotify)
+                    {
+                        SendServerChan(msg);
+                    }
+                }
+                if (suiqiuLastPrice < settings.priceAbove)
+                {
+                    priceAbove["suiqiu"] = false;
+                }
+            }
+            if (settings.priceBelow > 0)
+            {
+                if (uyulinLastPrice <= settings.priceBelow && !priceBelow["uyulin"])
+                {
+                    priceBelow["uyulin"] = true;
+                    var msg = "下跌提醒-悠雨林最新交易价格" + uyulinLastPrice + "元";
+                    if (settings.mailNotify)
+                    {
+                        SendMail(msg);
+                    }
+                    if (settings.serverchanNotify)
+                    {
+                        SendServerChan(msg);
+                    }
+                }
+                if (uyulinLastPrice > settings.priceBelow)
+                {
+                    priceBelow["uyulin"] = false;
+                }
+
+                if (suiqiuLastPrice <= settings.priceBelow && !priceBelow["suiqiu"])
+                {
+                    priceBelow["suiqiu"] = true;
+                    var msg = "下跌提醒-随求最新交易价格" + suiqiuLastPrice + "元";
+                    if (settings.mailNotify)
+                    {
+                        SendMail(msg);
+                    }
+                    if (settings.serverchanNotify)
+                    {
+                        SendServerChan(msg);
+                    }
+                }
+                if (suiqiuLastPrice > settings.priceBelow)
+                {
+                    priceBelow["suiqiu"] = false;
+                }
+            }
         }
         private void TotallyHide(object sender, EventArgs e)
         {
@@ -1428,6 +1516,8 @@ namespace imt_wankeyun_client
             grid_serverchan.DataContext = settings;
             grid_refreshSetting.DataContext = settings;
             tbx_mailPwd.Password = settings.mailAccount.password;
+            tbx_priceAboce.Text = settings.priceAbove.ToString();
+            tbx_priceBelow.Text = settings.priceBelow.ToString();
             if (settings.mailNotify)
             {
                 btu_mailNotify.Content = "关闭提醒";
@@ -2113,6 +2203,20 @@ namespace imt_wankeyun_client
             var result = await ServerChanNotify(settings.SCKEY, $"{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}汇报-不朽玩客云客户端", GetDailyNotifyMarkdown(deviceInfos));
             Debug.WriteLine($"SendDailyNotifyServerChan:" + result);
         }
+        private async void SendMail(string msg)
+        {
+            MailHelper.username = settings.mailAccount.username;
+            MailHelper.password = settings.mailAccount.password;
+            MailHelper.smtpServer = settings.mailAccount.smtpServer;
+            MailHelper.port = settings.mailAccount.port;
+            var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, $"{msg}-{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}", msg);
+            Debug.WriteLine($"SendMail:" + result);
+        }
+        private async void SendServerChan(string msg)
+        {
+            var result = await ServerChanNotify(settings.SCKEY, $"{msg}-{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}", msg);
+            Debug.WriteLine($"SendServerChan:" + result);
+        }
         private string GetDailyNotifyHtml(ObservableCollection<DeviceInfoVM> dis)
         {
             StringBuilder sb = new StringBuilder();
@@ -2354,6 +2458,20 @@ namespace imt_wankeyun_client
         {
             LoginManyWindow lmw = new LoginManyWindow();
             lmw.ShowDialog();
+        }
+        private void btu_savePriceNotify_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                settings.priceAbove = Convert.ToDouble(tbx_priceAboce.Text.Trim());
+                settings.priceBelow = Convert.ToDouble(tbx_priceBelow.Text.Trim());
+                SettingHelper.WriteSettings(settings, password);
+                MessageBox.Show("保存设置成功！", "提示");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "错误");
+            }
         }
     }
 }

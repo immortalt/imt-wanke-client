@@ -482,7 +482,7 @@
                                 <ImageBrush ImageSource="/img/price.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White">
-                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">币价看盘</TextBlock>
+                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" FontWeight="Bold">币价看盘</TextBlock>
                                 <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,45,0,0" Foreground="Black"><Hyperlink NavigateUri="http://www.uyulin.com/?invit=MI633727" Click="link_Click">悠雨林</Hyperlink>最新成交价</TextBlock>
                                 <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,45,0,0" Foreground="Goldenrod" x:Name="tbk_uyulin_newPrice">暂无数据</TextBlock>
                                 <TextBlock Margin="103,10,0,0" Width="136" Height="20" HorizontalAlignment="Left"
@@ -492,6 +492,16 @@
                                 <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,70,0,0" Foreground="Black"><Hyperlink NavigateUri="https://www.chaobi.la/" Click="link_Click">随求</Hyperlink><Run Text="最新成交价"/></TextBlock>
                                 <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,70,0,0" Foreground="Goldenrod" x:Name="tbk_suiqiu_newPrice"><Run Text="暂无数据"/></TextBlock>
                                 <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,121,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被暂时打爆了，不信你看网页能不能打开。"/></TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,177,0,0" Foreground="Black"><Run Text="超过多少元提醒"/></TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,204,0,0" Foreground="Black"><Run Text="低于多少元提醒"/></TextBlock>
+                                <TextBox x:Name="tbx_priceAboce" HorizontalAlignment="Left" Height="23" Margin="130,177,0,0" VerticalAlignment="Top" Width="95"/>
+                                <TextBox x:Name="tbx_priceBelow" HorizontalAlignment="Left" Margin="130,205,0,0" VerticalAlignment="Top" Width="95"/>
+                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,146,0,0"><Run Text="币价监控" FontWeight="Bold"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,231,0,0"><Run Text="设置的价格为空则不提醒。"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,251,0,0"><Run Text="币价提醒的方式和设置以“状态提醒”的设置为准，请先开启状态提醒。"/></TextBlock>
+                                <Button x:Name="btu_savePriceNotify" Content="保存设置" HorizontalAlignment="Left" Margin="247,204,0,0" 
+                                    VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
+                                    VerticalContentAlignment="Top" Click="btu_savePriceNotify_Click"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="4">
@@ -499,7 +509,7 @@
                                 <ImageBrush ImageSource="/img/mail.png" Stretch="Uniform"/>
                             </TabItem.Background>
                             <Grid Background="White" x:Name="grid_mailNotify">
-                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">邮件提醒</TextBlock>
+                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" FontWeight="Bold">邮件提醒</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,38,0,0" Foreground="Black">邮箱地址</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,66,0,0" Foreground="Black">邮箱密码/授权码</TextBlock>
                                 <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="10,92,0,0" Foreground="Black">邮箱SMTP服务器</TextBlock>
@@ -523,8 +533,8 @@
                                 <Grid x:Name="grid_serverchan" VerticalAlignment="Top" HorizontalAlignment="Left" Height="133" Margin="0,345,-0.4,0" Width="746">
                                     <TextBox x:Name="tbx_serverchan" HorizontalAlignment="Left" Height="23" Text="{Binding SCKEY, Mode=TwoWay}" VerticalAlignment="Top" Width="466" Margin="135,38,0,0"/>
                                     <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="7,38,0,0" Foreground="Black"><Run Text="Server酱SCKEY"/></TextBlock>
-                                    <TextBlock Height="20" Width="207" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,13,0,0"><Run Text="Server酱(ServerChan)提醒"/></TextBlock>
-                                    <Button x:Name="btu_serverchanNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="180,10,0,0" 
+                                    <TextBlock Height="20" Width="188" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,13,0,0"><Run Text="Server酱(ServerChan)提醒" FontWeight="Bold"/></TextBlock>
+                                    <Button x:Name="btu_serverchanNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="200,10,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_serverchanNotify_Click"/>
                                     <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,66,0,0"><Hyperlink Foreground="Purple" NavigateUri="https://sc.ftqq.com" Click="link_Click"><Run Text="去Server酱官网绑定账号实现微信推送"/></Hyperlink></TextBlock>

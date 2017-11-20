@@ -25,6 +25,8 @@ namespace imt_wankeyun_client.Entities
         public MailAccount mailAccount { get; set; }
         public int refresh_allSpan { get; set; }
         public int autoTibi { get; set; }
+        public double priceAbove { get; set; }
+        public double priceBelow { get; set; }
     }
     public class MailAccount
     {
