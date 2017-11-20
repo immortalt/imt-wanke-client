@@ -161,7 +161,7 @@ namespace imt_wankeyun_client
             if (settings.priceAbove > 0)
             {
                 //悠雨林
-                if (uyulinLastPrice >= settings.priceAbove && !priceAbove["uyulin"])
+                if (uyulinLastPrice != 0 && uyulinLastPrice >= settings.priceAbove && !priceAbove["uyulin"])
                 {
                     priceAbove["uyulin"] = true;
                     var msg = "上涨提醒-悠雨林最新交易价格" + uyulinLastPrice + "元";
@@ -174,13 +174,13 @@ namespace imt_wankeyun_client
                         SendServerChan(msg);
                     }
                 }
-                if (uyulinLastPrice < settings.priceAbove)
+                if (uyulinLastPrice != 0 && uyulinLastPrice < settings.priceAbove)
                 {
                     priceAbove["uyulin"] = false;
                 }
 
                 //随求
-                if (suiqiuLastPrice >= settings.priceAbove && !priceAbove["suiqiu"])
+                if (suiqiuLastPrice != 0 && suiqiuLastPrice >= settings.priceAbove && !priceAbove["suiqiu"])
                 {
                     priceAbove["suiqiu"] = true;
                     var msg = "上涨提醒-随求最新交易价格" + suiqiuLastPrice + "元";
@@ -193,14 +193,14 @@ namespace imt_wankeyun_client
                         SendServerChan(msg);
                     }
                 }
-                if (suiqiuLastPrice < settings.priceAbove)
+                if (suiqiuLastPrice != 0 && suiqiuLastPrice < settings.priceAbove)
                 {
                     priceAbove["suiqiu"] = false;
                 }
             }
             if (settings.priceBelow > 0)
             {
-                if (uyulinLastPrice <= settings.priceBelow && !priceBelow["uyulin"])
+                if (uyulinLastPrice != 0 && uyulinLastPrice <= settings.priceBelow && !priceBelow["uyulin"])
                 {
                     priceBelow["uyulin"] = true;
                     var msg = "下跌提醒-悠雨林最新交易价格" + uyulinLastPrice + "元";
@@ -213,12 +213,12 @@ namespace imt_wankeyun_client
                         SendServerChan(msg);
                     }
                 }
-                if (uyulinLastPrice > settings.priceBelow)
+                if (uyulinLastPrice != 0 && uyulinLastPrice > settings.priceBelow)
                 {
                     priceBelow["uyulin"] = false;
                 }
 
-                if (suiqiuLastPrice <= settings.priceBelow && !priceBelow["suiqiu"])
+                if (suiqiuLastPrice != 0 && suiqiuLastPrice <= settings.priceBelow && !priceBelow["suiqiu"])
                 {
                     priceBelow["suiqiu"] = true;
                     var msg = "下跌提醒-随求最新交易价格" + suiqiuLastPrice + "元";
@@ -231,7 +231,7 @@ namespace imt_wankeyun_client
                         SendServerChan(msg);
                     }
                 }
-                if (suiqiuLastPrice > settings.priceBelow)
+                if (suiqiuLastPrice != 0 && suiqiuLastPrice > settings.priceBelow)
                 {
                     priceBelow["suiqiu"] = false;
                 }
@@ -1566,6 +1566,7 @@ namespace imt_wankeyun_client
                 SendDailyNotifyServerChan();
             }
             NotifyTimer.Start();
+            PriceTimer.Start();
         }
         async Task UserLogin(LoginData ld)
         {
@@ -1892,12 +1893,10 @@ namespace imt_wankeyun_client
         {
             if (tab_account.SelectedIndex == 1)
             {
-                PriceTimer.Stop();
                 LoadDayHistroy();
             }
             else if (tab_account.SelectedIndex == 2)
             {
-                PriceTimer.Stop();
                 LoadWkbInfo();
             }
             else if (tab_account.SelectedIndex == 3)
@@ -1907,7 +1906,6 @@ namespace imt_wankeyun_client
             }
             else
             {
-                PriceTimer.Stop();
             }
         }
         private async void LoadWkbInfo()
