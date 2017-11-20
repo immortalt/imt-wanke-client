@@ -79,6 +79,15 @@ namespace imt_wankeyun_client.Properties {
         }
         
         /// <summary>
+        ///   查找类似 &lt;input type=&quot;hidden&quot; class=&quot;usdt_cny&quot; value=&quot; 的本地化字符串。
+        /// </summary>
+        internal static string CexUsdtCnyRateStart {
+            get {
+                return ResourceManager.GetString("CexUsdtCnyRateStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 title：value  
         /// 的本地化字符串。
         /// </summary>

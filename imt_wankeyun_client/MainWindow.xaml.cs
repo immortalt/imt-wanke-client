@@ -32,7 +32,7 @@ using System.Reflection;
 using System.Windows.Navigation;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
-using imt_wankeyun_client.Entities.CEX;
+using imt_wankeyun_client.Entities.Suiqiu;
 
 namespace imt_wankeyun_client
 {
@@ -43,8 +43,9 @@ namespace imt_wankeyun_client
     {
         int priceRefTime;//距离上一次刷新的时间
         double uyulinLastPrice;
+        double suiqiuLastPrice;
         UyulinWkc_DogeResponse uyulinPrice;
-        CexPriceResponse cexPrice;
+        SuiqiuPrice suiqiuPrice;
         WkbInfo wkbInfo;
         bool CanOpenNotify = false;
         private System.Windows.Forms.NotifyIcon notifyIcon;
@@ -72,6 +73,7 @@ namespace imt_wankeyun_client
             InitializeComponent();
             web_tongji.Navigating += WebBrowser_Navigating;
             web_tongji.Source = new Uri("http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html");
+
             this.SourceInitialized += delegate (object sender, EventArgs e)//执行拖拽
             {
                 this._HwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
@@ -128,8 +130,9 @@ namespace imt_wankeyun_client
         }
         private void PriceTimer_Tick(object sender, EventArgs e)
         {
+            var n = 6;
             priceRefTime++;
-            if ((6 - priceRefTime) == 0)
+            if ((n - priceRefTime) == 0)
             {
                 tbk_PriceAutoRefresh.Text = $"正在自动刷新";
                 RefreshPrice();
@@ -137,13 +140,14 @@ namespace imt_wankeyun_client
             }
             else
             {
-                tbk_PriceAutoRefresh.Text = $"{(6 - priceRefTime)}秒后自动刷新";
+                tbk_PriceAutoRefresh.Text = $"{(n - priceRefTime)}秒后自动刷新";
             }
         }
-        void RefreshPrice()
+
+        async void RefreshPrice()
         {
+            GetSuiqiuWkcPrice();
             GetUyulinPrice();
-            GetCexWkcPrice();
         }
         private void TotallyHide(object sender, EventArgs e)
         {
@@ -458,45 +462,44 @@ namespace imt_wankeyun_client
                     return false;
             }
         }
-        async Task<bool> GetCexWkcPrice()
+        async Task<bool> GetSuiqiuWkcPrice()
         {
-            double rate = await ApiHelper.GetCexWkcCnyRate();
-            if (rate == -1)
-            {
-                tbk_cex_newPrice.Text = "暂无数据";
-                tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
-                return false;
-            }
-            HttpMessage resp = await ApiHelper.GetCexWkcPrice();
+            var tbk = tbk_suiqiu_newPrice;
+            HttpMessage resp = await ApiHelper.GetSuiqiuWkcPrice();
             switch (resp.statusCode)
             {
                 case HttpStatusCode.OK:
-                    var r = resp.data as CexPriceResponse;
-                    if (r.cmark != null)
+                    var r = resp.data as SuiqiuPriceResponse;
+                    if (r.result && r.data != null && r.data.Count > 0)
                     {
-                        cexPrice = r;
-                        if (r.cmark.nstatus == 1)
+                        suiqiuPrice = r.data[0];
+                        var price = r.data[0].price * r.data[0].cny_rate;
+                        if (price >= suiqiuLastPrice)
                         {
-                            tbk_cex_newPrice.Text = $"￥{(r.cmark.new_price * rate).ToString("f2")} ↑";
-                            tbk_cex_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                            tbk.Text = $"￥{price.ToString("f2")} ↑";
+                            tbk.Foreground = new SolidColorBrush(Colors.Red);
                         }
                         else
                         {
-                            tbk_cex_newPrice.Text = $"￥{(r.cmark.new_price * rate).ToString("f2")} ↓";
-                            tbk_cex_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                            tbk.Text = $"￥{price.ToString("f2")} ↓";
+                            tbk.Foreground = new SolidColorBrush(Colors.Green);
+                        }
+                        if (price != suiqiuLastPrice)
+                        {
+                            uyulinLastPrice = price;
                         }
                         return true;
                     }
                     else
                     {
-                        tbk_cex_newPrice.Text = "暂无数据";
-                        tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        tbk.Text = "暂无数据";
+                        tbk.Foreground = new SolidColorBrush(Colors.Goldenrod);
                         Debug.WriteLine("获取数据出错！");
                     }
                     return false;
                 default:
-                    tbk_cex_newPrice.Text = "暂无数据";
-                    tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                    tbk.Text = "暂无数据";
+                    tbk.Foreground = new SolidColorBrush(Colors.Goldenrod);
                     Debug.WriteLine("网络异常错误！");
                     //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
                     return false;

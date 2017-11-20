@@ -163,7 +163,6 @@
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
     <Compile Include="Entities\Account\UpgradeProgressResponse.cs" />
     <Compile Include="Entities\Account\UsbInfoResponse.cs" />
-    <Compile Include="Entities\CEX\CexPriceResponse.cs" />
     <Compile Include="Entities\Control\PeerResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskInfo.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskResponse.cs" />
@@ -177,6 +176,7 @@
     <Compile Include="Entities\Account\CheckRegisterResponse.cs" />
     <Compile Include="Entities\Monitor\WkbInfoQueryResponse.cs" />
     <Compile Include="Entities\ServerChan\ServerChanResponse.cs" />
+    <Compile Include="Entities\Suiqiu\SuiqiuPriceResponse.cs" />
     <Compile Include="Entities\Uyulin\UyulinWkc_DogeResponse.cs" />
     <Compile Include="Entities\ViewModel\DlTaskVM.cs" />
     <Compile Include="Entities\ViewModel\FileVM.cs" />
@@ -512,6 +512,10 @@
     <Resource Include="img\price.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

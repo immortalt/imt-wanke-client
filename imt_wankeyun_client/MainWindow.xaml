@@ -483,15 +483,15 @@
                             </TabItem.Background>
                             <Grid Background="White">
                                 <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">币价看盘</TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,45,0,0" Foreground="Black">悠雨林最新成交价</TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="141,45,0,0" Foreground="Goldenrod" x:Name="tbk_uyulin_newPrice">暂无数据</TextBlock>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,45,0,0" Foreground="Black">悠雨林最新成交价</TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,45,0,0" Foreground="Goldenrod" x:Name="tbk_uyulin_newPrice">暂无数据</TextBlock>
                                 <TextBlock Margin="103,10,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run x:Name="tbk_PriceAutoRefresh" Foreground="Green"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,106,0,0"><Run Text="本软件统一使用"/><Run Foreground="Red" Text="红色"/><Run Text="表示涨，"/><Run Foreground="Green" Text="绿色"/><Run Text="表示跌。"/></TextBlock>                                  
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,70,0,0" Foreground="Black"><Run Text="CEX最新成交价"/></TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="141,70,0,0" Foreground="Goldenrod" x:Name="tbk_cex_newPrice"><Run Text="暂无数据"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,126,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被暂时打爆了，不信你看网页能不能打开。"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,100,0,0"><Run Text="本软件统一使用"/><Run Foreground="Red" Text="红色"/><Run Text="表示涨，"/><Run Foreground="Green" Text="绿色"/><Run Text="表示跌。"/></TextBlock>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,70,0,0" Foreground="Black"><Run Text="随求最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,70,0,0" Foreground="Goldenrod" x:Name="tbk_suiqiu_newPrice"><Run Text="暂无数据"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,121,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被暂时打爆了，不信你看网页能不能打开。"/></TextBlock>
                             </Grid>
                         </TabItem>
                         <TabItem Header="状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="4">

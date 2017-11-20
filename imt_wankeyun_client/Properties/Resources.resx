@@ -146,4 +146,7 @@
   <data name="CexRateEnd" xml:space="preserve">
     <value>"&gt;</value>
   </data>
+  <data name="CexUsdtCnyRateStart" xml:space="preserve">
+    <value>&lt;input type="hidden" class="usdt_cny" value="</value>
+  </data>
 </root>

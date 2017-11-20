@@ -14,11 +14,10 @@ using imt_wankeyun_client.Entities.Control;
 using imt_wankeyun_client.Entities.Account.Activate;
 using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
-using System.Windows;
 using imt_wankeyun_client.Entities.ServerChan;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
-using imt_wankeyun_client.Entities.CEX;
+using imt_wankeyun_client.Entities.Suiqiu;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -900,63 +899,34 @@ namespace imt_wankeyun_client.Helpers
             return message;
         }
         /// <summary>
-        /// CEX交易查询
+        /// 随求交易查询
         /// </summary>
         /// <returns></returns>
-        public static async Task<double> GetCexWkcCnyRate()
+        public static async Task<HttpMessage> GetSuiqiuWkcPrice()
         {
-            var client = new RestClient("https://cex.com/market/wkc_eth");
+            var client = new RestClient("https://www.chaobi.la/api/market/market_info");
             var resp = await Task.Run(() =>
             {
                 var request = new RestRequest(Method.GET);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
                 request.AddHeader("accept-encoding", "gzip, deflate, br");
+                request.AddHeader("referer", "https://www.chaobi.la/transaction.html");
                 request.AddHeader("dnt", "1");
-                request.AddHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-                request.AddHeader("upgrade-insecure-requests", "1");
+                request.AddHeader("x-requested-with", "XMLHttpRequest");
+                request.AddHeader("accept", "application/json, text/javascript, */*; q=0.01");
                 return client.Execute(request);
             });
-            if (resp.Content != null)
-            {
-                var st = resp.Content.IndexOf(Properties.Resources.CexEthCnyRateStart);
-                if (st != -1)
-                {
-                    st = st + Properties.Resources.CexEthCnyRateStart.Length;
-                    resp.Content = resp.Content.Substring(st, resp.Content.Length - st);
-                    var se = resp.Content.IndexOf(Properties.Resources.CexRateEnd);
-                    var rate = resp.Content.Substring(0, se);
-                    //Debug.WriteLine("GetCexWkcCnyRate:" + rate);
-                    return Convert.ToDouble(rate);
-                }
-            }
-            return -1;
-        }
-        /// <summary>
-        /// CEX交易查询
-        /// </summary>
-        /// <returns></returns>
-        public static async Task<HttpMessage> GetCexWkcPrice()
-        {
-            var client = new RestClient();
-            client.BaseUrl = new Uri("https://cex.com/Jsons");
-            var resp = await Task.Run(() =>
-           {
-               Random ran = new Random(DateTime.Now.Millisecond);
-               var request = new RestRequest("trade_wkc_eth.js?v=" + ran.NextDouble(), Method.GET);
-               request.AddHeader("cache-control", "no-cache");
-               return client.Execute(request);
-           });
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                //Debug.WriteLine("GetCexWkcPrice:" + resp.Content);
-                var root = JsonHelper.Deserialize<CexPriceResponse>(resp.Content);
+                Debug.WriteLine("GetSuiqiuWkcPrice:" + resp.Content);
+                var root = JsonHelper.Deserialize<SuiqiuPriceResponse>(resp.Content);
                 message.data = root;
             }
             else
             {
-                Debug.WriteLine("GetCexWkcPrice:" + resp.Content);
+                Debug.WriteLine("GetSuiqiuWkcPrice:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
