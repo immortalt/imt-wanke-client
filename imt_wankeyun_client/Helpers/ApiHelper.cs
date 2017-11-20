@@ -17,7 +17,6 @@ using imt_wankeyun_client.Entities.Control.RemoteDL;
 using imt_wankeyun_client.Entities.ServerChan;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
-using imt_wankeyun_client.Entities.Suiqiu;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -894,39 +893,6 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("Uyulin_Wkc_doge:" + resp.Content);
-                message.data = resp.Content;
-            }
-            return message;
-        }
-        /// <summary>
-        /// 随求交易查询
-        /// </summary>
-        /// <returns></returns>
-        public static async Task<HttpMessage> GetSuiqiuWkcPrice()
-        {
-            var client = new RestClient("https://www.chaobi.la/api/market/market_info");
-            var resp = await Task.Run(() =>
-            {
-                var request = new RestRequest(Method.GET);
-                request.AddHeader("cache-control", "no-cache");
-                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
-                request.AddHeader("accept-encoding", "gzip, deflate, br");
-                request.AddHeader("referer", "https://www.chaobi.la/transaction.html");
-                request.AddHeader("dnt", "1");
-                request.AddHeader("x-requested-with", "XMLHttpRequest");
-                request.AddHeader("accept", "application/json, text/javascript, */*; q=0.01");
-                return client.Execute(request);
-            });
-            var message = new HttpMessage { statusCode = resp.StatusCode };
-            if (resp.StatusCode == HttpStatusCode.OK)
-            {
-                Debug.WriteLine("GetSuiqiuWkcPrice:" + resp.Content);
-                var root = JsonHelper.Deserialize<SuiqiuPriceResponse>(resp.Content);
-                message.data = root;
-            }
-            else
-            {
-                Debug.WriteLine("GetSuiqiuWkcPrice:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;

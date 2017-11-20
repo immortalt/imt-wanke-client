@@ -32,7 +32,6 @@ using System.Reflection;
 using System.Windows.Navigation;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
-using imt_wankeyun_client.Entities.Suiqiu;
 
 namespace imt_wankeyun_client
 {
@@ -44,18 +43,15 @@ namespace imt_wankeyun_client
         private Dictionary<string, bool> priceAbove = new Dictionary<string, bool>()
         {
             {"uyulin",false },
-            {"suiqiu",false },
         };
         private Dictionary<string, bool> priceBelow = new Dictionary<string, bool>()
         {
             {"uyulin",false },
-            {"suiqiu",false },
         };
         int priceRefTime;//距离上一次刷新的时间
         double uyulinLastPrice;
         double suiqiuLastPrice;
         UyulinWkc_DogeResponse uyulinPrice;
-        SuiqiuPrice suiqiuPrice;
         WkbInfo wkbInfo;
         bool CanOpenNotify = false;
         private System.Windows.Forms.NotifyIcon notifyIcon;
@@ -156,7 +152,6 @@ namespace imt_wankeyun_client
 
         async void RefreshPrice()
         {
-            GetSuiqiuWkcPrice();
             GetUyulinPrice();
             if (settings.priceAbove > 0)
             {
@@ -178,25 +173,6 @@ namespace imt_wankeyun_client
                 {
                     priceAbove["uyulin"] = false;
                 }
-
-                //随求
-                if (suiqiuLastPrice != 0 && suiqiuLastPrice >= settings.priceAbove && !priceAbove["suiqiu"])
-                {
-                    priceAbove["suiqiu"] = true;
-                    var msg = "上涨提醒-随求最新交易价格" + suiqiuLastPrice + "元";
-                    if (settings.mailNotify)
-                    {
-                        SendMail(msg);
-                    }
-                    if (settings.serverchanNotify)
-                    {
-                        SendServerChan(msg);
-                    }
-                }
-                if (suiqiuLastPrice != 0 && suiqiuLastPrice < settings.priceAbove)
-                {
-                    priceAbove["suiqiu"] = false;
-                }
             }
             if (settings.priceBelow > 0)
             {
@@ -216,24 +192,6 @@ namespace imt_wankeyun_client
                 if (uyulinLastPrice != 0 && uyulinLastPrice > settings.priceBelow)
                 {
                     priceBelow["uyulin"] = false;
-                }
-
-                if (suiqiuLastPrice != 0 && suiqiuLastPrice <= settings.priceBelow && !priceBelow["suiqiu"])
-                {
-                    priceBelow["suiqiu"] = true;
-                    var msg = "下跌提醒-随求最新交易价格" + suiqiuLastPrice + "元";
-                    if (settings.mailNotify)
-                    {
-                        SendMail(msg);
-                    }
-                    if (settings.serverchanNotify)
-                    {
-                        SendServerChan(msg);
-                    }
-                }
-                if (suiqiuLastPrice != 0 && suiqiuLastPrice > settings.priceBelow)
-                {
-                    priceBelow["suiqiu"] = false;
                 }
             }
         }
@@ -545,49 +503,6 @@ namespace imt_wankeyun_client
                 default:
                     tbk_uyulin_newPrice.Text = "暂无数据";
                     tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
-                    Debug.WriteLine("网络异常错误！");
-                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
-                    return false;
-            }
-        }
-        async Task<bool> GetSuiqiuWkcPrice()
-        {
-            var tbk = tbk_suiqiu_newPrice;
-            HttpMessage resp = await ApiHelper.GetSuiqiuWkcPrice();
-            switch (resp.statusCode)
-            {
-                case HttpStatusCode.OK:
-                    var r = resp.data as SuiqiuPriceResponse;
-                    if (r.result && r.data != null && r.data.Count > 0)
-                    {
-                        suiqiuPrice = r.data[0];
-                        var price = r.data[0].price * r.data[0].cny_rate;
-                        if (price >= suiqiuLastPrice)
-                        {
-                            tbk.Text = $"￥{price.ToString("f2")} ↑";
-                            tbk.Foreground = new SolidColorBrush(Colors.Red);
-                        }
-                        else
-                        {
-                            tbk.Text = $"￥{price.ToString("f2")} ↓";
-                            tbk.Foreground = new SolidColorBrush(Colors.Green);
-                        }
-                        if (price != suiqiuLastPrice)
-                        {
-                            uyulinLastPrice = price;
-                        }
-                        return true;
-                    }
-                    else
-                    {
-                        tbk.Text = "暂无数据";
-                        tbk.Foreground = new SolidColorBrush(Colors.Goldenrod);
-                        Debug.WriteLine("获取数据出错！");
-                    }
-                    return false;
-                default:
-                    tbk.Text = "暂无数据";
-                    tbk.Foreground = new SolidColorBrush(Colors.Goldenrod);
                     Debug.WriteLine("网络异常错误！");
                     //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
                     return false;

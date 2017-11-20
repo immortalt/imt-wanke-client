@@ -488,20 +488,20 @@
                                 <TextBlock Margin="103,10,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run x:Name="tbk_PriceAutoRefresh" Foreground="Green"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,100,0,0"><Run Text="本软件统一使用"/><Run Foreground="Red" Text="红色"/><Run Text="表示涨，"/><Run Foreground="Green" Text="绿色"/><Run Text="表示跌。"/></TextBlock>
-                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,70,0,0" Foreground="Black"><Hyperlink NavigateUri="https://www.chaobi.la/" Click="link_Click">随求</Hyperlink><Run Text="最新成交价"/></TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,70,0,0" Foreground="Goldenrod" x:Name="tbk_suiqiu_newPrice"><Run Text="暂无数据"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,121,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被暂时打爆了，不信你看网页能不能打开。"/></TextBlock>
-                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,177,0,0" Foreground="Black"><Run Text="超过多少元提醒"/></TextBlock>
-                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,204,0,0" Foreground="Black"><Run Text="低于多少元提醒"/></TextBlock>
-                                <TextBox x:Name="tbx_priceAboce" HorizontalAlignment="Left" Height="23" Margin="130,177,0,0" VerticalAlignment="Top" Width="95"/>
-                                <TextBox x:Name="tbx_priceBelow" HorizontalAlignment="Left" Margin="130,205,0,0" VerticalAlignment="Top" Width="95"/>
-                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,146,0,0"><Run Text="币价监控" FontWeight="Bold"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,231,0,0"><Run Text="设置的价格为空则不提醒。"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,251,0,0"><Run Text="币价提醒的方式和设置以“状态提醒”的设置为准，请先开启状态提醒。"/></TextBlock>
-                                <Button x:Name="btu_savePriceNotify" Content="保存设置" HorizontalAlignment="Left" Margin="247,204,0,0" 
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,0"><Run Text="本软件统一使用"/><Run Foreground="Red" Text="红色"/><Run Text="表示涨，"/><Run Foreground="Green" Text="绿色"/><Run Text="表示跌。"/></TextBlock>
+                                <TextBlock Height="20" Width="604" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,131,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被人攻击打不开或者正在维护，不信你看网页能不能打开。"/></TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,187,0,0" Foreground="Black"><Run Text="超过多少元提醒"/></TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,214,0,0" Foreground="Black"><Run Text="低于多少元提醒"/></TextBlock>
+                                <TextBox x:Name="tbx_priceAboce" HorizontalAlignment="Left" Height="23" Margin="130,187,0,0" VerticalAlignment="Top" Width="95"/>
+                                <TextBox x:Name="tbx_priceBelow" HorizontalAlignment="Left" Margin="130,215,0,0" VerticalAlignment="Top" Width="95"/>
+                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,156,0,0"><Run Text="币价监控" FontWeight="Bold"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,241,0,0"><Run Text="设置的价格为空则不提醒。"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,261,0,0"><Run Text="币价提醒的方式和设置以“状态提醒”的设置为准，请先开启状态提醒。"/></TextBlock>
+                                <Button x:Name="btu_savePriceNotify" Content="保存设置" HorizontalAlignment="Left" Margin="247,214,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_savePriceNotify_Click"/>
+                                <TextBlock Height="20" Width="564" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,65,0,0">有啥交易平台靠谱的想要我加入显示可以加QQ群然后私聊群主，不要用什么随求，垃圾东西</TextBlock>
+                                <TextBlock Height="20" Width="564" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,87,0,0"><Run Text="辣鸡随求！再惹我，本软件自己搞个交易平台"/></TextBlock>
                             </Grid>
                         </TabItem>
                         <TabItem Header="状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="4">
