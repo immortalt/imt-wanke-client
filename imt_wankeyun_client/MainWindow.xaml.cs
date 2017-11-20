@@ -5,9 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Threading;
 using System.Collections.Generic;
-using System.Collections;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Net;
 using System.Windows.Threading;
@@ -20,7 +18,6 @@ using imt_wankeyun_client.Entities;
 using imt_wankeyun_client.Entities.ViewModel;
 using System.Threading.Tasks;
 using imt_wankeyun_client.Entities.Account.Activate;
-using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using imt_wankeyun_client.Entities.WKB;
 using imt_wankeyun_client.Entities.Control.RemoteDL;
@@ -34,6 +31,8 @@ using imt_wankeyun_client.Entities.ServerChan;
 using System.Reflection;
 using System.Windows.Navigation;
 using imt_wankeyun_client.Entities.Monitor;
+using imt_wankeyun_client.Entities.Uyulin;
+using imt_wankeyun_client.Entities.CEX;
 
 namespace imt_wankeyun_client
 {
@@ -42,6 +41,10 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        int priceRefTime;//距离上一次刷新的时间
+        double uyulinLastPrice;
+        UyulinWkc_DogeResponse uyulinPrice;
+        CexPriceResponse cexPrice;
         WkbInfo wkbInfo;
         bool CanOpenNotify = false;
         private System.Windows.Forms.NotifyIcon notifyIcon;
@@ -56,6 +59,7 @@ namespace imt_wankeyun_client
         DispatcherTimer NotifyTimer;
         DispatcherTimer StatusTimer;
         DispatcherTimer RemoteDlTimer;
+        DispatcherTimer PriceTimer;
         internal static WankeSettings settings;
         internal static string curAccount = null;
         ObservableCollection<string> userList;
@@ -114,10 +118,32 @@ namespace imt_wankeyun_client
             StatusTimer = new DispatcherTimer();
             StatusTimer.Interval = TimeSpan.FromSeconds(15);
             StatusTimer.Tick += StatusTimer_Tick;
+            PriceTimer = new DispatcherTimer();
+            PriceTimer.Interval = TimeSpan.FromSeconds(1);
+            PriceTimer.Tick += PriceTimer_Tick;
             RemoteDlTimer = new DispatcherTimer();
             RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
             LoadSettings();//载入设置
+        }
+        private void PriceTimer_Tick(object sender, EventArgs e)
+        {
+            priceRefTime++;
+            if ((6 - priceRefTime) == 0)
+            {
+                tbk_PriceAutoRefresh.Text = $"正在自动刷新";
+                RefreshPrice();
+                priceRefTime = 0;
+            }
+            else
+            {
+                tbk_PriceAutoRefresh.Text = $"{(6 - priceRefTime)}秒后自动刷新";
+            }
+        }
+        void RefreshPrice()
+        {
+            GetUyulinPrice();
+            GetCexWkcPrice();
         }
         private void TotallyHide(object sender, EventArgs e)
         {
@@ -380,6 +406,100 @@ namespace imt_wankeyun_client
             {
                 LoadAccounts();
                 RefreshStatus();
+            }
+        }
+        async Task<bool> GetUyulinPrice()
+        {
+            HttpMessage resp = await ApiHelper.Uyulin_Wkc_doge();
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var r = resp.data as UyulinWkc_DogeResponse;
+                    if (r.trades != null && r.trades.Count > 1)
+                    {
+                        uyulinPrice = r;
+                        if (r.trades[0] != null && r.trades[0].Count == 5)
+                        {
+                            var price = Convert.ToDouble(r.trades[0][2]);
+                            if (price >= uyulinLastPrice)
+                            {
+                                tbk_uyulin_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                                tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                            }
+                            else
+                            {
+                                tbk_uyulin_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                                tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                            }
+                            if (price != uyulinLastPrice)
+                            {
+                                uyulinLastPrice = price;
+                            }
+                        }
+                        else
+                        {
+                            tbk_uyulin_newPrice.Text = "暂无数据";
+                            tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        tbk_uyulin_newPrice.Text = "暂无数据";
+                        tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        Debug.WriteLine("获取数据出错！");
+                    }
+                    return false;
+                default:
+                    tbk_uyulin_newPrice.Text = "暂无数据";
+                    tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                    Debug.WriteLine("网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
+        async Task<bool> GetCexWkcPrice()
+        {
+            double rate = await ApiHelper.GetCexWkcCnyRate();
+            if (rate == -1)
+            {
+                tbk_cex_newPrice.Text = "暂无数据";
+                tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                return false;
+            }
+            HttpMessage resp = await ApiHelper.GetCexWkcPrice();
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var r = resp.data as CexPriceResponse;
+                    if (r.cmark != null)
+                    {
+                        cexPrice = r;
+                        if (r.cmark.nstatus == 1)
+                        {
+                            tbk_cex_newPrice.Text = $"￥{(r.cmark.new_price * rate).ToString("f2")} ↑";
+                            tbk_cex_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                        }
+                        else
+                        {
+                            tbk_cex_newPrice.Text = $"￥{(r.cmark.new_price * rate).ToString("f2")} ↓";
+                            tbk_cex_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        tbk_cex_newPrice.Text = "暂无数据";
+                        tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        Debug.WriteLine("获取数据出错！");
+                    }
+                    return false;
+                default:
+                    tbk_cex_newPrice.Text = "暂无数据";
+                    tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                    Debug.WriteLine("网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
             }
         }
         async Task<bool> WkbInfoQuery()
@@ -1679,11 +1799,22 @@ namespace imt_wankeyun_client
         {
             if (tab_account.SelectedIndex == 1)
             {
+                PriceTimer.Stop();
                 LoadDayHistroy();
             }
             else if (tab_account.SelectedIndex == 2)
             {
+                PriceTimer.Stop();
                 LoadWkbInfo();
+            }
+            else if (tab_account.SelectedIndex == 3)
+            {
+                RefreshPrice();
+                PriceTimer.Start();
+            }
+            else
+            {
+                PriceTimer.Stop();
             }
         }
         private async void LoadWkbInfo()

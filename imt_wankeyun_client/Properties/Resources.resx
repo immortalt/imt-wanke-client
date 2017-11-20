@@ -140,4 +140,10 @@
     <value>title：value  
 </value>
   </data>
+  <data name="CexEthCnyRateStart" xml:space="preserve">
+    <value>&lt;input type="hidden" class="eth_cny" value="</value>
+  </data>
+  <data name="CexRateEnd" xml:space="preserve">
+    <value>"&gt;</value>
+  </data>
 </root>

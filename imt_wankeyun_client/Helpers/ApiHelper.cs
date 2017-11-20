@@ -17,6 +17,8 @@ using imt_wankeyun_client.Entities.Control.RemoteDL;
 using System.Windows;
 using imt_wankeyun_client.Entities.ServerChan;
 using imt_wankeyun_client.Entities.Monitor;
+using imt_wankeyun_client.Entities.Uyulin;
+using imt_wankeyun_client.Entities.CEX;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -837,7 +839,6 @@ namespace imt_wankeyun_client.Helpers
         /// <summary>
         /// 查询玩客币信息
         /// </summary>
-        /// <param name="phone"></param>
         /// <returns></returns>
         public static async Task<HttpMessage> WkbInfoQuery()
         {
@@ -865,6 +866,97 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("WkbInfoQuery:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 悠雨林交易查询
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<HttpMessage> Uyulin_Wkc_doge()
+        {
+            var client = new RestClient();
+            client.BaseUrl = new Uri("https://www.uyulin.com/trade/index_json/market");
+            var resp = await Task.Run(() =>
+            {
+                Random ran = new Random(DateTime.Now.Millisecond);
+                var request = new RestRequest("wkc_doge?t=" + ran.NextDouble(), Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                //Debug.WriteLine("Uyulin_Wkc_doge:" + resp.Content);
+                var root = JsonHelper.Deserialize<UyulinWkc_DogeResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("Uyulin_Wkc_doge:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// CEX交易查询
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<double> GetCexWkcCnyRate()
+        {
+            var client = new RestClient("https://cex.com/market/wkc_eth");
+            var resp = await Task.Run(() =>
+            {
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
+                request.AddHeader("accept-encoding", "gzip, deflate, br");
+                request.AddHeader("dnt", "1");
+                request.AddHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                request.AddHeader("upgrade-insecure-requests", "1");
+                return client.Execute(request);
+            });
+            if (resp.Content != null)
+            {
+                var st = resp.Content.IndexOf(Properties.Resources.CexEthCnyRateStart);
+                if (st != -1)
+                {
+                    st = st + Properties.Resources.CexEthCnyRateStart.Length;
+                    resp.Content = resp.Content.Substring(st, resp.Content.Length - st);
+                    var se = resp.Content.IndexOf(Properties.Resources.CexRateEnd);
+                    var rate = resp.Content.Substring(0, se);
+                    //Debug.WriteLine("GetCexWkcCnyRate:" + rate);
+                    return Convert.ToDouble(rate);
+                }
+            }
+            return -1;
+        }
+        /// <summary>
+        /// CEX交易查询
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<HttpMessage> GetCexWkcPrice()
+        {
+            var client = new RestClient();
+            client.BaseUrl = new Uri("https://cex.com/Jsons");
+            var resp = await Task.Run(() =>
+           {
+               Random ran = new Random(DateTime.Now.Millisecond);
+               var request = new RestRequest("trade_wkc_eth.js?v=" + ran.NextDouble(), Method.GET);
+               request.AddHeader("cache-control", "no-cache");
+               return client.Execute(request);
+           });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                //Debug.WriteLine("GetCexWkcPrice:" + resp.Content);
+                var root = JsonHelper.Deserialize<CexPriceResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("GetCexWkcPrice:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;

@@ -40,7 +40,7 @@
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>10</ApplicationRevision>
+    <ApplicationRevision>11</ApplicationRevision>
     <ApplicationVersion>0.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -163,6 +163,7 @@
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
     <Compile Include="Entities\Account\UpgradeProgressResponse.cs" />
     <Compile Include="Entities\Account\UsbInfoResponse.cs" />
+    <Compile Include="Entities\CEX\CexPriceResponse.cs" />
     <Compile Include="Entities\Control\PeerResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskInfo.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskResponse.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Entities\Account\CheckRegisterResponse.cs" />
     <Compile Include="Entities\Monitor\WkbInfoQueryResponse.cs" />
     <Compile Include="Entities\ServerChan\ServerChanResponse.cs" />
+    <Compile Include="Entities\Uyulin\UyulinWkc_DogeResponse.cs" />
     <Compile Include="Entities\ViewModel\DlTaskVM.cs" />
     <Compile Include="Entities\ViewModel\FileVM.cs" />
     <Compile Include="Entities\WKB\DrawWkbResponse.cs" />
@@ -505,6 +507,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="img\wkbInfoBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\price.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

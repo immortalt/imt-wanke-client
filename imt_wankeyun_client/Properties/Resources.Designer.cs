@@ -61,6 +61,24 @@ namespace imt_wankeyun_client.Properties {
         }
         
         /// <summary>
+        ///   查找类似 &lt;input type=&quot;hidden&quot; class=&quot;eth_cny&quot; value=&quot; 的本地化字符串。
+        /// </summary>
+        internal static string CexEthCnyRateStart {
+            get {
+                return ResourceManager.GetString("CexEthCnyRateStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &quot;&gt; 的本地化字符串。
+        /// </summary>
+        internal static string CexRateEnd {
+            get {
+                return ResourceManager.GetString("CexRateEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 title：value  
         /// 的本地化字符串。
         /// </summary>
