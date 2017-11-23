@@ -40,7 +40,7 @@
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>18</ApplicationRevision>
+    <ApplicationRevision>19</ApplicationRevision>
     <ApplicationVersion>0.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -174,6 +174,7 @@
     <Compile Include="Entities\HttpMessage.cs" />
     <Compile Include="Entities\Account\LoginData.cs" />
     <Compile Include="Entities\Account\CheckRegisterResponse.cs" />
+    <Compile Include="Entities\Miguan\MiguanPriceResponse.cs" />
     <Compile Include="Entities\Monitor\WkbInfoQueryResponse.cs" />
     <Compile Include="Entities\ServerChan\ServerChanResponse.cs" />
     <Compile Include="Entities\Uyulin\UyulinWkc_DogeResponse.cs" />

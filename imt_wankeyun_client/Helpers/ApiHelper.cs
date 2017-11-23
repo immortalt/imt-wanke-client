@@ -17,6 +17,7 @@ using imt_wankeyun_client.Entities.Control.RemoteDL;
 using imt_wankeyun_client.Entities.ServerChan;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
+using imt_wankeyun_client.Entities.Miguan;
 
 namespace imt_wankeyun_client.Helpers
 {
@@ -893,6 +894,43 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("Uyulin_Wkc_doge:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// miguan交易查询
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<HttpMessage> GetMiguanPrice()
+        {
+            var client = new RestClient("https://x.miguan.in/otc/monitorRecordList?orderBy=turnover");
+
+            var resp = await Task.Run(() =>
+            {
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddHeader("cookie", "_ga=GA1.2.526643689.1511406570; _gid=GA1.2.1880627450.1511406570");
+                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
+                request.AddHeader("accept-encoding", "gzip, deflate, br");
+                request.AddHeader("referer", "https://t.miguan.in/monitor");
+                request.AddHeader("dnt", "1");
+                request.AddHeader("user-agent", "");
+                request.AddHeader("origin", "https://t.miguan.in");
+                request.AddHeader("accept", "application/json, text/plain, */*");
+                IRestResponse response = client.Execute(request);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("GetMiguanPrice:" + resp.Content);
+                var root = JsonHelper.Deserialize<MiguanPriceResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("GetMiguanPrice:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;

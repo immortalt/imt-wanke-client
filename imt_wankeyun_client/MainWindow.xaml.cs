@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Windows.Navigation;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
+using imt_wankeyun_client.Entities.Miguan;
 
 namespace imt_wankeyun_client
 {
@@ -43,15 +44,18 @@ namespace imt_wankeyun_client
         private Dictionary<string, bool> priceAbove = new Dictionary<string, bool>()
         {
             {"uyulin",false },
+             {"wkbsq",false },
         };
         private Dictionary<string, bool> priceBelow = new Dictionary<string, bool>()
         {
             {"uyulin",false },
+             {"wkbsq",false },
         };
         int priceRefTime;//距离上一次刷新的时间
         double uyulinLastPrice;
-        double suiqiuLastPrice;
+        double wkbsqLastPrice;
         UyulinWkc_DogeResponse uyulinPrice;
+        MiguanPriceResponse miguanPrice;
         WkbInfo wkbInfo;
         bool CanOpenNotify = false;
         private System.Windows.Forms.NotifyIcon notifyIcon;
@@ -153,6 +157,7 @@ namespace imt_wankeyun_client
         async void RefreshPrice()
         {
             GetUyulinPrice();
+            GetMiguanPrice();
             if (settings.priceAbove > 0)
             {
                 //悠雨林
@@ -173,9 +178,28 @@ namespace imt_wankeyun_client
                 {
                     priceAbove["uyulin"] = false;
                 }
+                //玩客币社区
+                if (wkbsqLastPrice != 0 && wkbsqLastPrice >= settings.priceAbove && !priceAbove["wkbsq"])
+                {
+                    priceAbove["wkbsq"] = true;
+                    var msg = "上涨提醒-玩客币社区最新交易价格" + wkbsqLastPrice + "元";
+                    if (settings.mailNotify)
+                    {
+                        SendMail(msg);
+                    }
+                    if (settings.serverchanNotify)
+                    {
+                        SendServerChan(msg);
+                    }
+                }
+                if (wkbsqLastPrice != 0 && wkbsqLastPrice < settings.priceAbove)
+                {
+                    priceAbove["wkbsq"] = false;
+                }
             }
             if (settings.priceBelow > 0)
             {
+                //悠雨林
                 if (uyulinLastPrice != 0 && uyulinLastPrice <= settings.priceBelow && !priceBelow["uyulin"])
                 {
                     priceBelow["uyulin"] = true;
@@ -192,6 +216,24 @@ namespace imt_wankeyun_client
                 if (uyulinLastPrice != 0 && uyulinLastPrice > settings.priceBelow)
                 {
                     priceBelow["uyulin"] = false;
+                }
+                //玩客币社区
+                if (wkbsqLastPrice != 0 && wkbsqLastPrice <= settings.priceBelow && !priceBelow["wkbsq"])
+                {
+                    priceBelow["wkbsq"] = true;
+                    var msg = "下跌提醒-玩客币社区最新交易价格" + wkbsqLastPrice + "元";
+                    if (settings.mailNotify)
+                    {
+                        SendMail(msg);
+                    }
+                    if (settings.serverchanNotify)
+                    {
+                        SendServerChan(msg);
+                    }
+                }
+                if (wkbsqLastPrice != 0 && wkbsqLastPrice > settings.priceBelow)
+                {
+                    priceBelow["wkbsq"] = false;
                 }
             }
         }
@@ -497,13 +539,67 @@ namespace imt_wankeyun_client
                     {
                         tbk_uyulin_newPrice.Text = "暂无数据";
                         tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
-                        Debug.WriteLine("获取数据出错！");
+                        Debug.WriteLine("GetUyulinPrice-获取数据出错！");
                     }
                     return false;
                 default:
                     tbk_uyulin_newPrice.Text = "暂无数据";
                     tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
-                    Debug.WriteLine("网络异常错误！");
+                    Debug.WriteLine("GetUyulinPrice-网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
+        async Task<bool> GetMiguanPrice()
+        {
+            HttpMessage resp = await ApiHelper.GetMiguanPrice();
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var r = resp.data as MiguanPriceResponse;
+                    if (r.code == 200 && r.msg == "操作成功")
+                    {
+                        miguanPrice = r;
+                        if (r.result != null && r.result.Count > 0)
+                        {
+                            var wkbsq = r.result.Find(t => t.dict != null && t.dict.name == "玩客币社区");
+                            if (wkbsq != null)
+                            {
+                                var price = Convert.ToDouble(wkbsq.cnyPrice);
+                                if (wkbsq.mark == 1)
+                                {
+                                    tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                                    tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                                }
+                                else
+                                {
+                                    tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                                    tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                                }
+                                if (price != wkbsqLastPrice)
+                                {
+                                    wkbsqLastPrice = price;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tbk_wkbsq_newPrice.Text = "暂无数据";
+                            tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        tbk_wkbsq_newPrice.Text = "暂无数据";
+                        tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        Debug.WriteLine("GetMiguanPrice-获取数据出错！");
+                    }
+                    return false;
+                default:
+                    tbk_wkbsq_newPrice.Text = "暂无数据";
+                    tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                    Debug.WriteLine("GetMiguanPrice-网络异常错误！");
                     //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
                     return false;
             }
@@ -575,11 +671,11 @@ namespace imt_wankeyun_client
                     }
                     else
                     {
-                        Debug.WriteLine("获取数据出错！");
+                        Debug.WriteLine("ListPeer-获取数据出错！");
                     }
                     return false;
                 default:
-                    Debug.WriteLine("网络异常错误！");
+                    Debug.WriteLine("ListPeer-网络异常错误！");
                     //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
                     return false;
             }
@@ -1403,6 +1499,7 @@ namespace imt_wankeyun_client
                     {
                         settings.mailAccount.smtpServer = "smtp.qq.com";
                     }
+                    tbx_settings.Text = JsonHelper.Serialize(settings);
                     InitLogin();
                 }
                 else//如果读取配置文件失败
