@@ -43,17 +43,24 @@ namespace imt_wankeyun_client
     {
         private Dictionary<string, bool> priceAbove = new Dictionary<string, bool>()
         {
-            {"uyulin",false },
-             {"wkbsq",false },
+            {"悠雨林",false },
+             {"玩客币社区",false },
         };
         private Dictionary<string, bool> priceBelow = new Dictionary<string, bool>()
         {
-            {"uyulin",false },
-             {"wkbsq",false },
+            {"悠雨林",false },
+             {"玩客币社区",false },
+        };
+        private Dictionary<string, double> lastPrice = new Dictionary<string, double>()
+        {
+            {"悠雨林",0 },
+             {"玩客币社区",0 },
+             {"cex-usdt",0 },
+             {"cex-eth",0 },
+             {"零肆叁贰",0 },
+             {"玩家网",0 },
         };
         int priceRefTime;//距离上一次刷新的时间
-        double uyulinLastPrice;
-        double wkbsqLastPrice;
         UyulinWkc_DogeResponse uyulinPrice;
         MiguanPriceResponse miguanPrice;
         WkbInfo wkbInfo;
@@ -160,80 +167,50 @@ namespace imt_wankeyun_client
             GetMiguanPrice();
             if (settings.priceAbove > 0)
             {
-                //悠雨林
-                if (uyulinLastPrice != 0 && uyulinLastPrice >= settings.priceAbove && !priceAbove["uyulin"])
+                for (int i = 0; i < lastPrice.Keys.Count; i++)
                 {
-                    priceAbove["uyulin"] = true;
-                    var msg = "上涨提醒-悠雨林最新交易价格" + uyulinLastPrice + "元";
-                    if (settings.mailNotify)
+                    var name = lastPrice.Keys.ElementAt(i);
+                    if (lastPrice[name] != 0 && lastPrice[name] >= settings.priceAbove && !priceAbove[name])
                     {
-                        SendMail(msg);
+                        priceAbove[name] = true;
+                        var msg = $"上涨提醒-{name}最新交易价格" + lastPrice[name] + "元";
+                        if (settings.mailNotify)
+                        {
+                            SendMail(msg);
+                        }
+                        if (settings.serverchanNotify)
+                        {
+                            SendServerChan(msg);
+                        }
                     }
-                    if (settings.serverchanNotify)
+                    if (lastPrice[name] != 0 && lastPrice[name] < settings.priceAbove)
                     {
-                        SendServerChan(msg);
+                        priceAbove[name] = false;
                     }
-                }
-                if (uyulinLastPrice != 0 && uyulinLastPrice < settings.priceAbove)
-                {
-                    priceAbove["uyulin"] = false;
-                }
-                //玩客币社区
-                if (wkbsqLastPrice != 0 && wkbsqLastPrice >= settings.priceAbove && !priceAbove["wkbsq"])
-                {
-                    priceAbove["wkbsq"] = true;
-                    var msg = "上涨提醒-玩客币社区最新交易价格" + wkbsqLastPrice + "元";
-                    if (settings.mailNotify)
-                    {
-                        SendMail(msg);
-                    }
-                    if (settings.serverchanNotify)
-                    {
-                        SendServerChan(msg);
-                    }
-                }
-                if (wkbsqLastPrice != 0 && wkbsqLastPrice < settings.priceAbove)
-                {
-                    priceAbove["wkbsq"] = false;
                 }
             }
             if (settings.priceBelow > 0)
             {
-                //悠雨林
-                if (uyulinLastPrice != 0 && uyulinLastPrice <= settings.priceBelow && !priceBelow["uyulin"])
+                for (int i = 0; i < lastPrice.Keys.Count; i++)
                 {
-                    priceBelow["uyulin"] = true;
-                    var msg = "下跌提醒-悠雨林最新交易价格" + uyulinLastPrice + "元";
-                    if (settings.mailNotify)
+                    var name = lastPrice.Keys.ElementAt(i);
+                    if (lastPrice[name] != 0 && lastPrice[name] <= settings.priceBelow && !priceBelow[name])
                     {
-                        SendMail(msg);
+                        priceBelow[name] = true;
+                        var msg = $"下跌提醒-{name}最新交易价格" + lastPrice[name] + "元";
+                        if (settings.mailNotify)
+                        {
+                            SendMail(msg);
+                        }
+                        if (settings.serverchanNotify)
+                        {
+                            SendServerChan(msg);
+                        }
                     }
-                    if (settings.serverchanNotify)
+                    if (lastPrice[name] != 0 && lastPrice[name] > settings.priceBelow)
                     {
-                        SendServerChan(msg);
+                        priceBelow[name] = false;
                     }
-                }
-                if (uyulinLastPrice != 0 && uyulinLastPrice > settings.priceBelow)
-                {
-                    priceBelow["uyulin"] = false;
-                }
-                //玩客币社区
-                if (wkbsqLastPrice != 0 && wkbsqLastPrice <= settings.priceBelow && !priceBelow["wkbsq"])
-                {
-                    priceBelow["wkbsq"] = true;
-                    var msg = "下跌提醒-玩客币社区最新交易价格" + wkbsqLastPrice + "元";
-                    if (settings.mailNotify)
-                    {
-                        SendMail(msg);
-                    }
-                    if (settings.serverchanNotify)
-                    {
-                        SendServerChan(msg);
-                    }
-                }
-                if (wkbsqLastPrice != 0 && wkbsqLastPrice > settings.priceBelow)
-                {
-                    priceBelow["wkbsq"] = false;
                 }
             }
         }
@@ -513,7 +490,7 @@ namespace imt_wankeyun_client
                         if (r.trades[0] != null && r.trades[0].Count == 5)
                         {
                             var price = Convert.ToDouble(r.trades[0][2]);
-                            if (price >= uyulinLastPrice)
+                            if (price >= lastPrice["悠雨林"])
                             {
                                 tbk_uyulin_newPrice.Text = $"￥{price.ToString("f2")} ↑";
                                 tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Red);
@@ -523,9 +500,9 @@ namespace imt_wankeyun_client
                                 tbk_uyulin_newPrice.Text = $"￥{price.ToString("f2")} ↓";
                                 tbk_uyulin_newPrice.Foreground = new SolidColorBrush(Colors.Green);
                             }
-                            if (price != uyulinLastPrice)
+                            if (price != lastPrice["悠雨林"])
                             {
-                                uyulinLastPrice = price;
+                                lastPrice["悠雨林"] = price;
                             }
                         }
                         else
@@ -562,6 +539,7 @@ namespace imt_wankeyun_client
                         miguanPrice = r;
                         if (r.result != null && r.result.Count > 0)
                         {
+                            //玩客币社区
                             var wkbsq = r.result.Find(t => t.dict != null && t.dict.name == "玩客币社区");
                             if (wkbsq != null)
                             {
@@ -576,29 +554,109 @@ namespace imt_wankeyun_client
                                     tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↓";
                                     tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Green);
                                 }
-                                if (price != wkbsqLastPrice)
+                                if (price != lastPrice["玩客币社区"])
                                 {
-                                    wkbsqLastPrice = price;
+                                    lastPrice["玩客币社区"] = price;
+                                }
+                            }
+                            //cex-usdt
+                            var cex_usdt = r.result.Find(t => t.dict != null && t.dict.name == "cex-usdt");
+                            if (cex_usdt != null)
+                            {
+                                var price = Convert.ToDouble(cex_usdt.cnyPrice);
+                                if (cex_usdt.mark == 1)
+                                {
+                                    tbk_cex_usdt_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                                    tbk_cex_usdt_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                                }
+                                else
+                                {
+                                    tbk_cex_usdt_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                                    tbk_cex_usdt_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                                }
+                                if (price != lastPrice["cex-usdt"])
+                                {
+                                    lastPrice["cex-usdt"] = price;
+                                }
+                            }
+                            //cex-eth
+                            var cex_eth = r.result.Find(t => t.dict != null && t.dict.name == "cex-eth");
+                            if (cex_eth != null)
+                            {
+                                var price = Convert.ToDouble(cex_eth.cnyPrice);
+                                if (cex_eth.mark == 1)
+                                {
+                                    tbk_cex_eth_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                                    tbk_cex_eth_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                                }
+                                else
+                                {
+                                    tbk_cex_eth_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                                    tbk_cex_eth_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                                }
+                                if (price != lastPrice["cex-eth"])
+                                {
+                                    lastPrice["cex-eth"] = price;
+                                }
+                            }
+                            //零肆叁贰
+                            var lsse = r.result.Find(t => t.dict != null && t.dict.name == "零肆叁贰");
+                            if (lsse != null)
+                            {
+                                var price = Convert.ToDouble(lsse.cnyPrice);
+                                if (lsse.mark == 1)
+                                {
+                                    tbk_lsse_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                                    tbk_lsse_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                                }
+                                else
+                                {
+                                    tbk_lsse_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                                    tbk_lsse_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                                }
+                                if (price != lastPrice["零肆叁贰"])
+                                {
+                                    lastPrice["零肆叁贰"] = price;
+                                }
+                            }
+                            //玩家网
+                            var wjw = r.result.Find(t => t.dict != null && t.dict.name == "玩家网");
+                            if (wjw != null)
+                            {
+                                var price = Convert.ToDouble(wjw.cnyPrice);
+                                if (wjw.mark == 1)
+                                {
+                                    tbk_wjw_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                                    tbk_wjw_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                                }
+                                else
+                                {
+                                    tbk_wjw_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                                    tbk_wjw_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                                }
+                                if (price != lastPrice["玩家网"])
+                                {
+                                    lastPrice["玩家网"] = price;
                                 }
                             }
                         }
                         else
                         {
-                            tbk_wkbsq_newPrice.Text = "暂无数据";
-                            tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                            //tbk_wkbsq_newPrice.Text = "暂无数据";
+                            //tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
                         }
                         return true;
                     }
                     else
                     {
-                        tbk_wkbsq_newPrice.Text = "暂无数据";
-                        tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                        //tbk_wkbsq_newPrice.Text = "暂无数据";
+                        //tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
                         Debug.WriteLine("GetMiguanPrice-获取数据出错！");
                     }
                     return false;
                 default:
-                    tbk_wkbsq_newPrice.Text = "暂无数据";
-                    tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
+                    //tbk_wkbsq_newPrice.Text = "暂无数据";
+                    //tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Goldenrod);
                     Debug.WriteLine("GetMiguanPrice-网络异常错误！");
                     //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
                     return false;

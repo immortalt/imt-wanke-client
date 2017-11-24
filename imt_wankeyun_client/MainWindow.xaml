@@ -488,20 +488,28 @@
                                 <TextBlock Margin="103,10,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run x:Name="tbk_PriceAutoRefresh" Foreground="Green"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,0"><Run Text="本软件统一使用"/><Run Foreground="Red" Text="红色"/><Run Text="表示涨，"/><Run Foreground="Green" Text="绿色"/><Run Text="表示跌。"/></TextBlock>
-                                <TextBlock Height="20" Width="604" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,131,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被人攻击打不开或者正在维护，不信你看网页能不能打开。"/></TextBlock>
-                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,187,0,0" Foreground="Black"><Run Text="超过多少元提醒"/></TextBlock>
-                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,214,0,0" Foreground="Black"><Run Text="低于多少元提醒"/></TextBlock>
-                                <TextBox x:Name="tbx_priceAboce" HorizontalAlignment="Left" Height="23" Margin="130,187,0,0" VerticalAlignment="Top" Width="95"/>
-                                <TextBox x:Name="tbx_priceBelow" HorizontalAlignment="Left" Margin="130,215,0,0" VerticalAlignment="Top" Width="95"/>
-                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,156,0,0"><Run Text="币价监控" FontWeight="Bold"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,241,0,0"><Run Text="设置的价格为空则不提醒。"/></TextBlock>
-                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,261,0,0"><Run Text="币价提醒的方式和设置以[状态提醒]的设置为准，请先开启状态提醒。"/></TextBlock>
-                                <Button x:Name="btu_savePriceNotify" Content="保存设置" HorizontalAlignment="Left" Margin="247,214,0,0" 
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,225,0,0"><Run Text="本软件统一使用"/><Run Foreground="Red" Text="红色"/><Run Text="表示涨，"/><Run Foreground="Green" Text="绿色"/><Run Text="表示跌。"/></TextBlock>
+                                <TextBlock Height="20" Width="604" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,246,0,0"><Run Text="如果显示暂无数据，可能是这个交易平台被人攻击打不开或者正在维护，不信你看网页能不能打开。"/></TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,302,0,0" Foreground="Black"><Run Text="超过多少元提醒"/></TextBlock>
+                                <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="2,329,0,0" Foreground="Black"><Run Text="低于多少元提醒"/></TextBlock>
+                                <TextBox x:Name="tbx_priceAboce" HorizontalAlignment="Left" Height="23" Margin="130,302,0,0" VerticalAlignment="Top" Width="95"/>
+                                <TextBox x:Name="tbx_priceBelow" HorizontalAlignment="Left" Margin="130,330,0,0" VerticalAlignment="Top" Width="95"/>
+                                <TextBlock Height="20" Width="93" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,271,0,0"><Run Text="币价监控" FontWeight="Bold"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,355,0,0"><Run Text="设置的价格为0则不提醒。"/></TextBlock>
+                                <TextBlock Height="20" Width="511" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,375,0,0"><Run Text="币价提醒的方式和设置以[状态提醒]的设置为准，请先开启状态提醒。"/></TextBlock>
+                                <Button x:Name="btu_savePriceNotify" Content="保存设置" HorizontalAlignment="Left" Margin="247,329,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_savePriceNotify_Click"/>
-                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,70,0,0" Foreground="Black"><Hyperlink><Run Text="玩客币社区"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,70,0,0" Foreground="Goldenrod" x:Name="tbk_wkbsq_newPrice" Text="暂无数据"></TextBlock>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,120,0,0" Foreground="Black"><Hyperlink NavigateUri="https://wx2.sinaimg.cn/mw1024/7250eae9gy1flbvzu0ql1j209t0gcmxw.jpg" Click="link_Click"><Run Text="玩客币社区"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,120,0,0" Foreground="Goldenrod" x:Name="tbk_wkbsq_newPrice" Text="暂无数据"></TextBlock>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,70,0,0" Foreground="Black"><Hyperlink NavigateUri="https://cex.com/market/wkc_usdt" Click="link_Click"><Run Text="CEX-USDT"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,70,0,0" Foreground="Goldenrod" x:Name="tbk_cex_usdt_newPrice" Text="暂无数据"/>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,95,0,0" Foreground="Black"><Hyperlink NavigateUri="https://cex.com/market/wkc_eth" Click="link_Click"><Run Text="CEX-ETH"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,95,0,0" Foreground="Goldenrod" x:Name="tbk_cex_eth_newPrice" Text="暂无数据"/>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,145,0,0" Foreground="Black"><Hyperlink><Run Text="零肆叁贰"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,145,0,0" Foreground="Goldenrod" x:Name="tbk_lsse_newPrice" Text="暂无数据"/>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,170,0,0" Foreground="Black"><Hyperlink NavigateUri="http://chinawkb.com/?invit=FAKEHB" Click="link_Click"><Run Text="玩家网"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,170,0,0" Foreground="Goldenrod" x:Name="tbk_wjw_newPrice" Text="暂无数据"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="4">
