@@ -824,15 +824,6 @@
                                     VerticalContentAlignment="Top" Click="btu_saveRefresh_Click"  Margin="10,62,0,0"/>
                             </Grid>
                         </TabItem>
-                        <TabItem TabIndex="1" Header="查看配置" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598">
-                            <TabItem.Background>
-                                <ImageBrush ImageSource="img\settings.png" Stretch="Uniform"/>
-                            </TabItem.Background>
-                            <Grid Background="White">
-                                <TextBox x:Name="tbx_settings" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
-                            </Grid>
-                        </TabItem>
-
                     </TabControl>
                 </Grid>
             </TabItem>

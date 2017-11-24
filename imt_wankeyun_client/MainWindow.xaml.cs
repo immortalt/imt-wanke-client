@@ -1542,7 +1542,6 @@ namespace imt_wankeyun_client
                     {
                         settings.mailAccount.smtpServer = "smtp.qq.com";
                     }
-                    tbx_settings.Text = JsonHelper.Serialize(settings);
                     InitLogin();
                 }
                 else//如果读取配置文件失败
