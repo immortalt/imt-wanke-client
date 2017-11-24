@@ -45,11 +45,17 @@ namespace imt_wankeyun_client
         {
             {"悠雨林",false },
              {"玩客币社区",false },
+              {"cex-usdt",false },
+             {"cex-eth",false },
+             {"玩家网",false },
         };
         private Dictionary<string, bool> priceBelow = new Dictionary<string, bool>()
         {
             {"悠雨林",false },
              {"玩客币社区",false },
+             {"cex-usdt",false },
+             {"cex-eth",false },
+             {"玩家网",false },
         };
         private Dictionary<string, double> lastPrice = new Dictionary<string, double>()
         {
@@ -57,7 +63,6 @@ namespace imt_wankeyun_client
              {"玩客币社区",0 },
              {"cex-usdt",0 },
              {"cex-eth",0 },
-             {"零肆叁贰",0 },
              {"玩家网",0 },
         };
         int priceRefTime;//距离上一次刷新的时间
@@ -597,26 +602,6 @@ namespace imt_wankeyun_client
                                 if (price != lastPrice["cex-eth"])
                                 {
                                     lastPrice["cex-eth"] = price;
-                                }
-                            }
-                            //零肆叁贰
-                            var lsse = r.result.Find(t => t.dict != null && t.dict.name == "零肆叁贰");
-                            if (lsse != null)
-                            {
-                                var price = Convert.ToDouble(lsse.cnyPrice);
-                                if (lsse.mark == 1)
-                                {
-                                    tbk_lsse_newPrice.Text = $"￥{price.ToString("f2")} ↑";
-                                    tbk_lsse_newPrice.Foreground = new SolidColorBrush(Colors.Red);
-                                }
-                                else
-                                {
-                                    tbk_lsse_newPrice.Text = $"￥{price.ToString("f2")} ↓";
-                                    tbk_lsse_newPrice.Foreground = new SolidColorBrush(Colors.Green);
-                                }
-                                if (price != lastPrice["零肆叁贰"])
-                                {
-                                    lastPrice["零肆叁贰"] = price;
                                 }
                             }
                             //玩家网

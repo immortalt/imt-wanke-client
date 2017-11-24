@@ -506,10 +506,8 @@
                                 <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,70,0,0" Foreground="Goldenrod" x:Name="tbk_cex_usdt_newPrice" Text="暂无数据"/>
                                 <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,95,0,0" Foreground="Black"><Hyperlink NavigateUri="https://cex.com/market/wkc_eth" Click="link_Click"><Run Text="CEX-ETH"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
                                 <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,95,0,0" Foreground="Goldenrod" x:Name="tbk_cex_eth_newPrice" Text="暂无数据"/>
-                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,145,0,0" Foreground="Black"><Hyperlink><Run Text="零肆叁贰"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,145,0,0" Foreground="Goldenrod" x:Name="tbk_lsse_newPrice" Text="暂无数据"/>
-                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,170,0,0" Foreground="Black"><Hyperlink NavigateUri="http://chinawkb.com/?invit=FAKEHB" Click="link_Click"><Run Text="玩家网"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
-                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,170,0,0" Foreground="Goldenrod" x:Name="tbk_wjw_newPrice" Text="暂无数据"/>
+                                <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,145,0,0" Foreground="Black"><Hyperlink NavigateUri="http://chinawkb.com/?invit=FAKEHB" Click="link_Click"><Run Text="玩家网"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
+                                <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,145,0,0" Foreground="Goldenrod" x:Name="tbk_wjw_newPrice" Text="暂无数据"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="4">
