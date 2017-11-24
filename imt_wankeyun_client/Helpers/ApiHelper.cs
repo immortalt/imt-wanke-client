@@ -876,7 +876,7 @@ namespace imt_wankeyun_client.Helpers
         public static async Task<HttpMessage> Uyulin_Wkc_doge()
         {
             var client = new RestClient();
-            client.BaseUrl = new Uri("https://www.uyulin.com/trade/index_json/market");
+            client.BaseUrl = new Uri("https://uyulin.com/trade/index_json/market");
             var resp = await Task.Run(() =>
             {
                 Random ran = new Random(DateTime.Now.Millisecond);
