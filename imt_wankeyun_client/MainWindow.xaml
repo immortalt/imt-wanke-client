@@ -681,19 +681,25 @@
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>
-                                                    <!--<GridViewColumn Width="60" Header="操作">
-                                                <GridViewColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Vertical">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <Button x:Name="btu_deleteRemoteTask"
+                                                    <GridViewColumn Width="100" Header="操作">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Vertical">
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Button Style="{DynamicResource SmallButton}" x:Name="btu_startRemoteTask" Click="btu_startRemoteTask_Click"
+                                                    Content="开始" Margin="2"
+                                                    CommandParameter="{Binding Path=id}" Width="40"/>
+                                                                        <Button Style="{DynamicResource SmallButton}" x:Name="btu_stopRemoteTask"
+                                                    Content="暂停" Margin="2" Click="btu_stopRemoteTask_Click"
+                                                    CommandParameter="{Binding Path=id}" Width="40"/>
+                                                                        <!--<Button x:Name="btu_deleteRemoteTask"
                                                     Content="删除" Margin="2"
-                                                    CommandParameter="{Binding Path=id}"/>
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </GridViewColumn.CellTemplate>
-                                            </GridViewColumn>-->
+                                                    CommandParameter="{Binding Path=id}"/>-->
+                                                                    </StackPanel>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
                                                 </GridView>
                                             </ListView.View>
                                         </ListView>

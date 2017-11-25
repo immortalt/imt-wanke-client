@@ -317,6 +317,90 @@ namespace imt_wankeyun_client.Helpers
             return message;
         }
         /// <summary>
+        /// 云添加开始任务
+        /// </summary>
+        /// <param name="phone">手机号</param>
+        /// <param name="id">任务id</param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> StartRemoteDl(string phone, string id)
+        {
+            var client = GetDlClient(phone);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var data = new Dictionary<string, string>();
+            data.Add("pid", GetPeerID(phone));
+            data.Add("v", "1");
+            data.Add("ct", "32");
+            data.Add("tasks", id + "_9");
+            var gstr = GetParams(client, data, true);
+            Debug.WriteLine("StartRemoteDl-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"start?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("StartRemoteDl:" + resp.Content);
+                //var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
+                //message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 云添加暂停任务
+        /// </summary>
+        /// <param name="phone">手机号</param>
+        /// <param name="id">任务id</param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> StopRemoteDl(string phone, string id)
+        {
+            var client = GetDlClient(phone);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var data = new Dictionary<string, string>();
+            data.Add("pid", GetPeerID(phone));
+            data.Add("v", "1");
+            data.Add("ct", "32");
+            data.Add("tasks", id + "_9");
+            var gstr = GetParams(client, data, true);
+            Debug.WriteLine("StopRemoteDl-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"pause?{gstr}", Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("StopRemoteDl:" + resp.Content);
+                //var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
+                //message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
         /// 云添加登陆
         /// </summary>
         /// <param name="phone"></param>

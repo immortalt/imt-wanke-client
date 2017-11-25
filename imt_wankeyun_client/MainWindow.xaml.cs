@@ -66,6 +66,7 @@ namespace imt_wankeyun_client
              {"玩家网",0 },
         };
         internal static string searchWord = "";
+        int offlineNotifyTime = 1;//离线超过几分钟提醒
         int priceRefTime;//距离上一次刷新的时间
         UyulinWkc_DogeResponse uyulinPrice;
         MiguanPriceResponse miguanPrice;
@@ -75,9 +76,9 @@ namespace imt_wankeyun_client
         bool IsHandRefreshing = false;
         LoadingWindow ld;
         internal static string password;
-        private ObservableCollection<DeviceInfoVM> _deviceInfos = null;
-        private ObservableCollection<DlTaskVM> _dlTasks = null;
-        private ObservableCollection<DlTaskVM> _dlTasks_finished = null;
+        private ObservableCollection<DeviceInfoVM> _deviceInfos = null;//设备信息
+        private ObservableCollection<DlTaskVM> _dlTasks = null;//正在下载列表
+        private ObservableCollection<DlTaskVM> _dlTasks_finished = null;//已下载列表
         List<Income> dayIncomes = new List<Income>();
         private ObservableCollection<FileVM> _partitions = null;
         DispatcherTimer NotifyTimer;
@@ -91,6 +92,7 @@ namespace imt_wankeyun_client
         System.Drawing.Icon onlineIcon;
         System.Drawing.Icon offlineIcon;
         private Dictionary<string, bool> OnlineStatus = new Dictionary<string, bool>();
+        private Dictionary<string, DateTime> OfflineTime = new Dictionary<string, DateTime>();
         public MainWindow()
         {
             InitializeComponent();
@@ -1305,23 +1307,55 @@ namespace imt_wankeyun_client
                             //确保获取到了设备的状态的情况下
                             if (ApiHelper.userDevices.ContainsKey(ubd.phone))
                             {
+                                var status = di.status == "在线";
                                 //检测并记录设备在线状态
                                 if (!OnlineStatus.ContainsKey(di.phone))
                                 {
                                     //初始化设备在线状态
-                                    OnlineStatus.Add(di.phone, di.status == "在线");
+                                    OnlineStatus.Add(di.phone, status);
                                 }
                                 else
                                 {
                                     //如果设备在线状态发生了变更
-                                    if (OnlineStatus[di.phone] != (di.status == "在线"))
+                                    if (OnlineStatus[di.phone] != status)
                                     {
                                         Debug.WriteLine(di.phone + "在线状态发生了变更");
-                                        OnlineStatus[di.phone] = (di.status == "在线");
-                                        SendNotifyMail(di);
-                                        SendNotifyServerChan(di);
+                                        OnlineStatus[di.phone] = status;
+                                        if (status == false)
+                                        {
+                                            //记录设备掉线时间
+                                            if (!OfflineTime.ContainsKey(di.phone))
+                                            {
+                                                OfflineTime.Add(di.phone, DateTime.Now);
+                                            }
+                                            else
+                                            {
+                                                OfflineTime[di.phone] = DateTime.Now;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //通知设备恢复在线
+                                            SendNotifyMail(di);
+                                            SendNotifyServerChan(di);
+                                        }
                                     }
                                 }
+                            }
+                        }
+                        for (var j = 0; j < OfflineTime.Count; j++)
+                        {
+                            var ot = OfflineTime.ElementAt(j);
+                            if (DateTime.Now.Subtract(ot.Value).TotalMinutes >= offlineNotifyTime)
+                            {
+                                //通知设备离线10分钟
+                                var di = DiList.Find(t => t.phone == ot.Key);
+                                if (di != null)
+                                {
+                                    SendNotifyMail(di);
+                                    SendNotifyServerChan(di);
+                                }
+                                OfflineTime.Remove(ot.Key);
                             }
                         }
                         if (searchWord.Trim() != "")
@@ -1452,6 +1486,7 @@ namespace imt_wankeyun_client
                                 state_img = stateimg,
                                 speed = UtilHelper.ConvertToSpeedString(t.speed),
                                 progress = (t.progress / 100d).ToString("f2") + "%",
+                                id = t.id
                             };
                             _dlTasks.Add(task);
                         }
@@ -2213,7 +2248,7 @@ namespace imt_wankeyun_client
                 MailHelper.password = settings.mailAccount.password;
                 MailHelper.smtpServer = settings.mailAccount.smtpServer;
                 MailHelper.port = settings.mailAccount.port;
-                var title = di.status == "在线" ? $"{di.phone}设备恢复在线-不朽玩客云客户端" : $"{di.phone}设备离线-不朽玩客云客户端";
+                var title = di.status == "在线" ? $"{di.phone} {di.device_name}恢复在线-不朽玩客云客户端" : $"{di.phone} {di.device_name}离线{offlineNotifyTime}分钟了-不朽玩客云客户端";
                 var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, title, GetNotifyHtml(di));
                 Debug.WriteLine($"SendNotifyMail {di.phone}:" + result);
             }
@@ -2470,7 +2505,7 @@ namespace imt_wankeyun_client
         {
             if (settings.serverchanNotify)
             {
-                var title = di.status == "在线" ? $"{di.phone}玩客云恢复在线-不朽玩客云客户端" : $"{di.phone}玩客云离线-不朽玩客云客户端";
+                var title = di.status == "在线" ? $"{di.phone} {di.device_name}恢复在线-不朽玩客云客户端" : $"{di.phone} {di.device_name}离线{offlineNotifyTime}分钟了-不朽玩客云客户端";
                 var result = await ServerChanNotify(settings.SCKEY, title + " " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), GetNotifyMarkdown(di));
                 Debug.WriteLine($"SendNotifyServerChan {di.phone}:" + result);
             }
@@ -2709,6 +2744,20 @@ namespace imt_wankeyun_client
                 }
             }
             SettingHelper.WriteSettings(settings, password);
+        }
+
+        private async void btu_startRemoteTask_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var id = btu.CommandParameter as string;
+            await ApiHelper.StartRemoteDl(curAccount, id);
+        }
+
+        private async void btu_stopRemoteTask_Click(object sender, RoutedEventArgs e)
+        {
+            var btu = sender as Button;
+            var id = btu.CommandParameter as string;
+            await ApiHelper.StopRemoteDl(curAccount, id);
         }
     }
 }
