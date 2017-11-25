@@ -17,6 +17,7 @@ namespace imt_wankeyun_client.Entities
                 smtpServer = "smtp.qq.com"
             };
         }
+        public List<string> priceNotifyItem { get; set; }
         public bool autoRefresh { get; set; }
         public bool mailNotify { get; set; }
         public bool serverchanNotify { get; set; }

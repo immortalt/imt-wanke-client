@@ -511,6 +511,11 @@
                                 <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,95,0,0" Foreground="Goldenrod" x:Name="tbk_cex_eth_newPrice" Text="暂无数据"/>
                                 <TextBlock Height="20" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,145,0,0" Foreground="Black"><Hyperlink NavigateUri="http://chinawkb.com/?invit=FAKEHB" Click="link_Click"><Run Text="玩家网"/></Hyperlink><Run Text="最新成交价"/></TextBlock>
                                 <TextBlock Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="169,145,0,0" Foreground="Goldenrod" x:Name="tbk_wjw_newPrice" Text="暂无数据"/>
+                                <CheckBox x:Name="chk_uyulin_notify" Click="chk_uyulin_notify_Click" Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,45,0,0">开启提醒</CheckBox>
+                                <CheckBox x:Name="chk_cex_usdt_notify" Click="chk_cex_usdt_notify_Click" Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,70,0,0">开启提醒</CheckBox>
+                                <CheckBox x:Name="chk_cex_eth_notify" Click="chk_cex_eth_notify_Click" Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,95,0,0">开启提醒</CheckBox>
+                                <CheckBox x:Name="chk_wkbsq_notify" Click="chk_wkbsq_notify_Click" Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,120,0,0">开启提醒</CheckBox>
+                                <CheckBox x:Name="chk_wjw_notify" Click="chk_wjw_notify_Click" Height="20" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,146,0,0">开启提醒</CheckBox>
                             </Grid>
                         </TabItem>
                         <TabItem Header="状态提醒" Margin="0" Style="{DynamicResource listTabItemStyle}" BorderBrush="{x:Null}" Foreground="#FF0E3C7A" Height="27.598" TabIndex="4">

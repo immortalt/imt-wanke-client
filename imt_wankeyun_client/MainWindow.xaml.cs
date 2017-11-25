@@ -176,22 +176,25 @@ namespace imt_wankeyun_client
                 for (int i = 0; i < lastPrice.Keys.Count; i++)
                 {
                     var name = lastPrice.Keys.ElementAt(i);
-                    if (lastPrice[name] != 0 && lastPrice[name] >= settings.priceAbove && !priceAbove[name])
+                    if (settings.priceNotifyItem.Contains(name))
                     {
-                        priceAbove[name] = true;
-                        var msg = $"上涨提醒-{name}最新交易价格" + lastPrice[name] + "元";
-                        if (settings.mailNotify)
+                        if (lastPrice[name] != 0 && lastPrice[name] >= settings.priceAbove && !priceAbove[name])
                         {
-                            SendMail(msg);
+                            priceAbove[name] = true;
+                            var msg = $"上涨提醒-{name}最新交易价格" + lastPrice[name] + "元";
+                            if (settings.mailNotify)
+                            {
+                                SendMail(msg);
+                            }
+                            if (settings.serverchanNotify)
+                            {
+                                SendServerChan(msg);
+                            }
                         }
-                        if (settings.serverchanNotify)
+                        if (lastPrice[name] != 0 && lastPrice[name] < settings.priceAbove)
                         {
-                            SendServerChan(msg);
+                            priceAbove[name] = false;
                         }
-                    }
-                    if (lastPrice[name] != 0 && lastPrice[name] < settings.priceAbove)
-                    {
-                        priceAbove[name] = false;
                     }
                 }
             }
@@ -200,22 +203,25 @@ namespace imt_wankeyun_client
                 for (int i = 0; i < lastPrice.Keys.Count; i++)
                 {
                     var name = lastPrice.Keys.ElementAt(i);
-                    if (lastPrice[name] != 0 && lastPrice[name] <= settings.priceBelow && !priceBelow[name])
+                    if (settings.priceNotifyItem.Contains(name))
                     {
-                        priceBelow[name] = true;
-                        var msg = $"下跌提醒-{name}最新交易价格" + lastPrice[name] + "元";
-                        if (settings.mailNotify)
+                        if (lastPrice[name] != 0 && lastPrice[name] <= settings.priceBelow && !priceBelow[name])
                         {
-                            SendMail(msg);
+                            priceBelow[name] = true;
+                            var msg = $"下跌提醒-{name}最新交易价格" + lastPrice[name] + "元";
+                            if (settings.mailNotify)
+                            {
+                                SendMail(msg);
+                            }
+                            if (settings.serverchanNotify)
+                            {
+                                SendServerChan(msg);
+                            }
                         }
-                        if (settings.serverchanNotify)
+                        if (lastPrice[name] != 0 && lastPrice[name] > settings.priceBelow)
                         {
-                            SendServerChan(msg);
+                            priceBelow[name] = false;
                         }
-                    }
-                    if (lastPrice[name] != 0 && lastPrice[name] > settings.priceBelow)
-                    {
-                        priceBelow[name] = false;
                     }
                 }
             }
@@ -1320,7 +1326,7 @@ namespace imt_wankeyun_client
                         }
                         if (searchWord.Trim() != "")
                         {
-                            DiList = DiList.Where(t=> 
+                            DiList = DiList.Where(t =>
                             t.phone.Contains(searchWord) ||
                             t.device_name.Contains(searchWord) ||
                             t.ip.Contains(searchWord) ||
@@ -1347,7 +1353,7 @@ namespace imt_wankeyun_client
                                     DiList = DiList.OrderBy(t => t.totalIncome).ToList();
                                     break;
                                 case "手机号":
-                                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                                    DiList = DiList.OrderBy(t => t.phone).ToList();
                                     break;
                                 default:
                                     DiList = DiList.OrderBy(t => t.device_name).ToList();
@@ -1371,7 +1377,7 @@ namespace imt_wankeyun_client
                                     DiList = DiList.OrderByDescending(t => t.totalIncome).ToList();
                                     break;
                                 case "手机号":
-                                    DiList = DiList.OrderByDescending(t => t.device_name).ToList();
+                                    DiList = DiList.OrderByDescending(t => t.phone).ToList();
                                     break;
                                 default:
                                     DiList = DiList.OrderByDescending(t => t.device_name).ToList();
@@ -1629,6 +1635,24 @@ namespace imt_wankeyun_client
                 settings.SortBy = "设备名称";
                 SettingHelper.WriteSettings(settings, password);
             }
+            if (settings.priceNotifyItem == null)
+            {
+                settings.priceNotifyItem = new List<string>
+                {
+                     "悠雨林",
+              "cex-usdt",
+             "cex-eth",
+             "玩客币社区",
+             "玩家网"
+                };
+                SettingHelper.WriteSettings(settings, password);
+            }
+            chk_uyulin_notify.IsChecked = settings.priceNotifyItem.Contains("悠雨林");
+            chk_cex_usdt_notify.IsChecked = settings.priceNotifyItem.Contains("cex-usdt");
+            chk_cex_eth_notify.IsChecked = settings.priceNotifyItem.Contains("cex-eth");
+            chk_wkbsq_notify.IsChecked = settings.priceNotifyItem.Contains("玩客币社区");
+            chk_wjw_notify.IsChecked = settings.priceNotifyItem.Contains("玩家网");
+
             cbx_autoTibi.SelectedIndex = settings.autoTibi;
             grid_mailNotify.DataContext = settings.mailAccount;
             grid_serverchan.DataContext = settings;
@@ -2590,6 +2614,101 @@ namespace imt_wankeyun_client
             deviceInfos = null;
             lv_DeviceStatus.ItemsSource = deviceInfos;
             AutoHeaderWidth(lv_DeviceStatus);
+        }
+
+        private void chk_uyulin_notify_Click(object sender, RoutedEventArgs e)
+        {
+            if (chk_uyulin_notify.IsChecked == true)
+            {
+                if (!settings.priceNotifyItem.Contains("悠雨林"))
+                {
+                    settings.priceNotifyItem.Add("悠雨林");
+                }
+            }
+            else
+            {
+                if (settings.priceNotifyItem.Contains("悠雨林"))
+                {
+                    settings.priceNotifyItem.Remove("悠雨林");
+                }
+            }
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void chk_cex_usdt_notify_Click(object sender, RoutedEventArgs e)
+        {
+            if (chk_cex_usdt_notify.IsChecked == true)
+            {
+                if (!settings.priceNotifyItem.Contains("cex-usdt"))
+                {
+                    settings.priceNotifyItem.Add("cex-usdt");
+                }
+            }
+            else
+            {
+                if (settings.priceNotifyItem.Contains("cex-usdt"))
+                {
+                    settings.priceNotifyItem.Remove("cex-usdt");
+                }
+            }
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void chk_cex_eth_notify_Click(object sender, RoutedEventArgs e)
+        {
+            if (chk_cex_eth_notify.IsChecked == true)
+            {
+                if (!settings.priceNotifyItem.Contains("cex-eth"))
+                {
+                    settings.priceNotifyItem.Add("cex-eth");
+                }
+            }
+            else
+            {
+                if (settings.priceNotifyItem.Contains("cex-eth"))
+                {
+                    settings.priceNotifyItem.Remove("cex-eth");
+                }
+            }
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void chk_wkbsq_notify_Click(object sender, RoutedEventArgs e)
+        {
+            if (chk_wkbsq_notify.IsChecked == true)
+            {
+                if (!settings.priceNotifyItem.Contains("玩客币社区"))
+                {
+                    settings.priceNotifyItem.Add("玩客币社区");
+                }
+            }
+            else
+            {
+                if (settings.priceNotifyItem.Contains("玩客币社区"))
+                {
+                    settings.priceNotifyItem.Remove("玩客币社区");
+                }
+            }
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void chk_wjw_notify_Click(object sender, RoutedEventArgs e)
+        {
+            if (chk_wjw_notify.IsChecked == true)
+            {
+                if (!settings.priceNotifyItem.Contains("玩家网"))
+                {
+                    settings.priceNotifyItem.Add("玩家网");
+                }
+            }
+            else
+            {
+                if (settings.priceNotifyItem.Contains("玩家网"))
+                {
+                    settings.priceNotifyItem.Remove("玩家网");
+                }
+            }
+            SettingHelper.WriteSettings(settings, password);
         }
     }
 }
