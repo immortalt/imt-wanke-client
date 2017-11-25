@@ -40,7 +40,7 @@
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>23</ApplicationRevision>
+    <ApplicationRevision>24</ApplicationRevision>
     <ApplicationVersion>0.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -201,6 +201,9 @@
     <Compile Include="Windows\LoginManyWindow.xaml.cs">
       <DependentUpon>LoginManyWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SortWindow.xaml.cs">
+      <DependentUpon>SortWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ViewHistoryWindow.xaml.cs">
       <DependentUpon>ViewHistoryWindow.xaml</DependentUpon>
     </Compile>
@@ -258,6 +261,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\LoginManyWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\SortWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

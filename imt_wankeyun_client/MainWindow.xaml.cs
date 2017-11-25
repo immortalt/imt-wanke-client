@@ -65,6 +65,7 @@ namespace imt_wankeyun_client
              {"cex-eth",0 },
              {"玩家网",0 },
         };
+        internal static string searchWord = "";
         int priceRefTime;//距离上一次刷新的时间
         UyulinWkc_DogeResponse uyulinPrice;
         MiguanPriceResponse miguanPrice;
@@ -1317,7 +1318,66 @@ namespace imt_wankeyun_client
                                 }
                             }
                         }
-                        DiList = DiList.OrderBy(t => t.device_name).ToList();
+                        if (searchWord.Trim() != "")
+                        {
+                            DiList = DiList.Where(t=> 
+                            t.phone.Contains(searchWord) ||
+                            t.device_name.Contains(searchWord) ||
+                            t.ip.Contains(searchWord) ||
+                            t.lan_ip.Contains(searchWord) ||
+                            t.system_version.Contains(searchWord) ||
+                            t.upgradeable.Contains(searchWord) ||
+                            t.device_sn.Contains(searchWord)
+                            ).ToList();
+                        }
+                        if (settings.SortOrder == 0)
+                        {
+                            switch (settings.SortBy)
+                            {
+                                case "设备名称":
+                                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                                    break;
+                                case "昨日收入":
+                                    DiList = DiList.OrderBy(t => t.yes_wkb).ToList();
+                                    break;
+                                case "可提玩客币":
+                                    DiList = DiList.OrderBy(t => t.ketiWkb).ToList();
+                                    break;
+                                case "总收入":
+                                    DiList = DiList.OrderBy(t => t.totalIncome).ToList();
+                                    break;
+                                case "手机号":
+                                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                                    break;
+                                default:
+                                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (settings.SortBy)
+                            {
+                                case "设备名称":
+                                    DiList = DiList.OrderByDescending(t => t.device_name).ToList();
+                                    break;
+                                case "昨日收入":
+                                    DiList = DiList.OrderByDescending(t => t.yes_wkb).ToList();
+                                    break;
+                                case "可提玩客币":
+                                    DiList = DiList.OrderByDescending(t => t.ketiWkb).ToList();
+                                    break;
+                                case "总收入":
+                                    DiList = DiList.OrderByDescending(t => t.totalIncome).ToList();
+                                    break;
+                                case "手机号":
+                                    DiList = DiList.OrderByDescending(t => t.device_name).ToList();
+                                    break;
+                                default:
+                                    DiList = DiList.OrderByDescending(t => t.device_name).ToList();
+                                    break;
+                            }
+                        }
                         DiList.ForEach(t => _deviceInfos.Add(t));
                         tbk_yesAllCoin.Text = yesAllCoin.ToString();
                         tbk_hisAllCoin.Text = hisAllCoin.ToString();
@@ -1347,7 +1407,6 @@ namespace imt_wankeyun_client
                 this._deviceInfos = value;
             }
         }
-
         public ObservableCollection<DlTaskVM> dlTasks
         {
             get
@@ -1563,6 +1622,11 @@ namespace imt_wankeyun_client
             if (settings.mailAccount.mailTo == null)
             {
                 settings.mailAccount.mailTo = settings.mailAccount.username;
+                SettingHelper.WriteSettings(settings, password);
+            }
+            if (settings.SortBy == null)
+            {
+                settings.SortBy = "设备名称";
                 SettingHelper.WriteSettings(settings, password);
             }
             cbx_autoTibi.SelectedIndex = settings.autoTibi;
@@ -2048,7 +2112,6 @@ namespace imt_wankeyun_client
         {
             SendMessage(_HwndSource.Handle, WM_SYSCOMMAND, (IntPtr)(61440 + direction), IntPtr.Zero);
         }
-
         private void btu_mailNotify_Click(object sender, RoutedEventArgs e)
         {
             if (!settings.mailNotify)
@@ -2420,7 +2483,6 @@ namespace imt_wankeyun_client
                 btu_serverchanNotify.Content = "开启推送";
             }
         }
-
         private void btu_saveRefresh_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2441,7 +2503,6 @@ namespace imt_wankeyun_client
                 MessageBox.Show(ex.Message, "错误");
             }
         }
-
         private async void menu_device_refresh_Click(object sender, RoutedEventArgs e)
         {
             if (lv_DeviceStatus.SelectedValue != null)
@@ -2451,7 +2512,6 @@ namespace imt_wankeyun_client
                 MessageBox.Show($"刷新{device.phone}成功", "提示");
             }
         }
-
         private void menu_device_delete_Click(object sender, RoutedEventArgs e)
         {
             if (lv_DeviceStatus.SelectedValue != null)
@@ -2469,7 +2529,6 @@ namespace imt_wankeyun_client
             settings.autoTibi = cbx_autoTibi.SelectedIndex;
             SettingHelper.WriteSettings(settings, password);
         }
-
         async void DrawAllWkb()
         {
             for (int i = 0; i < settings.loginDatas.Count; i++)
@@ -2505,7 +2564,6 @@ namespace imt_wankeyun_client
 
             objComWebBrowser.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { silent });
         }
-
         private void Btu_AddManyAccount_Click(object sender, RoutedEventArgs e)
         {
             LoginManyWindow lmw = new LoginManyWindow();
@@ -2524,6 +2582,14 @@ namespace imt_wankeyun_client
             {
                 MessageBox.Show(ex.Message, "错误");
             }
+        }
+        private void btu_sort_Click(object sender, RoutedEventArgs e)
+        {
+            SortWindow sw = new SortWindow();
+            sw.ShowDialog();
+            deviceInfos = null;
+            lv_DeviceStatus.ItemsSource = deviceInfos;
+            AutoHeaderWidth(lv_DeviceStatus);
         }
     }
 }

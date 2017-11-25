@@ -21,6 +21,8 @@ namespace imt_wankeyun_client.Entities
         public bool mailNotify { get; set; }
         public bool serverchanNotify { get; set; }
         public string SCKEY { get; set; }
+        public string SortBy { get; set; }
+        public int SortOrder { get; set; }
         public List<LoginData> loginDatas { get; set; }
         public MailAccount mailAccount { get; set; }
         public int refresh_allSpan { get; set; }

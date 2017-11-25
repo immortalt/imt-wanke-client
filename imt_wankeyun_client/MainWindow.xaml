@@ -5,7 +5,7 @@
         xmlns:Controls="clr-namespace:Wpf.Controls;assembly=Wpf.SplitButton" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" mc:Ignorable="d" 
         x:Class="imt_wankeyun_client.MainWindow" TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="Auto"
-        Title="不朽玩客云客户端" Height="600" Width="900" MinHeight="600" MinWidth="900" Style="{DynamicResource NoResize_window}" 
+        Title="不朽玩客云客户端" Height="600" Width="1000" MinHeight="600" MinWidth="900" Style="{DynamicResource NoResize_window}" 
         BorderThickness="1" BorderBrush="#FF87AFD4" MouseLeftButtonDown="Window_MouseLeftButtonDown" HorizontalContentAlignment="Center" Icon="/img/icon.ico" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="FileListItemStyle" TargetType="{x:Type ListViewItem}">
@@ -300,18 +300,21 @@
                                           VerticalAlignment="Top" Click="chk_autoRefresh_Click" IsChecked="True"
                                           Content="自动刷新"
                                           />
-                                <TextBlock Margin="333,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="434,7,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="在线设备："/><Run x:Name="tbk_onlineCount" Foreground="Green" Text="0"/></TextBlock>
-                                <TextBlock Margin="469,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="570,7,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run Text="离线设备："/><Run x:Name="tbk_offlineCount" Foreground="Red" Text="0"/></TextBlock>
-                                <TextBlock Margin="608,6,0,0" Width="136" Height="20" HorizontalAlignment="Left"
+                                <TextBlock Margin="709,7,0,0" Width="136" Height="20" HorizontalAlignment="Left"
                                     VerticalAlignment="Top"
                                           ><Run x:Name="tbk_isAutoRefreshing" Foreground="Green" Text=""/></TextBlock>
                                 <Button x:Name="Btu_AddManyAccount" Content="批量登陆" HorizontalAlignment="Left" Margin="88,3,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="Btu_AddManyAccount_Click"/>
+                                <Button x:Name="btu_sort" Content="排序查找" HorizontalAlignment="Left" Margin="342,4,0,0" 
+                                    VerticalAlignment="Top" Width="87" Height="23" Style="{DynamicResource SmallButton}" 
+                                    VerticalContentAlignment="Top" Click="btu_sort_Click"/>
 
                             </Grid>
                         </TabItem>
