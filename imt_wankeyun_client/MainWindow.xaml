@@ -547,12 +547,11 @@
                                 <Grid x:Name="grid_serverchan" VerticalAlignment="Top" HorizontalAlignment="Left" Height="133" Margin="0,345,-0.4,0" Width="746">
                                     <TextBox x:Name="tbx_serverchan" HorizontalAlignment="Left" Height="23" Text="{Binding SCKEY, Mode=TwoWay}" VerticalAlignment="Top" Width="466" Margin="135,38,0,0"/>
                                     <TextBlock Height="20" Width="114" HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Right" Margin="7,38,0,0" Foreground="Black"><Run Text="Server酱SCKEY"/></TextBlock>
-                                    <TextBlock Height="20" Width="188" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,13,0,0"><Run Text="Server酱(ServerChan)提醒" FontWeight="Bold"/></TextBlock>
+                                    <TextBlock Height="20" Width="188" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,13,0,0"><Run Text="Server酱(微信)提醒" FontWeight="Bold"/></TextBlock>
                                     <Button x:Name="btu_serverchanNotify" Content="开启提醒" HorizontalAlignment="Left" Margin="200,10,0,0" 
                                     VerticalAlignment="Top" Width="75" Height="23" Style="{DynamicResource SmallButton}" 
                                     VerticalContentAlignment="Top" Click="btu_serverchanNotify_Click"/>
                                     <TextBlock Height="20" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,66,0,0"><Hyperlink Foreground="Purple" NavigateUri="https://sc.ftqq.com" Click="link_Click"><Run Text="去Server酱官网绑定账号实现微信推送"/></Hyperlink></TextBlock>
-                                    <TextBlock Height="32" Width="693" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,91,0,0">如果需要更精美的表格界面，建议选择邮件提醒。</TextBlock>
                                 </Grid>
                             </Grid>
                         </TabItem>
