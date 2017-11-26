@@ -110,7 +110,7 @@ namespace imt_wankeyun_client.Windows
                 {
                     CreateTaskInfo cti = new CreateTaskInfo
                     {
-                        path = "/media/sda1/onecloud/tddownload",
+                        path = tbx_savePath.Text.Trim(),
                         tasks = new List<CreateTask>{
                                 new CreateTask
                             {

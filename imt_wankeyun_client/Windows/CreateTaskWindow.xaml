@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
-        Title="云添加" Height="332.927" Width="612.439" ResizeMode="NoResize"
+        Title="云添加" Height="371.092" Width="612.439" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="window_MouseLeftButtonDown">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
@@ -43,28 +43,33 @@
                     <ColumnDefinition Width="14*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="10*"/>
-                    <RowDefinition Height="58*"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="61*"/>
+                    <RowDefinition Height="25*"/>
                     <RowDefinition Height="28*"/>
-                    <RowDefinition Height="38*"/>
+                    <RowDefinition Height="43*"/>
                     <RowDefinition Height="44*"/>
-                    <RowDefinition Height="15*"/>
+                    <RowDefinition Height="18*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="1" Grid.Column="1" Height="60" VerticalAlignment="Top" TextWrapping="Wrap"
-                    FontSize="18" Margin="1.2,0.4,-0.4,0" Foreground="SlateBlue">文件名：
+                    FontSize="18" Margin="1.4,0,0,0" Foreground="SlateBlue">文件名：
                     <Run Foreground="Black" x:Name="tbx_filename"/>
                 </TextBlock>
                 <TextBlock  Grid.Row="2" Grid.Column="1" Height="30" VerticalAlignment="Top"
-                    FontSize="18" Margin="1.2,4.8,-0.4,0" Foreground="SlateBlue">大小：
+                    FontSize="18" Margin="1.4,3.2,0,0" Foreground="SlateBlue" Grid.RowSpan="2">大小：
                     <Run x:Name="tbx_size" Foreground="Black"></Run>
                 </TextBlock>
                 <TextBlock  Grid.Row="3" Grid.Column="1" Height="30" VerticalAlignment="Top"  Foreground="SlateBlue"
-                    FontSize="18" Margin="1.2,9.8,-0.4,0">格式：
+                    FontSize="18" Margin="1.4,6.4,0,0" Grid.RowSpan="2">格式：
                     <Run Foreground="Black" x:Name="tbx_format"></Run>
                 </TextBlock>
-                <Button x:Name="btu_createTask" Click="btu_createTask_Click" Grid.Row="4" Style="{DynamicResource SimpleButtonOpposite}"
-                FontSize="18" Grid.Column="1" Margin="120,5" Height="30">添加到玩客云</Button>
+                <Button x:Name="btu_createTask" Click="btu_createTask_Click" Grid.Row="5" Style="{DynamicResource SimpleButtonOpposite}"
+                FontSize="18" Grid.Column="1" Margin="120.4,9.2,120,4.8" Height="30">添加到玩客云</Button>
+                <TextBlock  Grid.Row="4" Grid.Column="1" Height="30" VerticalAlignment="Top"  Foreground="SlateBlue"
+                    FontSize="18" Margin="1.4,13.4,486,0" Grid.RowSpan="2"><Run Text="保存路径： "/></TextBlock>
             </Grid>
+            <TextBox x:Name="tbx_savePath" Text="/media/sda1/onecloud/tddownload" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" FontSize="18"
+                Height="24" Margin="28.6,144,5.4,68"/>
         </Grid>
     </Grid>
 </Window>

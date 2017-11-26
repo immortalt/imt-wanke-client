@@ -53,11 +53,12 @@ namespace imt_wankeyun_client.Windows
             try
             {
                 string result = "";
-                string[] accounts = tbx_loginMany.Text.Split('\n');
+                string[] accounts = tbx_loginMany.Text.Split(Environment.NewLine.ToCharArray());
                 var ldw = new LoadingWindow();
                 ldw.Show();
                 ldw.SetTitle("登陆中");
                 ldw.SetTip("正在登陆");
+                var index = 0;
                 for (var i = 0; i < accounts.Length; i++)
                 {
                     try
@@ -66,9 +67,14 @@ namespace imt_wankeyun_client.Windows
                         tbx_loginMany.Text = result;
                         var ac = accounts[i];
                         var tr = "";
+                        if (ac.Trim() == "")
+                        {
+                            continue;
+                        }
+                        index++;
                         if (ac.Length < 13)
                         {
-                            tr = $"第{i + 1}个账号密码{ac}:账号或密码格式错误" + Environment.NewLine;
+                            tr = $"第{index}个账号密码{ac}:账号或密码格式错误" + Environment.NewLine;
                             result += tr;
                             continue;
                         }
@@ -76,7 +82,7 @@ namespace imt_wankeyun_client.Windows
                         var pwd = ac.Substring(12, ac.Length - 13);
                         if (ApiHelper.userBasicDatas.ContainsKey(phone))
                         {
-                            tr = $"第{i + 1}个账号{phone}:该账号已经添加" + Environment.NewLine;
+                            tr = $"第{index}个账号{phone}:该账号已经添加" + Environment.NewLine;
                             result += tr;
                             continue;
                         }
