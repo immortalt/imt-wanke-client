@@ -21,4 +21,5 @@
 ![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot2.png)
 ![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot3.png)
 ![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot4.png)  
+![屏幕截图](https://raw.githubusercontent.com/Immortalt/imt-wanke-client/master/screenshot5.png)  
 本软件引用了[**MonoTorrent**](https://github.com/mono/monotorrent)开源库实现了种子的解析
