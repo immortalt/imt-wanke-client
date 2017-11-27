@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Controls="clr-namespace:Wpf.Controls;assembly=Wpf.SplitButton" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" mc:Ignorable="d" 
+        xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" mc:Ignorable="d" 
         x:Class="imt_wankeyun_client.MainWindow" TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="Auto"
         Title="不朽玩客云客户端" Height="600" Width="1000" MinHeight="600" MinWidth="900" Style="{DynamicResource NoResize_window}" 
@@ -26,9 +26,6 @@
                 <ImageBrush ImageSource="img\icon.png" Stretch="UniformToFill"/>
             </Rectangle.Fill>
         </Rectangle>
-        <Controls:SplitButton x:Name="mainmenu" Content="-" HorizontalAlignment="Right" Margin="0,-1,210,0" VerticalAlignment="Top" Width="20" Mode="Dropdown" Height="21" RenderTransformOrigin="-11.24,0.99" Visibility="Hidden">
-            <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
-        </Controls:SplitButton>
         <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" Margin="77,6,0,0" TextWrapping="Wrap" Text="不朽玩客云客户端" VerticalAlignment="Top" Foreground="White" FontFamily="微软雅黑" FontWeight="Bold"/>
         <TextBlock  HorizontalAlignment="Left" Margin="274,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" FontFamily="微软雅黑" Width="102"><Run Text="V"/><Run x:Name="tbk_version"/></TextBlock>
         <TextBlock  HorizontalAlignment="Left" Margin="376,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="14" Width="120" Foreground="Red" FontWeight="Bold"><Run />本软件永久免费</TextBlock>
@@ -49,7 +46,7 @@
             Margin="0,50,240,0" Height="20"
             FontSize="18"><Hyperlink x:Name="link_showQQ"  Foreground="Blue"
                 Click="link_showQQ_Click"><Run Text="官方QQ群与赞助"/></Hyperlink></TextBlock>
-        <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,18,0,2">
+        <TabControl  Style="{DynamicResource HomeTabControlStyle}" IsSynchronizedWithCurrentItem="True" Margin="0,24,-0.2,1.8">
             <TabItem Header="账户" Margin="64,23,0,0" Height="35.767" Width="145.376" Style="{DynamicResource TabItemStyle2}" FontSize="13.333" FontFamily="Microsoft YaHei" Foreground="Black" BorderBrush="White">
                 <Grid Margin="0,0,0,0">
                     <Grid.RowDefinitions>
@@ -863,6 +860,12 @@
         <Button x:Name="__" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource -ButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,81,0" Click="___Click"/>
         <Button x:Name="btu_max" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource MaxButtonStyle}" VerticalAlignment="Top" Width="35" Margin="0,0,46,0" Click="btu_max_Click"/>
         <Button x:Name="x" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource XButtonStyle}" VerticalAlignment="Top" Width="46" Click="x_Click" Margin="0,0,0,0" />
-        <Button x:Name="s" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click"/>
+        <Button x:Name="btu_menu" Content="Button" HorizontalAlignment="Right" Height="24" Style="{DynamicResource sButtonStyle}" VerticalAlignment="Top" Width="42" Margin="0,-1,116,0" Click="s_Click">
+            <Button.ContextMenu>
+                <ContextMenu Name="aboutMenu">
+                    <MenuItem Header="关于本软件" Click="MenuItem_Click"/>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
     </Grid>
 </Window>

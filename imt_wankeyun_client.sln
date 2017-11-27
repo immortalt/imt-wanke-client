@@ -5,12 +5,16 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "imt_wankeyun_client", "imt_wankeyun_client\imt_wankeyun_client.csproj", "{723D3BFA-2654-46B9-A860-BFC297A8AF94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTorrent", "MonoTorrent\MonoTorrent\MonoTorrent.csproj", "{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
+		Stats|Any CPU = Stats|Any CPU
+		Stats|x86 = Stats|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -22,6 +26,22 @@ Global
 		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Release|x86.ActiveCfg = Release|x86
 		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Release|x86.Build.0 = Release|x86
+		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Stats|Any CPU.ActiveCfg = Release|Any CPU
+		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Stats|Any CPU.Build.0 = Release|Any CPU
+		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Stats|x86.ActiveCfg = Release|x86
+		{723D3BFA-2654-46B9-A860-BFC297A8AF94}.Stats|x86.Build.0 = Release|x86
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Debug|x86.Build.0 = Debug|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Release|x86.ActiveCfg = Release|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Release|x86.Build.0 = Release|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Stats|Any CPU.ActiveCfg = Stats|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Stats|Any CPU.Build.0 = Stats|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Stats|x86.ActiveCfg = Stats|Any CPU
+		{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}.Stats|x86.Build.0 = Stats|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

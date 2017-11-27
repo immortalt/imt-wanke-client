@@ -33,6 +33,7 @@ using System.Windows.Navigation;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
 using imt_wankeyun_client.Entities.Miguan;
+using System.Windows.Controls.Primitives;
 
 namespace imt_wankeyun_client
 {
@@ -323,7 +324,9 @@ namespace imt_wankeyun_client
         }
         private void s_Click(object sender, RoutedEventArgs e)
         {
-            mainmenu.IsContextMenuOpen = true;
+            aboutMenu.PlacementTarget = btu_menu;
+            aboutMenu.Placement = PlacementMode.Bottom;
+            aboutMenu.IsOpen = true;
         }
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
