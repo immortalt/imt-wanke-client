@@ -247,6 +247,7 @@ namespace imt_wankeyun_client
         }
         private void Close(object sender, EventArgs e)
         {
+            notifyIcon.Visible = false;
             Environment.Exit(0);
         }
         public static string GetEdition()
@@ -314,6 +315,7 @@ namespace imt_wankeyun_client
         }
         private void x_Click(object sender, RoutedEventArgs e)
         {
+            notifyIcon.Visible = false;
             Environment.Exit(0);
         }
         private void ___Click(object sender, RoutedEventArgs e)
@@ -1651,6 +1653,7 @@ namespace imt_wankeyun_client
                 {
                     SettingHelper.DeleteSettings();
                     MessageBox.Show("读取配置文件失败，已删除配置文件", "提示");
+                    notifyIcon.Visible = false;
                     Environment.Exit(0);
                 }
             }
