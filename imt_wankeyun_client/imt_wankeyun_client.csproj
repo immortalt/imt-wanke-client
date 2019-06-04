@@ -23,7 +23,7 @@
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Background</UpdateMode>
+    <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
@@ -35,12 +35,12 @@
     <ProductName>不朽玩客云客户端</ProductName>
     <PublisherName>不朽网</PublisherName>
     <SuiteName>不朽玩客云客户端</SuiteName>
-    <MinimumRequiredVersion>0.0.1.28</MinimumRequiredVersion>
+    <MinimumRequiredVersion>0.0.1.51</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <DisallowUrlActivation>true</DisallowUrlActivation>
-    <ApplicationRevision>32</ApplicationRevision>
+    <ApplicationRevision>96</ApplicationRevision>
     <ApplicationVersion>0.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -74,7 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <Prefer32Bit>false</Prefer32Bit>
     <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
@@ -116,8 +116,11 @@
     <Reference Include="DevExpress.Charts.v15.2.Core, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Data.v15.2, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Mvvm.v15.2, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v15.2.Core, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Charts.v15.2, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Core.v15.2, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Grid.v15.2, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Grid.v15.2.Core, Version=15.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Expression.Drawing" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -154,8 +157,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Entities\Account\Activate\UserInfoResponse.cs" />
+    <Compile Include="Entities\Account\CheckSessionResponse.cs" />
     <Compile Include="Entities\Account\UpgradeProgressResponse.cs" />
     <Compile Include="Entities\Account\UsbInfoResponse.cs" />
+    <Compile Include="Entities\Ad\Ad.cs" />
+    <Compile Include="Entities\Ad\Ads.cs" />
     <Compile Include="Entities\Control\PeerResponse.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskInfo.cs" />
     <Compile Include="Entities\Control\RemoteDL\CreateTaskResponse.cs" />
@@ -185,11 +191,17 @@
     <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Helpers\SettingHelper.cs" />
     <Compile Include="Helpers\UtilHelper.cs" />
+    <Compile Include="Windows\AdWindow.xaml.cs">
+      <DependentUpon>AdWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\CreateTaskWindow.xaml.cs">
       <DependentUpon>CreateTaskWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\AuthWindow.xaml.cs">
       <DependentUpon>AuthWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ResultWindow.xaml.cs">
+      <DependentUpon>ResultWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\LoginManyWindow.xaml.cs">
       <DependentUpon>LoginManyWindow.xaml</DependentUpon>
@@ -209,6 +221,10 @@
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Windows\AdWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -250,6 +266,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\AuthWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\ResultWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -399,16 +419,6 @@
       <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
-    <PublishFile Include="DevExpress.Printing.v15.2.Core">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
     <PublishFile Include="DevExpress.RichEdit.v15.2.Core">
       <Visible>False</Visible>
       <Group>
@@ -430,26 +440,6 @@
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="DevExpress.Xpf.DocumentViewer.v15.2.Core">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="DevExpress.Xpf.Grid.v15.2">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="DevExpress.Xpf.Grid.v15.2.Core">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -516,6 +506,9 @@
       <Project>{411a9e0e-fdc6-4e25-828a-0c2cd1cd96f8}</Project>
       <Name>MonoTorrent</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

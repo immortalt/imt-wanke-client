@@ -47,5 +47,11 @@ namespace imt_wankeyun_client
             Hyperlink link = sender as Hyperlink;
             Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
+
+        private void link_Click(object sender, RoutedEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            Process.Start(new ProcessStartInfo("https://www.66otc.com/register?ref=MpypNllOZJ&hmsr=%E4%B8%8D%E6%9C%BD%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%96%87%E5%AD%97%E9%93%BE%E6%8E%A5&hmpl=&hmcu=&hmkw=&hmci="));
+        }
     }
 }

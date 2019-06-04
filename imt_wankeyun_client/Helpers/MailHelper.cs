@@ -37,7 +37,7 @@ namespace imt_wankeyun_client.Helpers
                 mailMessage.BodyEncoding = Encoding.UTF8;//正文编码
                 mailMessage.IsBodyHtml = true;//设置为HTML格式
                 mailMessage.Priority = MailPriority.High;//优先级
-                mailMessage.CC.Add(username);//给自己抄送一份
+                //mailMessage.CC.Add(username);//给自己抄送一份
                 try
                 {
                     smtpClient.Send(mailMessage); // 发送邮件

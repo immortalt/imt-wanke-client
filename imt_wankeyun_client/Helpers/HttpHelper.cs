@@ -45,11 +45,12 @@ namespace imt_wankeyun_client.Helpers
                 var client = new RestClient(url);
                 var request = new RestRequest(Method.GET);
                 request.AddHeader("cache-control", "no-cache");
-                request.AddHeader("accept-language", "zh-CN,zh;q=0.8");
-                request.AddHeader("accept-encoding", "gzip, deflate, sdch");
-                request.AddHeader("accept", "text/plain");
-                request.AddHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
+                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
+                request.AddHeader("accept-encoding", "gzip, deflate");
+                request.AddHeader("dnt", "1");
+                request.AddHeader("accept", "application/javascript,text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
                 request.AddHeader("upgrade-insecure-requests", "1");
+                request.AddHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36");
                 return client.Execute(request);
             });
         }

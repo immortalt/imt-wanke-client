@@ -11,45 +11,51 @@
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
-    <Grid>
+    <Grid Margin="0,0,0,1">
         <TextBlock Margin="10,10,0,0" FontSize="18" Foreground="White" FontWeight="Bold" Text="添加玩客云账号"/>
         <Button x:Name="btu_close" Content="Button" HorizontalAlignment="Right" Height="28" Margin="386,0,0,250.4" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="btu_close_Click"/>
-        <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0.2,0.4" Background="White">
+        <Grid VerticalAlignment="Stretch" x:Name="grid_login" Margin="0,41,0,0" Background="White">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.5*"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="0.5*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="58*"></ColumnDefinition>
+                <ColumnDefinition Width="auto" MinWidth="102"></ColumnDefinition>
+                <ColumnDefinition Width="115*"></ColumnDefinition>
+                <ColumnDefinition Width="116*"></ColumnDefinition>
+                <ColumnDefinition Width="57*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock  Grid.Row="1" Grid.Column="1" Margin="10"
-                    FontSize="18">手机号</TextBlock>
+            <ComboBox Grid.Row="1" Grid.Column="1" Margin="10"
+                    FontSize="14" SelectedIndex="0" x:Name="cbx_type">
+                <ComboBoxItem>手机号</ComboBoxItem>
+                <ComboBoxItem>邮箱</ComboBoxItem>
+            </ComboBox>
             <TextBlock  Grid.Row="2" Grid.Column="1" Margin="10"
-                    FontSize="18">密码</TextBlock>
+                    FontSize="14">密码</TextBlock>
             <TextBlock x:Name="label_vali" Grid.Row="3" Grid.Column="1" Margin="10"
-                    FontSize="18">验证码</TextBlock>
+                    FontSize="14">验证码</TextBlock>
             <TextBox x:Name="tbx_username" Grid.Row="1" Grid.Column="2" Margin="10"
-                 FontSize="18" InputScope="Number" PreviewTextInput="tb_PreviewTextInput" 
+                 FontSize="18"
                      Grid.ColumnSpan="2" TabIndex="1"
                 />
             <PasswordBox x:Name="tbx_password" Grid.Row="2" Grid.Column="2" Margin="10"
                  FontSize="18" Grid.ColumnSpan="2" TabIndex="2" KeyDown="tbx_password_KeyDown"/>
             <Image x:Name="img_vali" Grid.Row="3" Grid.Column="2" Margin="10"
                MouseDown="img_vali_MouseDown"/>
-            <TextBlock x:Name="tbx_tip" Grid.Row="3" Grid.Column="2" Margin="10" Width="100" Height="30"
+            <TextBlock x:Name="tbx_tip" Grid.Row="3" Grid.Column="2" Margin="10,10,5,10"
                    FontSize="12" TextWrapping="Wrap" MouseDown="tbx_tip_MouseDown"/>
             <TextBox x:Name="tbx_valicode" Grid.Row="3" Grid.Column="3" Margin="10"
                  FontSize="24" TextAlignment="Center" InputScope="Number" TabIndex="3" KeyDown="tbx_valicode_KeyDown"/>
             <Button x:Name="btu_login" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Margin="10" Style="{DynamicResource SimpleButton}"
                 Click="btu_login_Click" FontSize="18">登陆</Button>
+            <Button x:Name="btu_AddManyAccount" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Margin="10" Style="{DynamicResource SimpleButton}"
+                Click="btu_AddManyAccount_Click"  FontSize="18">批量登陆</Button>
         </Grid>
     </Grid>
 </Window>

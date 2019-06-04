@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:imt_wankeyun_client.Windows"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         mc:Ignorable="d"  Style="{DynamicResource NoResize_window}"
-        Title="玩客云登陆" Height="300" Width="450" ResizeMode="NoResize" x:Name="loginWindow"
+        Title="玩客云登陆" Height="320" Width="450" ResizeMode="NoResize" x:Name="loginWindow"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" MouseLeftButtonDown="loginWindow_MouseLeftButtonDown">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
@@ -23,6 +23,7 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="0.5*"></RowDefinition>
                 <RowDefinition Height="0.5*"></RowDefinition>
+                <RowDefinition Height="0.5*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
@@ -30,23 +31,26 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">排序方式:</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">默认排序方式:</TextBlock>
             <ComboBox x:Name="cbx_sortOrder" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" SelectionChanged="cbx_sortOrder_SelectionChanged">
                 <ComboBoxItem>正序</ComboBoxItem>
                 <ComboBoxItem>倒序</ComboBoxItem>
             </ComboBox>
-            <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">排序内容:</TextBlock>
+            <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">默认排序内容:</TextBlock>
             <ComboBox x:Name="cbx_sort" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" SelectionChanged="cbx_sort_SelectionChanged">
                 <ComboBoxItem>设备名称</ComboBoxItem>
                 <ComboBoxItem>昨日收入</ComboBoxItem>
                 <ComboBoxItem>可提玩客币</ComboBoxItem>
                 <ComboBoxItem>总收入</ComboBoxItem>
-                <ComboBoxItem>手机号</ComboBoxItem>
+                <ComboBoxItem>用户名</ComboBoxItem>
+                <ComboBoxItem>在线状态</ComboBoxItem>
+                <ComboBoxItem>不排序</ComboBoxItem>
             </ComboBox>
             <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">搜索内容:</TextBlock>
             <TextBox x:Name="tbx_search" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="18"></TextBox>
             <Button x:Name="btu_search" Click="btu_search_Click" Grid.Row="4" Grid.Column="2" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Style="{DynamicResource SmallButton}">搜索</Button>
             <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Blue">删光搜索内容再点搜索即可显示全部</TextBlock>
+            <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Blue">采用不同设备名称关键词,搜索关键词相当于切换分组</TextBlock>
         </Grid>
     </Grid>
 </Window>

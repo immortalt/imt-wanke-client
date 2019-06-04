@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:imt_wankeyun_client"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="imt_wankeyun_client.AboutWindow"
         mc:Ignorable="d"
-        Title="关于" Height="265.754" Width="349.6" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Style="{DynamicResource NoResize_window}" MouseLeftButtonDown="About1_MouseLeftButtonDown" Icon="/img/icon.ico">
+        Title="关于" Height="302.252" Width="349.6" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Style="{DynamicResource NoResize_window}" MouseLeftButtonDown="About1_MouseLeftButtonDown" Icon="/img/icon.ico">
     <Window.Background>
         <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
     </Window.Background>
@@ -18,23 +18,28 @@
                     <GradientStop Color="White" Offset="1"/>
                 </LinearGradientBrush>
             </Grid.Background>
-            <TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF0031FF" FontFamily="微软雅黑" FontWeight="Medium" Margin="118,82,0,0" FontSize="10" Height="15" Width="121">
+            <TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF0031FF" FontFamily="微软雅黑" FontWeight="Medium" Margin="118,57,0,0" FontSize="10" Height="15" Width="121">
             <Hyperlink NavigateUri="http://www.immortalt.com" Click="Hyperlink_Click">www.immortalt.com</Hyperlink>
             </TextBlock>
-            <Button x:Name="button1" FontSize="16" Content="确定" HorizontalAlignment="Left" Height="20" Margin="139,233,0,0" VerticalAlignment="Top" Width="61" Style="{DynamicResource SimpleButton}" Click="button1_Click"/>
+            <Button x:Name="button1" FontSize="16" Content="确定" HorizontalAlignment="Left" Height="20" Margin="138,270,0,0" VerticalAlignment="Top" Width="61" Style="{DynamicResource SimpleButton}" Click="button1_Click"/>
         </Grid>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="关于" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Margin="7,4,0,0" FontSize="15"/>
-        <TextBlock x:Name="textBlock_title" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="77,43,0,0" FontSize="16" Height="20" Width="200"><Run Text="不朽玩客云客户端"/><Run x:Name="tbk_version"/></TextBlock>
-        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="不朽网保留所有权利" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="113,68,0,0" FontSize="12" Height="20" Width="114"/>
+        <TextBlock x:Name="textBlock_title" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="77,18,0,0" FontSize="16" Height="20" Width="200"><Run Text="不朽玩客云客户端"/><Run x:Name="tbk_version"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="不朽网保留所有权利" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="113,43,0,0" FontSize="12" Height="20" Width="114"/>
         <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,100,0,0" FontSize="10" Height="13" Width="257">
         (推荐加入)讨论本软件、反馈问题和建议：
         </TextBlock>
-        <TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,113,0,0" FontSize="12" Height="18" Width="270"><Run Text="不朽爱国软件交流群(开发者是群主)："/><Run Foreground="Blue" Text="597799388"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,113,0,0" FontSize="12" Height="18" Width="289"><Run Text="不朽爱国软件交流群(开发者是群主)："/><Run Foreground="Blue" Text="597799388"/></TextBlock>
         <Button x:Name="button" Content="Button" HorizontalAlignment="Right" Height="22" Margin="256,0,-0.4,131.6" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="button_Click"/>
-        <TextBlock x:Name="textBlock_Copy6" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,202,0,0" FontSize="10" Height="13" Width="257"><Run Text="捐助贫穷的开发者一点玩客币："/></TextBlock>
-        <TextBox  FontSize="10" Margin="49,217,28.2,34" IsReadOnly="True">0xcc91d91579f1418d0221455015e1e829a87ae0f5</TextBox>
-        <TextBlock x:Name="textBlock_Copy3" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,146,0,0" FontSize="12" Height="18" Width="257"><Run Text="苏商电子商务玩客群(5000人群)："/><Run Foreground="Purple" Text="313261809"/></TextBlock>
-        <TextBlock x:Name="textBlock_Copy5" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,133,0,0" FontSize="10" Height="13" Width="257"><Run Text="广告位："/></TextBlock>
-        <TextBlock x:Name="textBlock_Copy7" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,161,0,0" FontSize="12" Height="18" Width="257"><Run Text="0月租手机卡联系QQ："/><Run Foreground="Purple" Text="65987225"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy6" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,236,0,0" FontSize="10" Height="13" Width="257"><Run Text="捐助贫穷的开发者一点玩客币："/></TextBlock>
+        <TextBox  FontSize="10" Margin="49,251,28,32" IsReadOnly="True">0xcc91d91579f1418d0221455015e1e829a87ae0f5</TextBox>
+        <TextBlock x:Name="textBlock_Copy3" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,165,0,0" FontSize="12" Height="18" Width="257"><Run Text="苏商电子商务玩客群(5000人群)："/><Run Foreground="Purple" Text="313261809"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy5" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,152,0,0" FontSize="10" Height="13" Width="257"><Run Text="广告位："/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy7" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,180,0,0" FontSize="12" Height="18" Width="257"><Run Text="0月租手机卡联系QQ："/><Run Foreground="Purple" Text="65987225"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy8" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,196,0,0" FontSize="12" Height="18" Width="277"><Run Text="零月租手机卡注册卡 微信:"/><Run Foreground="Purple">zhizhongji</Run><Run Text=" QQ:"/><Run Foreground="Purple" Text="9117151"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy9" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,82,0,0" FontSize="12" Height="18" Width="270"><Run Text="官方公众号："/><Run Foreground="Blue" Text="时空不朽"/></TextBlock>
+        <TextBlock x:Name="textBlock_Copy10" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,129,0,0" FontSize="12" Height="18" Width="289"><Run Text="不朽爱国软件交流②群(开发者是群主)："/><Run Foreground="Blue" Text="62237039"/></TextBlock>
+        <!--<TextBlock x:Name="textBlock_Copy11" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black" FontFamily="微软雅黑" FontWeight="Medium" Margin="49,213,0,0" FontSize="12" Height="18" Width="136"><Hyperlink x:Name="link_sourcecode"  Foreground="Purple"
+                                             Click="link_Click"><Run Text="66OTC（免手续费）"/></Hyperlink></TextBlock>-->
     </Grid>
 </Window>

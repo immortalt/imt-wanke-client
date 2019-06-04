@@ -9,7 +9,7 @@ namespace imt_wankeyun_client.Entities.Monitor
     public class TopNWkb
     {
         public long user_id { get; set; }
-        public long wkb { get; set; }
+        public double wkb { get; set; }
         public string phone { get; set; }
     }
 
@@ -33,7 +33,7 @@ namespace imt_wankeyun_client.Entities.Monitor
     {
         public long block_num { get; set; }
         public long wkb_num { get; set; }
-        public long average_onlinetime { get; set; }
+        public string average_onlinetime { get; set; }
         public long average_bandwidth { get; set; }
         public long average_disk { get; set; }
         public List<TopNWkb> topN_wkb { get; set; }

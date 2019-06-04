@@ -45,6 +45,12 @@ namespace imt_wankeyun_client.Windows
                 case "手机号":
                     cbx_sort.SelectedIndex = 4;
                     break;
+                case "在线状态":
+                    cbx_sort.SelectedIndex = 5;
+                    break;
+                case "不排序":
+                    cbx_sort.SelectedIndex = 6;
+                    break;
                 default:
                     cbx_sort.SelectedIndex = 0;
                     break;
@@ -87,6 +93,12 @@ namespace imt_wankeyun_client.Windows
                     break;
                 case 4:
                     sb = "手机号";
+                    break;
+                case 5:
+                    sb = "在线状态";
+                    break;
+                case 6:
+                    sb = "不排序";
                     break;
             }
             MainWindow.settings.SortBy = sb;

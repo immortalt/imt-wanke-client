@@ -5,6 +5,7 @@ using imt_wankeyun_client.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -45,6 +46,11 @@ namespace imt_wankeyun_client.Windows
 
         private async void btu_loginMany_Click(object sender, RoutedEventArgs e)
         {
+            if (tbx_loginMany.Text.Trim() == "")
+            {
+                MessageBox.Show("账号密码不能为空", "提示");
+                return;
+            }
             await HandleLogin();
             btu_loginMany.Visibility = Visibility.Collapsed;
         }
@@ -59,13 +65,14 @@ namespace imt_wankeyun_client.Windows
                 ldw.SetTitle("登陆中");
                 ldw.SetTip("正在登陆");
                 var index = 0;
-                for (var i = 0; i < accounts.Length; i++)
+                var acl = accounts.ToList().Where(t => t != "").ToArray();
+                for (var i = 0; i < acl.Length; i++)
                 {
                     try
                     {
                         ldw.SetPgr(0, i);
                         tbx_loginMany.Text = result;
-                        var ac = accounts[i];
+                        var ac = acl[i];
                         var tr = "";
                         if (ac.Trim() == "")
                         {
@@ -78,8 +85,28 @@ namespace imt_wankeyun_client.Windows
                             result += tr;
                             continue;
                         }
-                        var phone = ac.Substring(0, 11);
-                        var pwd = ac.Substring(12, ac.Length - 13);
+                        Regex re = new Regex(@"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?");//实例化一个Regex对象
+                        var phone = "";
+                        var pwd = "";
+                        var isMail = false;
+                        if (re.Match(ac).Success)
+                        {
+                            phone = re.Match(ac).Value;
+                            pwd = ac.Substring(phone.Length + 1, ac.Length - (phone.Length + 1));
+                            isMail = true;
+                        }
+                        else
+                        {
+                            phone = ac.Substring(0, 11);
+                            pwd = ac.Substring(12, ac.Length - 12);
+                            isMail = false;
+                        }
+                        Debug.WriteLine("phone:" + phone);
+                        Debug.WriteLine("pwd:" + pwd);
+                        //if (phone == null || phone == "")
+                        //{
+                        //    continue;
+                        //}
                         if (ApiHelper.userBasicDatas.ContainsKey(phone))
                         {
                             tr = $"第{index}个账号{phone}:该账号已经添加" + Environment.NewLine;
@@ -88,14 +115,14 @@ namespace imt_wankeyun_client.Windows
                         }
                         ld = new LoginData
                         {
-                            account_type = "4",
+                            account_type = isMail ? "5" : "4",
                             deviceid = UtilHelper.RandomCode(16),
                             imeiid = UtilHelper.RandomCode(15),
                             phone = phone,
                             pwd = pwd
                         };
                         HttpMessage resp = await ApiHelper.Login(
-                        ld.phone, ld.pwd, "", ld.account_type, ld.deviceid, ld.imeiid);
+                        ld.phone, ld.pwd, "", ld.account_type, ld.deviceid, ld.imeiid, isMail ? 1 : 0);
                         switch (resp.statusCode)
                         {
                             case HttpStatusCode.OK:
@@ -118,7 +145,7 @@ namespace imt_wankeyun_client.Windows
                                     MainWindow.settings.loginDatas.Add(ld);
                                     SettingHelper.WriteSettings(MainWindow.settings, MainWindow.password);
                                     //保存登陆信息
-                                    ApiHelper.userBasicDatas.Add(loginResponse.data.phone, loginResponse.data);
+                                    ApiHelper.userBasicDatas.Add(ld.phone, loginResponse.data);
                                 }
                                 else if (loginResponse.iRet == -121)
                                 {
@@ -152,6 +179,7 @@ namespace imt_wankeyun_client.Windows
                         result += tr;
                         continue;
                     }
+                    await Task.Delay(MainWindow.settings.refresh_everySpan * 1000);//防止过快引起风控
                 }
                 ldw.Close();
                 tbx_loginMany.Text = result;

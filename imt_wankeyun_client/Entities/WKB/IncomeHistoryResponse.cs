@@ -9,7 +9,7 @@ namespace imt_wankeyun_client.Entities.WKB
     public class Income
     {
         public string date { get; set; }
-        public string num { get; set; }
+        public double num { get; set; }
     }
 
     public class IncomeHistory

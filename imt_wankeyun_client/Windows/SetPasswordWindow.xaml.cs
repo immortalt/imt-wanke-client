@@ -4,6 +4,7 @@ using imt_wankeyun_client.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -73,6 +74,29 @@ namespace imt_wankeyun_client.Windows
                 MainWindow.password = password;
                 MessageBox.Show("设置启动密码成功！", "恭喜");
                 Close();
+            }
+        }
+
+        private void btu_import_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            ofd.Filter = "不朽玩客云配置文件(*.ini)|*.ini";
+            ofd.RestoreDirectory = true;
+
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string filename = ofd.FileName;
+                    File.Copy(filename, SettingHelper.settingPath, true);
+                    MessageBox.Show("导入成功！请重启程序", "提示");
+                    Environment.Exit(0);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导入失败！" + ex.Message, "提示");
+                }
             }
         }
     }

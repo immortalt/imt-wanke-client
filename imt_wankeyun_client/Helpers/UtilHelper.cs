@@ -1,4 +1,7 @@
-﻿using System;
+﻿using imt_wankeyun_client.Entities.ViewModel;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -34,7 +37,7 @@ namespace imt_wankeyun_client.Helpers
                 return GB.ToString("f2") + "GB";
             }
         }
-        public static string ConvertToSpeedString(int speed)
+        public static string ConvertToSpeedString(long speed)
         {
             var GB = speed / 1024d / 1024d / 1024d;
             if (GB < 1)
@@ -105,6 +108,87 @@ namespace imt_wankeyun_client.Helpers
                 strbul.Append(result[i].ToString("x2"));//加密结果"x2"结果为32位,"x3"结果为48位,"x4"结果为64位
             }
             return strbul.ToString();
+        }
+        internal static int CompareString(string fileA, string fileB)
+        {
+            try
+            {
+                char[] arr1 = fileA.ToCharArray();
+                char[] arr2 = fileB.ToCharArray();
+                long i = 0, j = 0;
+                while (i < arr1.Length && j < arr2.Length)
+                {
+                    if (char.IsDigit(arr1[i]) && char.IsDigit(arr2[j]))
+                    {
+                        string s1 = "", s2 = "";
+                        while (i < arr1.Length && char.IsDigit(arr1[i]))
+                        {
+                            s1 += arr1[i];
+                            i++;
+                        }
+                        while (j < arr2.Length && char.IsDigit(arr2[j]))
+                        {
+                            s2 += arr2[j];
+                            j++;
+                        }
+                        if (Convert.ToInt64(s1) > Convert.ToInt64(s2))
+                        {
+                            return 1;
+                        }
+                        if (Convert.ToInt64(s1) < Convert.ToInt64(s2))
+                        {
+                            return -1;
+                        }
+                    }
+                    else
+                    {
+                        if (arr1[i] > arr2[j])
+                        {
+                            return 1;
+                        }
+                        if (arr1[i] < arr2[j])
+                        {
+                            return -1;
+                        }
+                        i++;
+                        j++;
+                    }
+                }
+                if (arr1.Length == arr2.Length)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return arr1.Length > arr2.Length ? 1 : -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("排序错误:" + ex.Message);
+                return 0;
+            }
+        }
+        ///<summary>
+        ///主要用于设备名称的比较。
+        ///</summary>
+        public class DeviceNameComparerClass : IComparer<DeviceInfoVM>
+        {
+            // Calls CaseInsensitiveComparer.Compare with the parameters reversed.
+            ///<summary>
+            ///比较两个字符串，如果含用数字，则数字按数字的大小来比较。
+            ///</summary>
+            ///<param name="x"></param>
+            ///<param name="y"></param>
+            ///<returns></returns>
+            int IComparer<DeviceInfoVM>.Compare(DeviceInfoVM x, DeviceInfoVM y)
+            {
+                if (x == null || y == null)
+                    throw new ArgumentException("Parameters can't be null");
+                string fileA = x.device_name;
+                string fileB = y.device_name;
+                return CompareString(fileA, fileB);
+            }
         }
     }
 }

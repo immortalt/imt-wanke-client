@@ -34,6 +34,9 @@ using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
 using imt_wankeyun_client.Entities.Miguan;
 using System.Windows.Controls.Primitives;
+using DevExpress.Xpf.Grid;
+using imt_wanke_client.Entities;
+using System.Media;
 
 namespace imt_wankeyun_client
 {
@@ -42,6 +45,7 @@ namespace imt_wankeyun_client
     /// </summary>
     public partial class MainWindow : Window
     {
+        Ads ads;
         private Dictionary<string, bool> priceAbove = new Dictionary<string, bool>()
         {
             {"悠雨林",false },
@@ -66,8 +70,9 @@ namespace imt_wankeyun_client
              {"cex-eth",0 },
              {"玩家网",0 },
         };
+        object lv_DeviceStatus;
         internal static string searchWord = "";
-        int offlineNotifyTime = 1;//离线超过几分钟提醒
+        int offlineNotifyTime = 5;//离线超过几分钟提醒
         int priceRefTime;//距离上一次刷新的时间
         UyulinWkc_DogeResponse uyulinPrice;
         MiguanPriceResponse miguanPrice;
@@ -93,12 +98,29 @@ namespace imt_wankeyun_client
         System.Drawing.Icon onlineIcon;
         System.Drawing.Icon offlineIcon;
         private Dictionary<string, bool> OnlineStatus = new Dictionary<string, bool>();
+        private Dictionary<string, bool> DiskStatus = new Dictionary<string, bool>();
         private Dictionary<string, DateTime> OfflineTime = new Dictionary<string, DateTime>();
+        private Dictionary<string, DateTime> DiskBadTime = new Dictionary<string, DateTime>();
+        int minEveryDelay = 2;//最小刷新延迟
         public MainWindow()
         {
             InitializeComponent();
+            tbk_ad_main.Visibility = Visibility.Hidden;
+            tbk_updateInfo.Visibility = Visibility.Hidden;
+
+            AdTitleQuery();
+            AdTitle2Query();
+            try
+            {
+                tbk_version.Text = GetEdition();
+            }
+            catch (Exception ex)
+            {
+                tbk_version.Text = "开发版";
+                Debug.WriteLine("MainWindow error" + ex.Message);
+            }
             web_tongji.Navigating += WebBrowser_Navigating;
-            web_tongji.Source = new Uri("http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html");
+            web_tongji.Source = new Uri("http://wanke.immortalt.com/tool/imt_wankeyun_client/tongji.html" + $"?version={tbk_version.Text}");
 
             this.SourceInitialized += delegate (object sender, EventArgs e)//执行拖拽
             {
@@ -130,16 +152,6 @@ namespace imt_wankeyun_client
             {
                 if (e.Button == System.Windows.Forms.MouseButtons.Left) this.Show(o, e);
             });
-
-            try
-            {
-                tbk_version.Text = GetEdition();
-            }
-            catch (Exception ex)
-            {
-                tbk_version.Text = "开发版";
-                Debug.WriteLine("MainWindow error" + ex.Message);
-            }
             NotifyTimer = new DispatcherTimer();
             NotifyTimer.Interval = TimeSpan.FromMinutes(1);
             NotifyTimer.Tick += NotifyTimer_Tick;
@@ -150,7 +162,7 @@ namespace imt_wankeyun_client
             PriceTimer.Interval = TimeSpan.FromSeconds(1);
             PriceTimer.Tick += PriceTimer_Tick;
             RemoteDlTimer = new DispatcherTimer();
-            RemoteDlTimer.Interval = TimeSpan.FromSeconds(5);
+            RemoteDlTimer.Interval = TimeSpan.FromSeconds(10);
             RemoteDlTimer.Tick += RemoteDlTimer_Tick;
             LoadSettings();//载入设置
         }
@@ -169,7 +181,6 @@ namespace imt_wankeyun_client
                 tbk_PriceAutoRefresh.Text = $"{(n - priceRefTime)}秒后自动刷新";
             }
         }
-
         async void RefreshPrice()
         {
             GetUyulinPrice();
@@ -350,6 +361,14 @@ namespace imt_wankeyun_client
         }
         async Task RefreshStatus(string singlePhone = null, bool Hand = false)
         {
+            if (this.Opacity == 0)
+            {
+                this.ShowInTaskbar = false;
+            }
+            else
+            {
+                this.ShowInTaskbar = true;
+            }
             if (IsHandRefreshing && (!Hand))
             {
                 return;
@@ -360,29 +379,36 @@ namespace imt_wankeyun_client
             }
             try
             {
-                if (ApiHelper.userBasicDatas.Count == 0)
+                if (settings.loginDatas.Count == 0)
                 {
                     deviceInfos = null;
-                    lv_DeviceStatus.ItemsSource = deviceInfos;
-                    AutoHeaderWidth(lv_DeviceStatus);
+                    if (settings.showSimple)
+                    {
+                        (lv_DeviceStatus as GridControl).ItemsSource = deviceInfos;
+                    }
+                    else
+                    {
+                        (lv_DeviceStatus as ListView).ItemsSource = deviceInfos;
+                        AutoHeaderWidth((lv_DeviceStatus as ListView));
+                    }
                     return;
                 }
-                if (settings.refresh_allSpan <= 0)
+                if (settings.refresh_allSpan < settings.loginDatas.Count * settings.refresh_everySpan + 60)
                 {
-                    settings.refresh_allSpan = (ApiHelper.userBasicDatas.Count * 3) + 3;
+                    settings.refresh_allSpan = settings.loginDatas.Count * settings.refresh_everySpan + 60;
                     SettingHelper.WriteSettings(settings, password);
                     tbx_refresh_allSpan.Text = settings.refresh_allSpan.ToString();
                 }
                 StatusTimer.Interval = TimeSpan.FromSeconds(settings.refresh_allSpan);
-                for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
+                for (int i = 0; i < settings.loginDatas.Count; i++)
                 {
                     if (!Hand && singlePhone == null)
                     {
-                        tbk_isAutoRefreshing.Text = $"正在自动刷新({i + 1}/{ApiHelper.userBasicDatas.Count})";
+                        tbk_isAutoRefreshing.Text = $"正在自动刷新({i + 1}/{settings.loginDatas.Count})";
                     }
-                    var t = ApiHelper.userBasicDatas.ElementAt(i);
-                    var phone = t.Key;
-                    var basic = t.Value;
+                    var t = settings.loginDatas.ElementAt(i);
+                    var phone = t.phone;
+                    //var basic = t.Value;                  
                     if (singlePhone != null && phone != singlePhone)
                     {
                         continue;
@@ -390,9 +416,30 @@ namespace imt_wankeyun_client
                     if (ld != null)
                     {
                         ld.SetTitle($"正在获取数据");
-                        ld.SetPgr(i, ApiHelper.userBasicDatas.Count);
+                        ld.SetPgr(i, settings.loginDatas.Count);
                         ld.SetTip($"正在获取账号{phone}的数据");
                     }
+                    if (await CheckSession(phone) == false)
+                    {
+                        var ldd = settings.loginDatas.Find(xx => xx.phone == phone);
+                        await UserLogin(ldd);
+                        //if (!ApiHelper.userDevices.ContainsKey(phone))
+                        //{
+                        //    var device = new Device
+                        //    {
+                        //        device_sn = "登陆已过期",
+                        //        device_name = "登陆已过期",
+                        //        status = "登陆已过期"
+                        //    };
+                        //    ApiHelper.userDevices.Add(phone, device);
+                        //}
+                        //else
+                        //{
+                        //    ApiHelper.userDevices[phone].status = "登陆已过期";
+                        //}
+                        //continue;
+                    }
+
                     if (await ListPeer(phone))
                     {
                         if (await GetUserInfo(phone))
@@ -402,40 +449,19 @@ namespace imt_wankeyun_client
                             await GetUsbInfo(phone);
                         }
                     }
+                    await Task.Delay(settings.refresh_everySpan * 1000);//防止过快引起风控
                     deviceInfos = null;
-                    lv_DeviceStatus.ItemsSource = deviceInfos;
-                    AutoHeaderWidth(lv_DeviceStatus);
-                }
-                var v = ApiHelper.incomeHistorys.Values;
-                dayIncomes = null;
-                dayIncomes = new List<Income>();
-                for (int i = 0; i < v.Count; i++)
-                {
-                    var t = v.ElementAt(i);
-                    var inc = t.incomeArr;
-                    foreach (var c in inc)
+                    if (settings.showSimple)
                     {
-                        var cClone = new Income
-                        {
-                            date = c.date,
-                            num = c.num
-                        };
-                        if (dayIncomes.Where(tt => tt.date == c.date).Count() == 0)
-                        {
-                            dayIncomes.Add(cClone);
-                        }
-                        else
-                        {
-                            var ii = dayIncomes.Find(tt => tt.date == cClone.date);
-                            ii.num = (Convert.ToDouble(ii.num) + Convert.ToDouble(cClone.num)).ToString();
-                        }
+                        (lv_DeviceStatus as GridControl).ItemsSource = deviceInfos;
+                    }
+                    else
+                    {
+                        (lv_DeviceStatus as ListView).ItemsSource = deviceInfos;
+                        AutoHeaderWidth((lv_DeviceStatus as ListView));
                     }
                 }
-                dayIncomes = dayIncomes.OrderBy(t => t.date).ToList();
-                lv_incomeHistory.ItemsSource = null;
-                lv_incomeHistory.ItemsSource = dayIncomes.OrderByDescending(t => t.date).ToList();
-                AutoHeaderWidth(lv_incomeHistory);
-                tbk_isAutoRefreshing.Text = "";
+                updateTotalInfo();
             }
             catch (Exception ex)
             {
@@ -443,12 +469,70 @@ namespace imt_wankeyun_client
                 Debug.WriteLine("RefreshStatus error:" + ex.Message);
             }
         }
+        void updateTotalInfo()
+        {
+            var v = ApiHelper.incomeHistorys.Values;
+            dayIncomes = null;
+            dayIncomes = new List<Income>();
+            for (int i = 0; i < v.Count; i++)
+            {
+                var t = v.ElementAt(i);
+                var inc = t.incomeArr;
+                foreach (var c in inc)
+                {
+                    var cClone = new Income
+                    {
+                        date = c.date,
+                        num = c.num
+                    };
+                    if (dayIncomes.Where(tt => tt.date == c.date).Count() == 0)
+                    {
+                        dayIncomes.Add(cClone);
+                    }
+                    else
+                    {
+                        var ii = dayIncomes.Find(tt => tt.date == cClone.date);
+                        ii.num = ii.num + cClone.num;
+                    }
+                }
+            }
+            dayIncomes = dayIncomes.OrderBy(t => t.date).ToList();
+            lv_incomeHistory.ItemsSource = null;
+            lv_incomeHistory.ItemsSource = dayIncomes.OrderByDescending(t => t.date).ToList();
+            AutoHeaderWidth(lv_incomeHistory);
+
+            var nets = deviceInfos.ToList().GroupBy(t => t.ip_info).Select(t => t.Key).ToList();
+            var net_incs = new List<Object>();
+            nets.ForEach(t =>
+            {
+                var dis = deviceInfos.Where(d => d.ip_info == t).ToList();
+                double incs = 0;
+                double hincs = 0;
+                dis.ForEach(d => incs += Convert.ToDouble(d.yes_wkb));
+                dis.ForEach(d => hincs += d.totalIncome);
+                double aver = incs / dis.Count;
+                net_incs.Add(new
+                {
+                    name = t,
+                    incs = incs,
+                    aver = aver,
+                    hincs = hincs,
+                    count = dis.Count,
+                });
+            });
+            lv_net_income.ItemsSource = null;
+            lv_net_income.ItemsSource = net_incs;
+            AutoHeaderWidth(lv_net_income);
+
+            tbk_isAutoRefreshing.Text = "";
+            LoadAccounts();
+        }
         async void RefreshRemoteDlStatus()
         {
             if (curAccount != null)
             {
                 Debug.WriteLine("curAccount=" + curAccount);
-                await RemoteDlLogin(curAccount);
+                //await RemoteDlLogin(curAccount);
                 if (await GetRemoteDlInfo(curAccount, 0))
                 {
                     dlTasks = null;
@@ -461,7 +545,7 @@ namespace imt_wankeyun_client
             if (curAccount != null)
             {
                 Debug.WriteLine("curAccount=" + curAccount);
-                await RemoteDlLogin(curAccount);
+                //await RemoteDlLogin(curAccount);
                 if (await GetRemoteDlInfo(curAccount, 1))
                 {
                     dlTasks_finished = null;
@@ -493,7 +577,45 @@ namespace imt_wankeyun_client
             if (LoginWindow.LoginSuccess)
             {
                 LoadAccounts();
-                RefreshStatus();
+                RefreshStatus(LoginWindow.LoginPhone);
+            }
+        }
+        async Task<bool> AdTitleQuery()
+        {
+            HttpMessage resp = await ApiHelper.Query("http://wanke.immortalt.com/tool/imt_wankeyun_client/ad_title.html");
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var title = resp.data.ToString();
+                    tbk_ad_main.Visibility = Visibility.Visible;
+                    ad_main_title.Text = title;
+                    Debug.WriteLine("AdTitleQuery:" + title);
+                    return false;
+                default:
+                    Debug.WriteLine("AdTitleQuery-网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
+            }
+        }
+        async Task<bool> AdTitle2Query()
+        {
+            HttpMessage resp = await ApiHelper.Query("http://wanke.immortalt.com/tool/imt_wankeyun_client/ad_title2_text.html");
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    var title = resp.data.ToString();
+                    if (title == "")
+                    {
+                        return false;
+                    }
+                    link_updateInfo_text.Text = title;
+                    Debug.WriteLine("AdTitle2Query:" + title);
+                    tbk_updateInfo.Visibility = Visibility.Visible;
+                    return true;
+                default:
+                    Debug.WriteLine("AdTitle2Query-网络异常错误！");
+                    //MessageBox.Show(resp.data.ToString(), "网络异常错误！");
+                    return false;
             }
         }
         async Task<bool> GetUyulinPrice()
@@ -503,12 +625,12 @@ namespace imt_wankeyun_client
             {
                 case HttpStatusCode.OK:
                     var r = resp.data as UyulinWkc_DogeResponse;
-                    if (r.trades != null && r.trades.Count > 1)
+                    if (r.code == 1 && r.body != null && r.body.Count > 0)
                     {
                         uyulinPrice = r;
-                        if (r.trades[0] != null && r.trades[0].Count == 5)
+                        if (r.body.Find(T => T.marketId == "wkb_wcny") != null)
                         {
-                            var price = Convert.ToDouble(r.trades[0][2]);
+                            var price = Convert.ToDouble(r.body.Find(T => T.marketId == "wkb_wcny").newPrice);
                             if (price >= lastPrice["悠雨林"])
                             {
                                 tbk_uyulin_newPrice.Text = $"￥{price.ToString("f2")} ↑";
@@ -548,6 +670,7 @@ namespace imt_wankeyun_client
         }
         async Task<bool> GetMiguanPrice()
         {
+            return false;
             HttpMessage resp = await ApiHelper.GetMiguanPrice();
             switch (resp.statusCode)
             {
@@ -558,86 +681,86 @@ namespace imt_wankeyun_client
                         miguanPrice = r;
                         if (r.result != null && r.result.Count > 0)
                         {
-                            //玩客币社区
-                            var wkbsq = r.result.Find(t => t.dict != null && t.dict.name == "玩客币社区");
-                            if (wkbsq != null)
-                            {
-                                var price = Convert.ToDouble(wkbsq.cnyPrice);
-                                if (wkbsq.mark == 1)
-                                {
-                                    tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↑";
-                                    tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Red);
-                                }
-                                else
-                                {
-                                    tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↓";
-                                    tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Green);
-                                }
-                                if (price != lastPrice["玩客币社区"])
-                                {
-                                    lastPrice["玩客币社区"] = price;
-                                }
-                            }
-                            //cex-usdt
-                            var cex_usdt = r.result.Find(t => t.dict != null && t.dict.name == "cex-usdt");
-                            if (cex_usdt != null)
-                            {
-                                var price = Convert.ToDouble(cex_usdt.cnyPrice);
-                                if (cex_usdt.mark == 1)
-                                {
-                                    tbk_cex_usdt_newPrice.Text = $"￥{price.ToString("f2")} ↑";
-                                    tbk_cex_usdt_newPrice.Foreground = new SolidColorBrush(Colors.Red);
-                                }
-                                else
-                                {
-                                    tbk_cex_usdt_newPrice.Text = $"￥{price.ToString("f2")} ↓";
-                                    tbk_cex_usdt_newPrice.Foreground = new SolidColorBrush(Colors.Green);
-                                }
-                                if (price != lastPrice["cex-usdt"])
-                                {
-                                    lastPrice["cex-usdt"] = price;
-                                }
-                            }
-                            //cex-eth
-                            var cex_eth = r.result.Find(t => t.dict != null && t.dict.name == "cex-eth");
-                            if (cex_eth != null)
-                            {
-                                var price = Convert.ToDouble(cex_eth.cnyPrice);
-                                if (cex_eth.mark == 1)
-                                {
-                                    tbk_cex_eth_newPrice.Text = $"￥{price.ToString("f2")} ↑";
-                                    tbk_cex_eth_newPrice.Foreground = new SolidColorBrush(Colors.Red);
-                                }
-                                else
-                                {
-                                    tbk_cex_eth_newPrice.Text = $"￥{price.ToString("f2")} ↓";
-                                    tbk_cex_eth_newPrice.Foreground = new SolidColorBrush(Colors.Green);
-                                }
-                                if (price != lastPrice["cex-eth"])
-                                {
-                                    lastPrice["cex-eth"] = price;
-                                }
-                            }
-                            //玩家网
-                            var wjw = r.result.Find(t => t.dict != null && t.dict.name == "玩家网");
-                            if (wjw != null)
-                            {
-                                var price = Convert.ToDouble(wjw.cnyPrice);
-                                if (wjw.mark == 1)
-                                {
-                                    tbk_wjw_newPrice.Text = $"￥{price.ToString("f2")} ↑";
-                                    tbk_wjw_newPrice.Foreground = new SolidColorBrush(Colors.Red);
-                                }
-                                else
-                                {
-                                    tbk_wjw_newPrice.Text = $"￥{price.ToString("f2")} ↓";
-                                    tbk_wjw_newPrice.Foreground = new SolidColorBrush(Colors.Green);
-                                }
-                                if (price != lastPrice["玩家网"])
-                                {
-                                    lastPrice["玩家网"] = price;
-                                }
-                            }
+                            ////玩客币社区
+                            //var wkbsq = r.result.Find(t => t.dict != null && t.dict.name == "玩客币社区");
+                            //if (wkbsq != null)
+                            //{
+                            //    var price = Convert.ToDouble(wkbsq.cnyPrice);
+                            //    if (wkbsq.mark == 1)
+                            //    {
+                            //        tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                            //        tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                            //    }
+                            //    else
+                            //    {
+                            //        tbk_wkbsq_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                            //        tbk_wkbsq_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                            //    }
+                            //    if (price != lastPrice["玩客币社区"])
+                            //    {
+                            //        lastPrice["玩客币社区"] = price;
+                            //    }
+                            //}
+                            ////cex-usdt
+                            //var cex_usdt = r.result.Find(t => t.dict != null && t.dict.name == "cex-usdt");
+                            //if (cex_usdt != null)
+                            //{
+                            //    var price = Convert.ToDouble(cex_usdt.cnyPrice);
+                            //    if (cex_usdt.mark == 1)
+                            //    {
+                            //        tbk_cex_usdt_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                            //        tbk_cex_usdt_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                            //    }
+                            //    else
+                            //    {
+                            //        tbk_cex_usdt_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                            //        tbk_cex_usdt_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                            //    }
+                            //    if (price != lastPrice["cex-usdt"])
+                            //    {
+                            //        lastPrice["cex-usdt"] = price;
+                            //    }
+                            //}
+                            ////cex-eth
+                            //var cex_eth = r.result.Find(t => t.dict != null && t.dict.name == "cex-eth");
+                            //if (cex_eth != null)
+                            //{
+                            //    var price = Convert.ToDouble(cex_eth.cnyPrice);
+                            //    if (cex_eth.mark == 1)
+                            //    {
+                            //        tbk_cex_eth_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                            //        tbk_cex_eth_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                            //    }
+                            //    else
+                            //    {
+                            //        tbk_cex_eth_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                            //        tbk_cex_eth_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                            //    }
+                            //    if (price != lastPrice["cex-eth"])
+                            //    {
+                            //        lastPrice["cex-eth"] = price;
+                            //    }
+                            //}
+                            ////玩家网
+                            //var wjw = r.result.Find(t => t.dict != null && t.dict.name == "玩家网");
+                            //if (wjw != null)
+                            //{
+                            //    var price = Convert.ToDouble(wjw.cnyPrice);
+                            //    if (wjw.mark == 1)
+                            //    {
+                            //        tbk_wjw_newPrice.Text = $"￥{price.ToString("f2")} ↑";
+                            //        tbk_wjw_newPrice.Foreground = new SolidColorBrush(Colors.Red);
+                            //    }
+                            //    else
+                            //    {
+                            //        tbk_wjw_newPrice.Text = $"￥{price.ToString("f2")} ↓";
+                            //        tbk_wjw_newPrice.Foreground = new SolidColorBrush(Colors.Green);
+                            //    }
+                            //    if (price != lastPrice["玩家网"])
+                            //    {
+                            //        lastPrice["玩家网"] = price;
+                            //    }
+                            //}
                         }
                         else
                         {
@@ -970,6 +1093,23 @@ namespace imt_wankeyun_client
                     return "错误！网络异常错误！";
             }
         }
+        async Task<string> DeviceReset(string phone)
+        {
+            HttpMessage resp = await ApiHelper.DeviceReset(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data == null)
+                    {
+                        return "错误！获取数据为空！";
+                    }
+                    var r = resp.data as SimpleResponse;
+                    return r.msg;
+                default:
+                    Debug.WriteLine("DeviceReset-网络异常错误！");
+                    return "错误！网络异常错误！";
+            }
+        }
         async Task<string> UpgradeProcess(string phone)
         {
             HttpMessage resp = await ApiHelper.UpgradeProgress(phone);
@@ -1091,6 +1231,8 @@ namespace imt_wankeyun_client
         }
         async Task<bool> GetUsbInfo(string phone)
         {
+            //var ld = settings.loginDatas.Find(t => t.phone == phone);
+            //await UserLogin(ld);
             HttpMessage resp = await ApiHelper.GetUSBInfo(phone);
             switch (resp.statusCode)
             {
@@ -1153,6 +1295,27 @@ namespace imt_wankeyun_client
                     return null;
             }
         }
+        async Task<bool> CheckSession(string phone)
+        {
+            HttpMessage resp = await ApiHelper.CheckSession(phone);
+            switch (resp.statusCode)
+            {
+                case HttpStatusCode.OK:
+                    if (resp.data != null)
+                    {
+                        var r = resp.data as CheckSessionResponse;
+                        return r.iRet == 0 && r.sMsg == "ok";
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"CheckSession-获取数据出错{(resp.data as CheckSessionResponse).sMsg}");
+                    }
+                    return false;
+                default:
+                    Debug.WriteLine("CheckSession-网络异常错误！");
+                    return false;
+            }
+        }
         private void RemoteDlTimer_Tick(object sender, EventArgs e)
         {
             if (chk_refreshRemoteDl.IsChecked == true)
@@ -1175,11 +1338,6 @@ namespace imt_wankeyun_client
                 {
                     if (this._deviceInfos == null)
                     {
-                        double yesAllCoin = 0;
-                        double hisAllCoin = 0;
-                        double ketiWkb = 0;
-                        int onlineCount = 0;
-                        int offlineCount = 0;
                         _deviceInfos = new ObservableCollection<DeviceInfoVM>();
                         var DiList = new List<DeviceInfoVM>();
                         for (int i = 0; i < ApiHelper.userBasicDatas.Count; i++)
@@ -1212,6 +1370,10 @@ namespace imt_wankeyun_client
                                 },
                                 device_sn = "暂无数据",
                             };
+                            if (ubd.phone == null && ubd.mail != null)
+                            {
+                                ubd.phone = ubd.mail;
+                            }
                             if (ApiHelper.userDevices.ContainsKey(ubd.phone))
                             {
                                 device = ApiHelper.userDevices[ubd.phone];
@@ -1237,12 +1399,20 @@ namespace imt_wankeyun_client
                                 {
                                     cap += p.capacity;
                                     used += p.used;
+                                    volume += $"{UtilHelper.ConvertToSizeString(p.used)}/{UtilHelper.ConvertToSizeString(p.capacity)}\r\n";
                                 });
-                                volume = $"{UtilHelper.ConvertToSizeString(used)}/{UtilHelper.ConvertToSizeString(cap)}";
                                 if (used == 0 && cap == 0)
                                 {
                                     volume = "无硬盘";
                                     volume_color = "Red";
+                                    //noDiskCount++;
+                                }
+                                else
+                                {
+                                    if (volume.Length > 2)
+                                    {
+                                        volume = volume.Substring(0, volume.Length - 2);
+                                    }
                                 }
                             }
                             else
@@ -1268,17 +1438,10 @@ namespace imt_wankeyun_client
                             {
                                 incomeHistory = ApiHelper.incomeHistorys[ubd.phone];
                             }
-                            yesAllCoin += userInfo.yes_wkb;
-                            hisAllCoin += incomeHistory.totalIncome;
-                            ketiWkb += wkbAccountInfo.balance;
-                            if (device.status == "offline")
-                            {
-                                offlineCount++;
-                            }
-                            else
-                            {
-                                onlineCount++;
-                            }
+                            var wkb_yes_before = incomeHistory != null ?
+                                ((incomeHistory.incomeArr != null && incomeHistory.incomeArr.Count > 1) ?
+                                incomeHistory.incomeArr[1].num : 0) : 0;
+                            //MessageBox.Show(device.device_name + " " + device.coturn_online.ToString());
                             var di = new DeviceInfoVM
                             {
                                 phone = ubd.phone != null ? ubd.phone : "暂无数据",
@@ -1286,82 +1449,50 @@ namespace imt_wankeyun_client
                                 ip = device.ip != null ? device.ip : "暂无数据",
                                 lan_ip = device.lan_ip != null ? device.lan_ip : "暂无数据",
                                 device_name = device.device_name != null ? device.device_name : "暂无数据",
-                                status = device.status == "offline" ? "离线" : (device.status == "online" ? "在线" : (device.status == "exception" ? "在线" : device.status)),
-                                status_color = device.status == "offline" ? "Red" : "Green",
                                 dcdn_upnp_status = device.dcdn_upnp_status != null ? device.dcdn_upnp_status : "暂无数据",
                                 system_version = device.system_version != null ? device.system_version : "暂无数据",
-                                dcdn_download_speed = UtilHelper.ConvertToSpeedString(device.dcdn_download_speed),
-                                dcdn_upload_speed = UtilHelper.ConvertToSpeedString(device.dcdn_upload_speed),
-                                exception_message = device.exception_message != null ? device.exception_message : "暂无数据",
-                                isActived = (device.features != null ? device.features.onecloud_coin : 0).ToString() == "False" ? "未激活" : "已激活" + userInfo.activate_days.ToString() + "天",
+                                //dcdn_download_speed = UtilHelper.ConvertToSpeedString(device.dcdn_download_speed),
+                                //dcdn_upload_speed = UtilHelper.ConvertToSpeedString(device.dcdn_upload_speed),
+                                //exception_message = device.exception_message != null ? device.exception_message : "暂无数据",
+                                isActived = (device.features != null ? device.features.onecloud_coin : 0).ToString() == "False" ? "未激活" : "已激活" + (userInfo.activate_days != 1 ? userInfo.activate_days.ToString() + "天" : ""),
                                 dcdn_clients_count = (device.dcdn_clients != null ? device.dcdn_clients.Count : 0).ToString(),
                                 dcdn_upnp_message = device.dcdn_upnp_message != null ? device.dcdn_upnp_message : "暂无数据",
                                 upgradeable = device.upgradeable ? "可升级" : "已最新！",
-                                ip_info = device.ip_info != null ? $"{device.ip_info.province}{device.ip_info.city}{device.ip_info.isp}" : "暂无数据",
+                                ip_info = device.ip_info != null ? $"{NotUnknown(device.ip_info.province)}{NotUnknown(device.ip_info.city)}{NotUnknown(device.ip_info.isp)}" : "暂无数据",
                                 yes_wkb = userInfo.yes_wkb,
+                                yes_wkb_color = userInfo.yes_wkb > wkb_yes_before ? "Red" : "Green",
+                                wkb_yes_before = wkb_yes_before,
                                 activate_days = userInfo.activate_days,
                                 totalIncome = incomeHistory.totalIncome,
-                                volume = device.status != "offline" ? volume : "设备离线",
                                 device_sn = device.device_sn != null ? device.device_sn : "暂无数据",
                                 ketiWkb = wkbAccountInfo.balance,
                                 wkbAddr = wkbAccountInfo.addr != null ? wkbAccountInfo.addr : "暂无",
                                 showUpgrade = device.upgradeable ? Visibility.Visible : Visibility.Collapsed,
                                 volume_color = volume_color,
                             };
-                            DiList.Add(di);
-                            //确保获取到了设备的状态的情况下
-                            if (ApiHelper.userDevices.ContainsKey(ubd.phone))
+                            //if ((device.status != "offline" || device.coturn_online > 0))
+                            if (device.status != "登陆已过期")
                             {
-                                var status = di.status == "在线";
-                                //检测并记录设备在线状态
-                                if (!OnlineStatus.ContainsKey(di.phone))
+                                if ((device.status != "offline"))
                                 {
-                                    //初始化设备在线状态
-                                    OnlineStatus.Add(di.phone, status);
+                                    di.status = "在线";
+                                    di.status_color = "Green";
+                                    di.volume = volume;
                                 }
                                 else
                                 {
-                                    //如果设备在线状态发生了变更
-                                    if (OnlineStatus[di.phone] != status)
-                                    {
-                                        Debug.WriteLine(di.phone + "在线状态发生了变更");
-                                        OnlineStatus[di.phone] = status;
-                                        if (status == false)
-                                        {
-                                            //记录设备掉线时间
-                                            if (!OfflineTime.ContainsKey(di.phone))
-                                            {
-                                                OfflineTime.Add(di.phone, DateTime.Now);
-                                            }
-                                            else
-                                            {
-                                                OfflineTime[di.phone] = DateTime.Now;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //通知设备恢复在线
-                                            SendNotifyMail(di);
-                                            SendNotifyServerChan(di);
-                                        }
-                                    }
+                                    di.status = "离线";
+                                    di.status_color = "Red";
+                                    di.volume = "设备离线";
                                 }
                             }
-                        }
-                        for (var j = 0; j < OfflineTime.Count; j++)
-                        {
-                            var ot = OfflineTime.ElementAt(j);
-                            if (DateTime.Now.Subtract(ot.Value).TotalMinutes >= offlineNotifyTime)
+                            else
                             {
-                                //通知设备离线10分钟
-                                var di = DiList.Find(t => t.phone == ot.Key);
-                                if (di != null)
-                                {
-                                    SendNotifyMail(di);
-                                    SendNotifyServerChan(di);
-                                }
-                                OfflineTime.Remove(ot.Key);
+                                di.status = "登陆已过期";
+                                di.volume = "登陆已过期";
                             }
+
+                            DiList.Add(di);
                         }
                         if (searchWord.Trim() != "")
                         {
@@ -1375,12 +1506,39 @@ namespace imt_wankeyun_client
                             t.device_sn.Contains(searchWord)
                             ).ToList();
                         }
+                        int onlineCount = 0;
+                        int offlineCount = 0;
+                        int nodiskCount = 0;
+
+                        double yesAllCoin = 0;
+                        double hisAllCoin = 0;
+                        double ketiWkb = 0;
+
+                        DiList.ForEach(di =>
+                        {
+                            if (di.status == "离线")
+                            {
+                                offlineCount++;
+                            }
+                            else
+                            {
+                                onlineCount++;
+                                if (di.volume == "无硬盘")
+                                {
+                                    nodiskCount++;
+                                }
+                            }
+                            yesAllCoin += di.yes_wkb;
+                            hisAllCoin += di.totalIncome;
+                            ketiWkb += di.ketiWkb;
+                        });
                         if (settings.SortOrder == 0)
                         {
                             switch (settings.SortBy)
                             {
                                 case "设备名称":
-                                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                                    System.Collections.Generic.IComparer<DeviceInfoVM> fileNameComparer = new UtilHelper.DeviceNameComparerClass();
+                                    DiList.Sort(fileNameComparer);
                                     break;
                                 case "昨日收入":
                                     DiList = DiList.OrderBy(t => t.yes_wkb).ToList();
@@ -1391,11 +1549,16 @@ namespace imt_wankeyun_client
                                 case "总收入":
                                     DiList = DiList.OrderBy(t => t.totalIncome).ToList();
                                     break;
-                                case "手机号":
+                                case "用户名":
                                     DiList = DiList.OrderBy(t => t.phone).ToList();
                                     break;
+                                case "在线状态":
+                                    DiList = DiList.OrderBy(t => t.status).ThenBy(t => t.device_name).ToList();
+                                    break;
+                                case "不排序":
+                                    break;
                                 default:
-                                    DiList = DiList.OrderBy(t => t.device_name).ToList();
+                                    DiList = DiList.OrderBy(t => t.status).ThenBy(t => t.device_name).ToList();
                                     break;
                             }
                         }
@@ -1415,23 +1578,31 @@ namespace imt_wankeyun_client
                                 case "总收入":
                                     DiList = DiList.OrderByDescending(t => t.totalIncome).ToList();
                                     break;
-                                case "手机号":
+                                case "用户名":
                                     DiList = DiList.OrderByDescending(t => t.phone).ToList();
                                     break;
+                                case "在线状态":
+                                    DiList = DiList.OrderByDescending(t => t.status).ThenBy(t => t.device_name).ToList();
+                                    break;
+                                case "不排序":
+                                    break;
                                 default:
-                                    DiList = DiList.OrderByDescending(t => t.device_name).ToList();
+                                    DiList = DiList.OrderByDescending(t => t.status).ThenBy(t => t.device_name).ToList();
                                     break;
                             }
                         }
                         DiList.ForEach(t => _deviceInfos.Add(t));
+                        var yes_average = DiList != null && DiList.Count > 0 ? (yesAllCoin / DiList.Count).ToString() : "0";
+                        tbk_yes_average.Text = yes_average;
                         tbk_yesAllCoin.Text = yesAllCoin.ToString();
                         tbk_hisAllCoin.Text = hisAllCoin.ToString();
                         tbk_onlineCount.Text = onlineCount.ToString();
                         tbk_offlineCount.Text = offlineCount.ToString();
-                        if (offlineCount > 0)
+                        tbk_nodiskCount.Text = nodiskCount.ToString();
+                        if (offlineCount > 0 || nodiskCount > 0)
                         {
                             notifyIcon.Icon = offlineIcon;
-                            notifyIcon.Text = "离线设备数量：" + offlineCount.ToString();
+                            notifyIcon.Text = $"离线设备数量：{offlineCount} 掉盘设备数量：{nodiskCount}";
                         }
                         else
                         {
@@ -1439,6 +1610,123 @@ namespace imt_wankeyun_client
                             notifyIcon.Text = "所有" + onlineCount.ToString() + "设备正常在线";
                         }
                         tbk_ketiWkb.Text = ketiWkb.ToString();
+                        DiList.ForEach(di =>
+                        {
+                            //确保获取到了设备的状态的情况下
+                            if (ApiHelper.userDevices.ContainsKey(di.phone))
+                            {
+                                if (di.status != "暂无数据" && di.status != "登陆已过期")
+                                {
+                                    //在线检测
+                                    var status = di.status == "在线";
+                                    //检测并记录设备在线状态
+                                    if (!OnlineStatus.ContainsKey(di.phone))
+                                    {
+                                        //初始化设备在线状态
+                                        OnlineStatus.Add(di.phone, status);
+                                    }
+                                    else
+                                    {
+                                        //如果设备在线状态发生了变更
+                                        if (OnlineStatus[di.phone] != status)
+                                        {
+                                            //MessageBox.Show(di.phone + "在线状态发生了变更" + status);
+                                            OnlineStatus[di.phone] = status;
+                                            if (status == false)
+                                            {
+                                                ////记录设备掉线时间
+                                                //if (!OfflineTime.ContainsKey(di.phone))
+                                                //{
+                                                //    OfflineTime.Add(di.phone, DateTime.Now);
+                                                //}
+                                                //else
+                                                //{
+                                                //    OfflineTime[di.phone] = DateTime.Now;
+                                                //}
+                                                SendNotifyMail(di);
+                                                SendNotifyServerChan(di);
+                                            }
+                                            else
+                                            {
+                                                ////通知设备恢复在线
+                                                //if (OfflineTime.ContainsKey(di.phone) && OfflineTime[di.phone].Year == 2016)
+                                                //{
+                                                //如果已经发送过离线通知了
+                                                SendNotifyMail(di);
+                                                SendNotifyServerChan(di);
+                                                //}
+                                            }
+                                        }
+                                    }
+                                    //硬盘检测
+                                    var hasDisk = di.volume != "无硬盘";
+                                    //检测并记录设备硬盘状态
+                                    if (!DiskStatus.ContainsKey(di.phone))
+                                    {
+                                        //初始化设备硬盘状态
+                                        DiskStatus.Add(di.phone, hasDisk);
+                                    }
+                                    else
+                                    {
+                                        //如果设备硬盘状态发生了变更
+                                        if (DiskStatus[di.phone] != hasDisk)
+                                        {
+                                            //MessageBox.Show(di.phone + "硬盘状态发生了变更");
+                                            DiskStatus[di.phone] = hasDisk;
+                                            if (hasDisk == false)
+                                            {
+                                                ////记录设备掉线时间
+                                                //if (!DiskBadTime.ContainsKey(di.phone))
+                                                //{
+                                                //    DiskBadTime.Add(di.phone, DateTime.Now);
+                                                //}
+                                                //else
+                                                //{
+                                                //    DiskBadTime[di.phone] = DateTime.Now;
+                                                //}
+                                                SendNotifyMail(di, 1);
+                                                SendNotifyServerChan(di, 1);
+                                            }
+                                            else
+                                            {
+                                                ////通知设备硬盘恢复
+                                                //if (DiskBadTime.ContainsKey(di.phone) && DiskBadTime[di.phone].Year == 2016)
+                                                //{
+                                                //如果已经发送过离线通知了
+                                                SendNotifyMail(di, 1);
+                                                SendNotifyServerChan(di, 1);
+                                                //}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            ////离线提醒
+                            //if (OfflineTime.ContainsKey(di.phone))
+                            //{
+                            //    var ot = OfflineTime[di.phone];
+                            //    //通过标记为2016年，来表示删除这个元素
+                            //    if (ot.Year != 2016 && DateTime.Now.Subtract(ot).TotalMinutes >= offlineNotifyTime)
+                            //    {
+                            //        //通知设备离线10分钟
+
+                            //        OfflineTime[di.phone] = new DateTime(2016, 1, 1);
+                            //    }
+                            //}
+                            //掉盘提醒
+                            //if (DiskBadTime.ContainsKey(di.phone))
+                            //{
+                            //    var ot = DiskBadTime[di.phone];
+                            //    //通过标记为2016年，来表示删除这个元素
+                            //    if (ot.Year != 2016 && DateTime.Now.Subtract(ot).TotalMinutes >= offlineNotifyTime)
+                            //    {
+                            //        //通知设备离线10分钟
+                            //        SendNotifyMail(di, 1);
+                            //        SendNotifyServerChan(di, 1);
+                            //        DiskBadTime[di.phone] = new DateTime(2016, 1, 1);
+                            //    }
+                            //}                    
+                        });
                     }
                 }
                 catch (Exception ex)
@@ -1509,6 +1797,10 @@ namespace imt_wankeyun_client
                 _dlTasks = value;
             }
         }
+        string NotUnknown(string name)
+        {
+            return name == "未知" ? "" : name;
+        }
         public ObservableCollection<DlTaskVM> dlTasks_finished
         {
             get
@@ -1542,6 +1834,7 @@ namespace imt_wankeyun_client
                                 state_img = null,
                                 speed = UtilHelper.ConvertToSpeedString(t.speed),
                                 progress = (t.progress / 100d).ToString("f2") + "%",
+                                id = t.id
                             };
                             _dlTasks_finished.Add(task);
                         }
@@ -1666,19 +1959,60 @@ namespace imt_wankeyun_client
         }
         async void InitLogin()
         {
-            if (settings.mailAccount.mailTo == null)
+            try
             {
-                settings.mailAccount.mailTo = settings.mailAccount.username;
-                SettingHelper.WriteSettings(settings, password);
-            }
-            if (settings.SortBy == null)
-            {
-                settings.SortBy = "设备名称";
-                SettingHelper.WriteSettings(settings, password);
-            }
-            if (settings.priceNotifyItem == null)
-            {
-                settings.priceNotifyItem = new List<string>
+                if (settings.refresh_everySpan < minEveryDelay)
+                {
+                    settings.refresh_everySpan = minEveryDelay;
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                if (settings.everyday_report == 0)
+                {
+                    settings.everyday_report = 1;
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                if (settings.offline_report == 0)
+                {
+                    settings.offline_report = 1;
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                chk_everyday_report.IsChecked = settings.everyday_report == 1;
+                chk_offline_report.IsChecked = settings.offline_report == 1;
+                if (settings.showSimple)
+                {
+                    chk_showSimple.IsChecked = true;
+                    lv_DeviceStatus = lv_DeviceStatusSimple;
+                    lv_DeviceStatusSimple.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    chk_showSimple.IsChecked = false;
+                    lv_DeviceStatus = lv_DeviceStatusFull;
+                    lv_DeviceStatusFull.Visibility = Visibility.Visible;
+                }
+                if (settings.dailyNotifyHour == 0)
+                {
+                    settings.dailyNotifyHour = 9;
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                if (settings.dailyNotifyMinute == 0)
+                {
+                    settings.dailyNotifyMinute = 1;
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                if (settings.mailAccount.mailTo == null)
+                {
+                    settings.mailAccount.mailTo = settings.mailAccount.username;
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                if (settings.SortBy == null)
+                {
+                    settings.SortBy = "在线状态";
+                    SettingHelper.WriteSettings(settings, password);
+                }
+                if (settings.priceNotifyItem == null)
+                {
+                    settings.priceNotifyItem = new List<string>
                 {
                      "悠雨林",
               "cex-usdt",
@@ -1686,117 +2020,174 @@ namespace imt_wankeyun_client
              "玩客币社区",
              "玩家网"
                 };
-                SettingHelper.WriteSettings(settings, password);
-            }
-            chk_uyulin_notify.IsChecked = settings.priceNotifyItem.Contains("悠雨林");
-            chk_cex_usdt_notify.IsChecked = settings.priceNotifyItem.Contains("cex-usdt");
-            chk_cex_eth_notify.IsChecked = settings.priceNotifyItem.Contains("cex-eth");
-            chk_wkbsq_notify.IsChecked = settings.priceNotifyItem.Contains("玩客币社区");
-            chk_wjw_notify.IsChecked = settings.priceNotifyItem.Contains("玩家网");
-
-            cbx_autoTibi.SelectedIndex = settings.autoTibi;
-            grid_mailNotify.DataContext = settings.mailAccount;
-            grid_serverchan.DataContext = settings;
-            grid_refreshSetting.DataContext = settings;
-            tbx_mailPwd.Password = settings.mailAccount.password;
-            tbx_priceAboce.Text = settings.priceAbove.ToString();
-            tbx_priceBelow.Text = settings.priceBelow.ToString();
-            if (settings.mailNotify)
-            {
-                btu_mailNotify.Content = "关闭提醒";
-            }
-            else
-            {
-                btu_mailNotify.Content = "开启提醒";
-            }
-            if (settings.serverchanNotify)
-            {
-                btu_serverchanNotify.Content = "关闭提醒";
-            }
-            else
-            {
-                btu_serverchanNotify.Content = "开启提醒";
-            }
-            grid_main.IsEnabled = false;
-            if (settings.loginDatas != null && settings.loginDatas.Count > 0)
-            {
-                ld = new LoadingWindow();
-                ld.Show();
-                ld.SetTitle("登陆中");
-                ld.SetTip("正在登陆");
-                ld.SetPgr(0, settings.loginDatas.Count);
-                for (int i = 0; i < settings.loginDatas.Count; i++)
-                {
-                    var t = settings.loginDatas[i];
-                    ld.SetPgr(i, settings.loginDatas.Count);
-                    ld.SetTip("正在登陆账号：" + t.phone);
-                    await UserLogin(t);
+                    SettingHelper.WriteSettings(settings, password);
                 }
-                chk_autoRefresh.IsChecked = settings.autoRefresh;
-                LoadAccounts();
-                await RefreshStatus();
-                ld.Close();
-                ld = null;
-                StatusTimer.Start();
+                chk_uyulin_notify.IsChecked = settings.priceNotifyItem.Contains("悠雨林");
+                //chk_cex_usdt_notify.IsChecked = settings.priceNotifyItem.Contains("cex-usdt");
+                //chk_cex_eth_notify.IsChecked = settings.priceNotifyItem.Contains("cex-eth");
+                //chk_wkbsq_notify.IsChecked = settings.priceNotifyItem.Contains("玩客币社区");
+                //chk_wjw_notify.IsChecked = settings.priceNotifyItem.Contains("玩家网");
+
+                cbx_autoTibi.SelectedIndex = settings.autoTibi;
+                grid_mailNotify.DataContext = settings.mailAccount;
+                grid_serverchan.DataContext = settings;
+                grid_refreshSetting.DataContext = settings;
+                tbx_mailPwd.Password = settings.mailAccount.password;
+                tbx_priceAboce.Text = settings.priceAbove.ToString();
+                tbx_priceBelow.Text = settings.priceBelow.ToString();
+
+                tbx_notifyTime_hour.Text = settings.dailyNotifyHour.ToString();
+                tbx_notifyTime_minute.Text = settings.dailyNotifyMinute.ToString();
+
+                if (settings.mailNotify)
+                {
+                    btu_mailNotify.Content = "关闭提醒";
+                }
+                else
+                {
+                    btu_mailNotify.Content = "开启提醒";
+                }
+                if (settings.serverchanNotify)
+                {
+                    btu_serverchanNotify.Content = "关闭提醒";
+                }
+                else
+                {
+                    btu_serverchanNotify.Content = "开启提醒";
+                }
             }
-            grid_main.IsEnabled = true;
-            if (settings.mailNotify)
+            catch (Exception ex)
             {
-                SendDailyNotifyMail();
+                MessageBox.Show(ex.Message + ex.Source + ex.InnerException + ex.StackTrace, "初始化登陆发生错误-阶段1");
             }
-            if (settings.serverchanNotify)
+            try
             {
-                SendDailyNotifyServerChan();
+                //grid_main.IsEnabled = false;
+                if (settings.loginDatas != null && settings.loginDatas.Count > 0)
+                {
+                    ld = new LoadingWindow();
+                    ld.Show();
+                    ld.SetTitle("登陆中");
+                    ld.SetTip("正在登陆");
+                    ld.SetPgr(0, settings.loginDatas.Count);
+                    //for (int i = 0; i < settings.loginDatas.Count; i++)
+                    //{
+                    //    var t = settings.loginDatas[i];
+                    //    ld.SetPgr(i, settings.loginDatas.Count);
+                    //    ld.SetTip($"正在登陆第{i + 1}个账号：" + t.phone);
+                    //    await UserLogin(t);
+                    //    await Task.Delay(settings.refresh_everySpan * 1000);//防止过快引起风控
+                    //}
+                    chk_autoRefresh.IsChecked = settings.autoRefresh;
+                    LoadAccounts();
+                    await RefreshStatus(null, true);
+                    ld.Close();
+                    ld = null;
+                    StatusTimer.Start();
+                }
+                grid_main.IsEnabled = true;
             }
-            NotifyTimer.Start();
-            PriceTimer.Start();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + ex.Source + ex.InnerException + ex.StackTrace, "初始化登陆发生错误-阶段2");
+            }
+            try
+            {
+                if (settings.mailNotify)
+                {
+                    SendDailyNotifyMail();
+                }
+                if (settings.serverchanNotify)
+                {
+                    SendDailyNotifyServerChan();
+                }
+                NotifyTimer.Start();
+                PriceTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + ex.Source + ex.InnerException + ex.StackTrace, "初始化登陆发生错误-阶段3");
+            }
         }
-        async Task UserLogin(LoginData ld)
+        async Task<bool> UserLogin(LoginData ld)
         {
+            int loginType = 0;
+            switch (ld.account_type)
+            {
+                case "4":
+                    loginType = 0;
+                    break;
+                case "5":
+                    loginType = 1;
+                    break;
+            }
             HttpMessage resp = await ApiHelper.Login(
-                ld.phone, ld.pwd, "", ld.account_type, ld.deviceid, ld.imeiid);
+                ld.phone, ld.pwd, "", ld.account_type, ld.deviceid, ld.imeiid, loginType);
             switch (resp.statusCode)
             {
                 case HttpStatusCode.OK:
-                    var loginResponse = resp.data as LoginResponse;
-                    if (loginResponse.iRet == 0)
+                    if (resp.data != null)
                     {
-                        ApiHelper.userBasicDatas.Add(loginResponse.data.phone, loginResponse.data);
-                        //RefreshStatus();
-                        //载入登陆响应信息到主窗口
-                    }
-                    else if (loginResponse.iRet == -121)
-                    {
-                        if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
+                        var loginResponse = resp.data as LoginResponse;
+                        var userBasic = new UserBasicData()
                         {
-                            settings.loginDatas.Remove(ld);
-                            SettingHelper.WriteSettings(settings, password);
-                        }
-                        MessageBox.Show($"账号{ld.phone}登陆失败：验证码输入错误！请重新添加账号", "错误(-121)");
-                    }
-                    else if (loginResponse.iRet == -122)
-                    {
-                        if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
+                            phone = ld.phone
+                        };
+                        if (loginResponse.iRet == 0)
                         {
-                            settings.loginDatas.Remove(ld);
-                            SettingHelper.WriteSettings(settings, password);
+                            userBasic = loginResponse.data;
+                            if (!ApiHelper.userBasicDatas.Keys.Contains(ld.phone))
+                            {
+                                ApiHelper.userBasicDatas.Add(ld.phone, userBasic);
+                            }
+                            else
+                            {
+                                ApiHelper.userBasicDatas[ld.phone] = userBasic;
+                            }
+                            return true;
+                            //RefreshStatus();
+                            //载入登陆响应信息到主窗口
                         }
-                        MessageBox.Show($"账号{ld.phone}登陆失败：需要输入验证码！请重新添加账号", "提示(-122)");
-                    }
-                    else
-                    {
-                        if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
+                        else
                         {
-                            settings.loginDatas.Remove(ld);
-                            SettingHelper.WriteSettings(settings, password);
+                            if (loginResponse.iRet == -121)
+                            {
+                                if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
+                                {
+                                    settings.loginDatas.Remove(ld);
+                                    SettingHelper.WriteSettings(settings, password);
+                                }
+                                MessageBox.Show($"账号{ld.phone}登陆失败：验证码输入错误！请重新添加账号", "错误(-121)");
+                            }
+                            else if (loginResponse.iRet == -122)
+                            {
+                                if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
+                                {
+                                    settings.loginDatas.Remove(ld);
+                                    SettingHelper.WriteSettings(settings, password);
+                                }
+                                MessageBox.Show($"账号{ld.phone}登陆失败：需要输入验证码！请重新添加账号", "提示(-122)");
+                            }
+                            else
+                            {
+                                if (settings.loginDatas != null && settings.loginDatas.Contains(ld))
+                                {
+                                    settings.loginDatas.Remove(ld);
+                                    SettingHelper.WriteSettings(settings, password);
+                                }
+                                MessageBox.Show($"账号{ld.phone}登陆失败：{loginResponse.sMsg}！请重新添加账号", $"登陆失败({loginResponse.iRet})");
+                            }
                         }
-                        MessageBox.Show($"账号{ld.phone}登陆失败：{loginResponse.sMsg}！请重新添加账号", $"登陆失败({loginResponse.iRet})");
                     }
+                    break;
+                case HttpStatusCode.BadGateway:
+                    MessageBox.Show($"账号{ld.phone}登陆失败：无法连接到服务器，请尝试重启电脑所在的光猫/路由器重置网络", "连接网络失败！");
                     break;
                 default:
                     MessageBox.Show($"账号{ld.phone}登陆失败：{resp.data.ToString()}", "网络异常错误！");
                     break;
             }
+            return false;
         }
         private void chk_autoRefresh_Click(object sender, RoutedEventArgs e)
         {
@@ -1829,7 +2220,10 @@ namespace imt_wankeyun_client
         private void link_Click(object sender, RoutedEventArgs e)
         {
             Hyperlink link = sender as Hyperlink;
-            Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
+            if (link.NavigateUri != null)
+            {
+                Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
+            }
         }
         private void btu_delete_Click(object sender, RoutedEventArgs e)
         {
@@ -1862,11 +2256,11 @@ namespace imt_wankeyun_client
         }
         private void tbc_fileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (tbc_fileList.SelectedIndex == 0)
-            {
-                RefreshFileStatus();
-            }
-            else if (tbc_fileList.SelectedIndex == 3)
+            //if (tbc_fileList.SelectedIndex == 0)
+            //{
+            RefreshFileStatus();
+            //}
+            if (tbc_fileList.SelectedIndex == 3)
             {
                 remoteDlTab_SelectionChanged(null, null);
                 RemoteDlTimer.Start();
@@ -1895,8 +2289,10 @@ namespace imt_wankeyun_client
         {
             if (cbx_curAccount.SelectedValue != null)
             {
+                //MessageBox.Show("cbx_curAccount_SelectionChanged");
                 curAccount = cbx_curAccount.SelectedValue.ToString();
-                tbc_fileList_SelectionChanged(null, null);
+                //tbc_fileList_SelectionChanged(null, null);
+                RefreshFileStatus();
             }
         }
         private void btu_max_Click(object sender, RoutedEventArgs e)
@@ -1919,6 +2315,7 @@ namespace imt_wankeyun_client
             this.Width = rcnormal.Width;
             this.Height = rcnormal.Height;
         }
+
         private void link_showQQ_Click(object sender, RoutedEventArgs e)
         {
             AboutWindow a = new AboutWindow();
@@ -1979,6 +2376,10 @@ namespace imt_wankeyun_client
                     {
                         r.sMsg = "提币成功！";
                     }
+                    if (r.iRet == 99)
+                    {
+                        r.sMsg = "这周已经提过币了";
+                    }
                     tresult = $"{t.phone}:(状态码{r.iRet}){r.sMsg}";
                 }
                 else
@@ -1993,10 +2394,14 @@ namespace imt_wankeyun_client
                 {
                     result += tresult;
                 }
-                Thread.Sleep(3 * 1000);//防止提币过快引起风控
+                await Task.Delay(settings.refresh_everySpan * 1000);//防止提币过快引起风控
             }
             wkld.Close();
-            MessageBox.Show(result, "提币结果");
+            ResultWindow rw = new ResultWindow();
+            rw.tbk_tip.Text = "提币结果";
+            rw.tbx_content.Text = result;
+            rw.ShowDialog();
+            //MessageBox.Show(result, "提币结果");
         }
         private async void btu_drawWkb_Click(object sender, RoutedEventArgs e)
         {
@@ -2009,6 +2414,10 @@ namespace imt_wankeyun_client
                 if (r != null)
                 {
                     RefreshStatus();
+                    if (r.iRet == 0)
+                    {
+                        r.sMsg = "提币成功";
+                    }
                     MessageBox.Show($"{r.sMsg}", $"提示({r.iRet})");
                 }
                 else
@@ -2052,7 +2461,7 @@ namespace imt_wankeyun_client
             }
             else
             {
-                MessageBox.Show("设备名称不能为空！", "提示");
+                //MessageBox.Show("设备名称不能为空！", "提示");
             }
         }
         private void btu_viewHistoryIncome_Click(object sender, RoutedEventArgs e)
@@ -2063,7 +2472,7 @@ namespace imt_wankeyun_client
             if (ApiHelper.incomeHistorys.ContainsKey(phone))
             {
                 var ih = ApiHelper.incomeHistorys[phone];
-                ViewHistoryWindow vhw = new ViewHistoryWindow(ih);
+                ViewHistoryWindow vhw = new ViewHistoryWindow(phone, ih);
                 vhw.ShowDialog();
             }
             else
@@ -2076,13 +2485,18 @@ namespace imt_wankeyun_client
         {
             if (tab_account.SelectedIndex == 1)
             {
+                updateTotalInfo();
                 LoadDayHistroy();
             }
             else if (tab_account.SelectedIndex == 2)
             {
-                LoadWkbInfo();
+                updateTotalInfo();
             }
             else if (tab_account.SelectedIndex == 3)
+            {
+                LoadWkbInfo();
+            }
+            else if (tab_account.SelectedIndex == 4)
             {
                 RefreshPrice();
                 PriceTimer.Start();
@@ -2246,16 +2660,29 @@ namespace imt_wankeyun_client
                 MessageBox.Show("错误！" + ex.Message, "提示");
             }
         }
-        private async void SendNotifyMail(DeviceInfoVM di)
+        private async void SendNotifyMail(DeviceInfoVM di, int type = 0)
         {
-            if (settings.mailNotify)
+            //type=0:在线提醒 1:硬盘提醒
+            if (settings.mailNotify && settings.offline_report == 1)
             {
                 MailHelper.username = settings.mailAccount.username;
                 MailHelper.password = settings.mailAccount.password;
                 MailHelper.smtpServer = settings.mailAccount.smtpServer;
                 MailHelper.port = settings.mailAccount.port;
-                var title = di.status == "在线" ? $"{di.phone} {di.device_name}恢复在线-不朽玩客云客户端" : $"{di.phone} {di.device_name}离线{offlineNotifyTime}分钟了-不朽玩客云客户端";
-                var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, title, GetNotifyHtml(di));
+                string title = "";
+                if (type == 0)
+                {
+                    title = di.status == "在线" ? $"{di.device_name}恢复在线-不朽玩客云客户端" : $"{di.device_name}离线-不朽玩客云客户端";
+                }
+                else
+                {
+                    if (di.volume == "设备离线")
+                    {
+                        return;
+                    }//防止设备离线导致硬盘重复提醒
+                    title = di.volume != "无硬盘" ? $"{di.device_name}硬盘恢复正常-不朽玩客云客户端" : $"{di.device_name}无硬盘-不朽玩客云客户端";
+                }
+                var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, $"{DateTime.Now.Hour}点{DateTime.Now.Minute}分{DateTime.Now.Second}秒 " + title, GetNotifyHtml(di));
                 Debug.WriteLine($"SendNotifyMail {di.phone}:" + result);
             }
         }
@@ -2263,13 +2690,18 @@ namespace imt_wankeyun_client
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<html>");
-            var status = di.status == "在线" ? $"恢复在线" : $"离线";
-            sb.Append($"<p style='display:inline;'>账号{di.phone}的设备</p><p style='display:inline;color:{(di.status == "在线" ? "green" : "red")};'>{status}</p>");
-            sb.Append($"<br/>");
-            sb.Append($"时间：{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}");
-            sb.Append($"<br/>");
-            sb.Append($"设备详情：");
-            sb.Append($"<br/>");
+            //var status = di.status == "在线" ? $"恢复在线" : $"离线";
+            //sb.Append($"<p style='display:inline;'>账号{di.phone}的设备</p><p style='display:inline;color:{(di.status == "在线" ? "green" : "red")};'>{status}</p>");
+            sb.Append($"<p style='font-weight:bold;'>总览</p>");
+            sb.Append(Properties.Resources.TableStart);
+            sb.Append(Properties.Resources.TableContent.Replace("title", "统计时间").Replace("value", DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "在线设备数量").Replace("value", tbk_onlineCount.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "离线设备数量").Replace("value", tbk_offlineCount.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "昨日总收入").Replace("value", tbk_yesAllCoin.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "历史总收入").Replace("value", tbk_hisAllCoin.Text));
+            sb.Append(Properties.Resources.TableContent.Replace("title", "可提玩客币").Replace("value", tbk_ketiWkb.Text));
+            sb.Append(Properties.Resources.TableEnd);
+            sb.Append($"<p style='font-weight:bold;'>账号{di.phone}的设备详情</p>");
             sb.Append(Properties.Resources.TableStart);
             sb.Append(Properties.Resources.TableContent.Replace("title", "名称").Replace("value", di.device_name));
             sb.Append(Properties.Resources.TableContent.Replace("title", "SN").Replace("value", di.device_sn));
@@ -2280,10 +2712,10 @@ namespace imt_wankeyun_client
             sb.Append(Properties.Resources.TableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
             sb.Append(Properties.Resources.TableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
             sb.Append(Properties.Resources.TableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
-            sb.Append(Properties.Resources.TableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
-            sb.Append(Properties.Resources.TableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
-            sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
-            sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
+            //sb.Append(Properties.Resources.TableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
+            //sb.Append(Properties.Resources.TableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
+            //sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
+            //sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
             sb.Append(Properties.Resources.TableContent.Replace("title", "固件版本").Replace("value", di.system_version));
             sb.Append(Properties.Resources.TableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
             sb.Append(Properties.Resources.TableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
@@ -2296,10 +2728,16 @@ namespace imt_wankeyun_client
         {
             StringBuilder sb = new StringBuilder();
             var br = "  " + Environment.NewLine;
-            var status = di.status == "在线" ? $"恢复在线" : $"离线";
-            sb.Append($"账号{di.phone}的设备" + $"** { status } **");
+            //var status = di.status == "在线" ? $"恢复在线" : $"离线";
+            sb.Append($"### 总览");
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", "统计时间").Replace("value", DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()));
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", "在线设备数量").Replace("value", tbk_onlineCount.Text));
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", "离线设备数量").Replace("value", tbk_offlineCount.Text));
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", "昨日总收入").Replace("value", tbk_yesAllCoin.Text));
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", "历史总收入").Replace("value", tbk_hisAllCoin.Text));
+            sb.Append(Properties.Resources.MdTableContent.Replace("title", "可提玩客币").Replace("value", tbk_ketiWkb.Text));
+            sb.Append($"### 账号{di.phone}的设备详情");
             sb.Append(br);
-            sb.Append(Properties.Resources.MdTableContent.Replace("title", $"时间：").Replace("value", DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "名称").Replace("value", di.device_name));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "SN").Replace("value", di.device_sn));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "激活状态").Replace("value", di.isActived));
@@ -2309,10 +2747,10 @@ namespace imt_wankeyun_client
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
-            sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
-            sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
-            sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
-            sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
+            //sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
+            //sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
+            //sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
+            //sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件版本").Replace("value", di.system_version));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
             sb.Append(Properties.Resources.MdTableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
@@ -2323,7 +2761,7 @@ namespace imt_wankeyun_client
         {
             if (settings.mailNotify)
             {
-                if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
+                if (DateTime.Now.Hour == settings.dailyNotifyHour && DateTime.Now.Minute == settings.dailyNotifyMinute)
                 {
                     SendDailyNotifyMail();
                     web_tongji.Refresh();//确保一直挂机检测的客户端也可以做到每日统计一次访问量，而不是只统计第一次打开那天的访问，从而保证访问统计真实性
@@ -2331,7 +2769,7 @@ namespace imt_wankeyun_client
             }
             if (settings.serverchanNotify)
             {
-                if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
+                if (DateTime.Now.Hour == settings.dailyNotifyHour && DateTime.Now.Minute == settings.dailyNotifyMinute)
                 {
                     SendDailyNotifyServerChan();
                     web_tongji.Refresh();//确保一直挂机检测的客户端也可以做到每日统计一次访问量，而不是只统计第一次打开那天的访问，从而保证访问统计真实性
@@ -2362,7 +2800,7 @@ namespace imt_wankeyun_client
                 }
                 if (week == settings.autoTibi || settings.autoTibi == 6)
                 {
-                    if (DateTime.Now.Hour == 9 && DateTime.Now.Minute == 1)
+                    if (DateTime.Now.Hour == 10 && DateTime.Now.Minute == 6)
                     {
                         DrawAllWkb();
                     }
@@ -2371,17 +2809,23 @@ namespace imt_wankeyun_client
         }
         private async void SendDailyNotifyMail()
         {
-            MailHelper.username = settings.mailAccount.username;
-            MailHelper.password = settings.mailAccount.password;
-            MailHelper.smtpServer = settings.mailAccount.smtpServer;
-            MailHelper.port = settings.mailAccount.port;
-            var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, $"{DateTime.Now.ToShortDateString()}汇报-不朽玩客云客户端", GetDailyNotifyHtml(deviceInfos));
-            Debug.WriteLine($"SendDailyNotifyMail:" + result);
+            if (settings.everyday_report == 1)
+            {
+                MailHelper.username = settings.mailAccount.username;
+                MailHelper.password = settings.mailAccount.password;
+                MailHelper.smtpServer = settings.mailAccount.smtpServer;
+                MailHelper.port = settings.mailAccount.port;
+                var result = await MailHelper.SendEmail(settings.mailAccount.mailTo, $"{DateTime.Now.ToShortDateString()}汇报-不朽玩客云客户端", GetDailyNotifyHtml(deviceInfos));
+                Debug.WriteLine($"SendDailyNotifyMail:" + result);
+            }
         }
         private async void SendDailyNotifyServerChan()
         {
-            var result = await ServerChanNotify(settings.SCKEY, $"{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}汇报-不朽玩客云客户端", GetDailyNotifyMarkdown(deviceInfos));
-            Debug.WriteLine($"SendDailyNotifyServerChan:" + result);
+            if (settings.everyday_report == 1)
+            {
+                var result = await ServerChanNotify(settings.SCKEY, $"{DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString()}汇报-不朽玩客云客户端", GetDailyNotifyMarkdown(deviceInfos));
+                Debug.WriteLine($"SendDailyNotifyServerChan:" + result);
+            }
         }
         private async void SendMail(string msg)
         {
@@ -2426,10 +2870,6 @@ namespace imt_wankeyun_client
                 sb.Append(Properties.Resources.TableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
                 sb.Append(Properties.Resources.TableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
                 sb.Append(Properties.Resources.TableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
-                sb.Append(Properties.Resources.TableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
-                sb.Append(Properties.Resources.TableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
-                sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
-                sb.Append(Properties.Resources.TableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
                 sb.Append(Properties.Resources.TableContent.Replace("title", "固件版本").Replace("value", di.system_version));
                 sb.Append(Properties.Resources.TableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
                 sb.Append(Properties.Resources.TableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
@@ -2438,6 +2878,47 @@ namespace imt_wankeyun_client
             }
             sb.Append("</body>");
             sb.Append("</html>");
+            return sb.ToString();
+        }
+        private string GetDailyNotifyCSV(ObservableCollection<DeviceInfoVM> dis)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("用户名,设备名称,设备SN,激活状态,内网IP,外网IP,前日产币,昨日产币,可提币,总收入,硬盘容量,固件版本,固件能否升级,网络运营商,绑定的玩客币地址");
+            sb.Append(Environment.NewLine);
+            var dot = ",";
+            foreach (var di in dis)
+            {
+                sb.Append(di.phone);
+                sb.Append(dot);
+                sb.Append(di.device_name);
+                sb.Append(dot);
+                sb.Append(di.device_sn);
+                sb.Append(dot);
+                sb.Append(di.isActived);
+                sb.Append(dot);
+                sb.Append(di.lan_ip);
+                sb.Append(dot);
+                sb.Append(di.ip);
+                sb.Append(dot);
+                sb.Append(di.wkb_yes_before.ToString());
+                sb.Append(dot);
+                sb.Append(di.yes_wkb.ToString());
+                sb.Append(dot);
+                sb.Append(di.ketiWkb.ToString());
+                sb.Append(dot);
+                sb.Append(di.totalIncome.ToString());
+                sb.Append(dot);
+                sb.Append(di.volume);
+                sb.Append(dot);
+                sb.Append(di.system_version);
+                sb.Append(dot);
+                sb.Append(di.upgradeable);
+                sb.Append(dot);
+                sb.Append(di.ip_info);
+                sb.Append(dot);
+                sb.Append(di.wkbAddr);
+                sb.Append(Environment.NewLine);
+            }
             return sb.ToString();
         }
         private string GetDailyNotifyMarkdown(ObservableCollection<DeviceInfoVM> dis)
@@ -2471,10 +2952,10 @@ namespace imt_wankeyun_client
                 sb.Append(Properties.Resources.MdTableContent.Replace("title", "可提币").Replace("value", di.ketiWkb.ToString()));
                 sb.Append(Properties.Resources.MdTableContent.Replace("title", "总收入").Replace("value", di.totalIncome.ToString()));
                 sb.Append(Properties.Resources.MdTableContent.Replace("title", "硬盘容量").Replace("value", di.volume));
-                sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
-                sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
-                sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
-                sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
+                //sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN上传速度").Replace("value", di.dcdn_upload_speed));
+                //sb.Append(Properties.Resources.MdTableContent.Replace("title", "CDN下载速度").Replace("value", di.dcdn_download_speed));
+                //sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP状态").Replace("value", di.dcdn_upnp_status));
+                //sb.Append(Properties.Resources.MdTableContent.Replace("title", "UPNP消息").Replace("value", di.dcdn_upnp_message));
                 sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件版本").Replace("value", di.system_version));
                 sb.Append(Properties.Resources.MdTableContent.Replace("title", "固件能否升级").Replace("value", di.upgradeable));
                 sb.Append(Properties.Resources.MdTableContent.Replace("title", "网络运营商").Replace("value", di.ip_info));
@@ -2507,12 +2988,24 @@ namespace imt_wankeyun_client
                     return "错误！网络异常错误！";
             }
         }
-        private async void SendNotifyServerChan(DeviceInfoVM di)
+        private async void SendNotifyServerChan(DeviceInfoVM di, int type = 0)
         {
-            if (settings.serverchanNotify)
+            if (settings.serverchanNotify && settings.offline_report == 1)
             {
-                var title = di.status == "在线" ? $"{di.phone} {di.device_name}恢复在线-不朽玩客云客户端" : $"{di.phone} {di.device_name}离线{offlineNotifyTime}分钟了-不朽玩客云客户端";
-                var result = await ServerChanNotify(settings.SCKEY, title + " " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), GetNotifyMarkdown(di));
+                string title = "";
+                if (type == 0)
+                {
+                    title = di.status == "在线" ? $"{di.device_name}恢复在线-不朽玩客云客户端" : $"{di.device_name}离线-不朽玩客云客户端";
+                }
+                else
+                {
+                    if (di.volume == "设备离线")
+                    {
+                        return;
+                    }//防止设备离线导致硬盘重复提醒
+                    title = di.volume != "无硬盘" ? $"{di.device_name}硬盘恢复正常-不朽玩客云客户端" : $"{di.device_name}无硬盘-不朽玩客云客户端";
+                }
+                var result = await ServerChanNotify(settings.SCKEY, $"{DateTime.Now.Hour}点{DateTime.Now.Minute}分{DateTime.Now.Second}秒 " + title, GetNotifyMarkdown(di));
                 Debug.WriteLine($"SendNotifyServerChan {di.phone}:" + result);
             }
         }
@@ -2552,13 +3045,20 @@ namespace imt_wankeyun_client
         {
             try
             {
+                var et = Convert.ToInt32(tbx_refresh_everySpan.Text);
                 var at = Convert.ToInt32(tbx_refresh_allSpan.Text);
-                if (at <= 0)
+                if (et < minEveryDelay)
                 {
-                    MessageBox.Show("时间间隔不能小于0！", "错误");
+                    MessageBox.Show($"刷新延迟不能小于{minEveryDelay}秒！", "错误");
+                    return;
+                }
+                if (at < ApiHelper.userBasicDatas.Count * et + 60)
+                {
+                    MessageBox.Show("时间间隔不能小于(设备数量*刷新延迟 + 60)秒！", "错误");
                     return;
                 }
                 settings.refresh_allSpan = at;
+                settings.refresh_everySpan = et;
                 StatusTimer.Interval = TimeSpan.FromSeconds(settings.refresh_allSpan);
                 SettingHelper.WriteSettings(settings, password);
                 MessageBox.Show("保存设置成功！", "提示");
@@ -2570,22 +3070,49 @@ namespace imt_wankeyun_client
         }
         private async void menu_device_refresh_Click(object sender, RoutedEventArgs e)
         {
-            if (lv_DeviceStatus.SelectedValue != null)
+            if (settings.showSimple)
             {
-                DeviceInfoVM device = lv_DeviceStatus.SelectedValue as DeviceInfoVM;
-                await RefreshStatus(device.phone);
-                MessageBox.Show($"刷新{device.phone}成功", "提示");
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    DeviceInfoVM device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                    await RefreshStatus(device.phone);
+                    MessageBox.Show($"刷新{device.phone}成功", "提示");
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    DeviceInfoVM device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                    await RefreshStatus(device.phone);
+                    MessageBox.Show($"刷新{device.phone}成功", "提示");
+                }
             }
         }
         private void menu_device_delete_Click(object sender, RoutedEventArgs e)
         {
-            if (lv_DeviceStatus.SelectedValue != null)
+            if (settings.showSimple)
             {
-                DeviceInfoVM device = lv_DeviceStatus.SelectedValue as DeviceInfoVM;
-                var result = MessageBox.Show($"确定删除账号{device.phone}?", "提示", MessageBoxButton.OKCancel);
-                if (result == MessageBoxResult.OK)
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
                 {
-                    DeleteDevice(device.phone);
+                    DeviceInfoVM device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                    var result = MessageBox.Show($"确定删除账号{device.phone}?", "提示", MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        DeleteDevice(device.phone);
+                    }
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    DeviceInfoVM device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                    var result = MessageBox.Show($"确定删除账号{device.phone}?", "提示", MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        DeleteDevice(device.phone);
+                    }
                 }
             }
         }
@@ -2606,8 +3133,12 @@ namespace imt_wankeyun_client
                     {
                         r.sMsg = "提币成功！";
                     }
+                    if (r.iRet == 99)
+                    {
+                        r.sMsg = "这周已经提过币了";
+                    }
                 }
-                Thread.Sleep(3 * 1000);//防止提币过快引起风控
+                await Task.Delay(settings.refresh_everySpan * 1000);//防止提币过快引起风控
             }
         }
         private void WebBrowser_Navigating(object sender, NavigatingCancelEventArgs e)
@@ -2629,11 +3160,11 @@ namespace imt_wankeyun_client
 
             objComWebBrowser.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { silent });
         }
-        private void Btu_AddManyAccount_Click(object sender, RoutedEventArgs e)
-        {
-            LoginManyWindow lmw = new LoginManyWindow();
-            lmw.ShowDialog();
-        }
+        //private void Btu_AddManyAccount_Click(object sender, RoutedEventArgs e)
+        //{
+        //    LoginManyWindow lmw = new LoginManyWindow();
+        //    lmw.ShowDialog();
+        //}
         private void btu_savePriceNotify_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2653,10 +3184,16 @@ namespace imt_wankeyun_client
             SortWindow sw = new SortWindow();
             sw.ShowDialog();
             deviceInfos = null;
-            lv_DeviceStatus.ItemsSource = deviceInfos;
-            AutoHeaderWidth(lv_DeviceStatus);
+            if (settings.showSimple)
+            {
+                (lv_DeviceStatus as GridControl).ItemsSource = deviceInfos;
+            }
+            else
+            {
+                (lv_DeviceStatus as ListView).ItemsSource = deviceInfos;
+                AutoHeaderWidth((lv_DeviceStatus as ListView));
+            }
         }
-
         private void chk_uyulin_notify_Click(object sender, RoutedEventArgs e)
         {
             if (chk_uyulin_notify.IsChecked == true)
@@ -2675,95 +3212,666 @@ namespace imt_wankeyun_client
             }
             SettingHelper.WriteSettings(settings, password);
         }
-
-        private void chk_cex_usdt_notify_Click(object sender, RoutedEventArgs e)
-        {
-            if (chk_cex_usdt_notify.IsChecked == true)
-            {
-                if (!settings.priceNotifyItem.Contains("cex-usdt"))
-                {
-                    settings.priceNotifyItem.Add("cex-usdt");
-                }
-            }
-            else
-            {
-                if (settings.priceNotifyItem.Contains("cex-usdt"))
-                {
-                    settings.priceNotifyItem.Remove("cex-usdt");
-                }
-            }
-            SettingHelper.WriteSettings(settings, password);
-        }
-
-        private void chk_cex_eth_notify_Click(object sender, RoutedEventArgs e)
-        {
-            if (chk_cex_eth_notify.IsChecked == true)
-            {
-                if (!settings.priceNotifyItem.Contains("cex-eth"))
-                {
-                    settings.priceNotifyItem.Add("cex-eth");
-                }
-            }
-            else
-            {
-                if (settings.priceNotifyItem.Contains("cex-eth"))
-                {
-                    settings.priceNotifyItem.Remove("cex-eth");
-                }
-            }
-            SettingHelper.WriteSettings(settings, password);
-        }
-
-        private void chk_wkbsq_notify_Click(object sender, RoutedEventArgs e)
-        {
-            if (chk_wkbsq_notify.IsChecked == true)
-            {
-                if (!settings.priceNotifyItem.Contains("玩客币社区"))
-                {
-                    settings.priceNotifyItem.Add("玩客币社区");
-                }
-            }
-            else
-            {
-                if (settings.priceNotifyItem.Contains("玩客币社区"))
-                {
-                    settings.priceNotifyItem.Remove("玩客币社区");
-                }
-            }
-            SettingHelper.WriteSettings(settings, password);
-        }
-
-        private void chk_wjw_notify_Click(object sender, RoutedEventArgs e)
-        {
-            if (chk_wjw_notify.IsChecked == true)
-            {
-                if (!settings.priceNotifyItem.Contains("玩家网"))
-                {
-                    settings.priceNotifyItem.Add("玩家网");
-                }
-            }
-            else
-            {
-                if (settings.priceNotifyItem.Contains("玩家网"))
-                {
-                    settings.priceNotifyItem.Remove("玩家网");
-                }
-            }
-            SettingHelper.WriteSettings(settings, password);
-        }
-
+        //private void chk_cex_usdt_notify_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (chk_cex_usdt_notify.IsChecked == true)
+        //    {
+        //        if (!settings.priceNotifyItem.Contains("cex-usdt"))
+        //        {
+        //            settings.priceNotifyItem.Add("cex-usdt");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (settings.priceNotifyItem.Contains("cex-usdt"))
+        //        {
+        //            settings.priceNotifyItem.Remove("cex-usdt");
+        //        }
+        //    }
+        //    SettingHelper.WriteSettings(settings, password);
+        //}
+        //private void chk_cex_eth_notify_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (chk_cex_eth_notify.IsChecked == true)
+        //    {
+        //        if (!settings.priceNotifyItem.Contains("cex-eth"))
+        //        {
+        //            settings.priceNotifyItem.Add("cex-eth");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (settings.priceNotifyItem.Contains("cex-eth"))
+        //        {
+        //            settings.priceNotifyItem.Remove("cex-eth");
+        //        }
+        //    }
+        //    SettingHelper.WriteSettings(settings, password);
+        //}
+        //private void chk_wkbsq_notify_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (chk_wkbsq_notify.IsChecked == true)
+        //    {
+        //        if (!settings.priceNotifyItem.Contains("玩客币社区"))
+        //        {
+        //            settings.priceNotifyItem.Add("玩客币社区");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (settings.priceNotifyItem.Contains("玩客币社区"))
+        //        {
+        //            settings.priceNotifyItem.Remove("玩客币社区");
+        //        }
+        //    }
+        //    SettingHelper.WriteSettings(settings, password);
+        //}
+        //private void chk_wjw_notify_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (chk_wjw_notify.IsChecked == true)
+        //    {
+        //        if (!settings.priceNotifyItem.Contains("玩家网"))
+        //        {
+        //            settings.priceNotifyItem.Add("玩家网");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (settings.priceNotifyItem.Contains("玩家网"))
+        //        {
+        //            settings.priceNotifyItem.Remove("玩家网");
+        //        }
+        //    }
+        //    SettingHelper.WriteSettings(settings, password);
+        //}
         private async void btu_startRemoteTask_Click(object sender, RoutedEventArgs e)
         {
             var btu = sender as Button;
-            var id = btu.CommandParameter as string;
+            var id = btu.CommandParameter as string + btu.Tag.ToString();
             await ApiHelper.StartRemoteDl(curAccount, id);
+            remoteDlTab_SelectionChanged(null, null);
         }
-
         private async void btu_stopRemoteTask_Click(object sender, RoutedEventArgs e)
         {
             var btu = sender as Button;
-            var id = btu.CommandParameter as string;
+            var id = btu.CommandParameter as string + btu.Tag.ToString();
             await ApiHelper.StopRemoteDl(curAccount, id);
+            remoteDlTab_SelectionChanged(null, null);
+        }
+        private void mainAd_click(object sender, RoutedEventArgs e)
+        {
+            if (ad_main_title.Text != "公告")
+            {
+                AdWindow aw = new AdWindow("http://wanke.immortalt.com/tool/imt_wankeyun_client/ad.png");
+                aw.Show();
+            }
+        }
+        private void chk_showSimple_Click(object sender, RoutedEventArgs e)
+        {
+            if (chk_showSimple.IsChecked == true)
+            {
+                settings.showSimple = true;
+                lv_DeviceStatus = lv_DeviceStatusSimple;
+                lv_DeviceStatusSimple.Visibility = Visibility.Visible;
+                lv_DeviceStatusFull.Visibility = Visibility.Hidden;
+                lv_DeviceStatusSimple.ItemsSource = null;
+                lv_DeviceStatusSimple.ItemsSource = deviceInfos;
+            }
+            else
+            {
+                settings.showSimple = false;
+                lv_DeviceStatus = lv_DeviceStatusFull;
+                lv_DeviceStatusFull.Visibility = Visibility.Visible;
+                lv_DeviceStatusSimple.Visibility = Visibility.Hidden;
+                lv_DeviceStatusFull.ItemsSource = null;
+                lv_DeviceStatusFull.ItemsSource = deviceInfos;
+            }
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void ad_left1_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            Process.Start(new ProcessStartInfo("http://www.vg3d.cc"));
+        }
+
+        private async void menu_device_relogin_Click(object sender, RoutedEventArgs e)
+        {
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    DeviceInfoVM device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                    var ld = settings.loginDatas.Find(t => t.phone == device.phone);
+                    if (ld != null)
+                    {
+                        await UserLogin(ld);
+                        MessageBox.Show($"重新登陆{device.phone}成功", "提示");
+                        await RefreshStatus(ld.phone);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"重新登陆{device.phone}失败!请重新添加该账号", "提示");
+                    }
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    DeviceInfoVM device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                    var ld = settings.loginDatas.Find(t => t.phone == device.phone);
+                    if (ld != null)
+                    {
+                        await UserLogin(ld);
+                        MessageBox.Show($"重新登陆{device.phone}成功", "提示");
+                        await RefreshStatus(ld.phone);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"重新登陆{device.phone}失败!请重新添加该账号", "提示");
+                    }
+                }
+            }
+        }
+
+        private async void menu_device_tibi(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                var phone = device.phone;
+                var result = MessageBox.Show($"确定提取账号{phone}的玩客币?", "提示", MessageBoxButton.OKCancel);
+                if (result == MessageBoxResult.OK)
+                {
+                    var r = await DrawWkb(phone);
+                    if (r != null)
+                    {
+                        if (r.iRet == 0)
+                        {
+                            r.sMsg = "提币成功";
+                        }
+                        if (r.iRet == 99)
+                        {
+                            r.sMsg = "这周已经提过币了";
+                        }
+                        MessageBox.Show($"{r.sMsg}", $"提示({r.iRet})");
+                        await RefreshStatus(phone);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"网络请求失败", "提示");
+                    }
+                }
+            }
+        }
+
+        private async void menu_device_restart(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                var phone = device.phone;
+                var result = MessageBox.Show($"确定重启账号{phone}的设备{device.device_name}?", "提示", MessageBoxButton.OKCancel);
+                if (result == MessageBoxResult.OK)
+                {
+                    var resp = await DeviceReboot(phone);
+                    MessageBox.Show(resp == "success" ? "重启指令发送成功！请等待设备重启" : resp, "提示");
+                    await RefreshStatus(phone);
+                }
+            }
+        }
+
+        private async void menu_device_umount(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                var phone = device.phone;
+                var result = MessageBox.Show($"确定安全弹出账号{phone}设备{device.device_name}的硬盘?", "提示", MessageBoxButton.OKCancel);
+                if (result == MessageBoxResult.OK)
+                {
+                    var resp = await UmountUSBDisk(phone);
+                    MessageBox.Show(resp == "success" ? "安全弹出硬盘成功！可以拔掉硬盘了" : resp, "提示");
+                    await RefreshStatus(phone);
+                }
+            }
+        }
+
+        private async void menu_device_rename(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                var phone = device.phone;
+                string newname = Interaction.InputBox("请输入新的设备名称", "设置设备名称", device.device_name, -1, -1);
+                if (newname.Trim() == device.device_name)
+                {
+                    return;
+                }
+                else if (newname.Trim() != "")
+                {
+                    string result = await SetDeviceName(phone, newname);
+                    if (result == "0")
+                    {
+                        MessageBox.Show("设备名称修改成功！", "恭喜");
+                        await RefreshStatus(phone);
+                    }
+                    else
+                    {
+                        MessageBox.Show("设备名称修改失败！您输入的名称格式有误或过长", "错误");
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+
+        private void lv_DeviceStatusSimple_CustomColumnSort(object sender, CustomColumnSortEventArgs e)
+        {
+            int res1 = UtilHelper.CompareString(e.Value1.ToString(), e.Value2.ToString());
+            e.Result = res1;
+            e.Handled = true;
+        }
+
+        private async void btu_delRemoteTask_Click(object sender, RoutedEventArgs e)
+        {
+            var sel = MessageBox.Show("是否同时删除文件？", "删除任务", MessageBoxButton.YesNoCancel);
+            bool deleteFile = true;
+            if (sel == MessageBoxResult.Yes)
+            {
+                deleteFile = true;
+            }
+            else if (sel == MessageBoxResult.No)
+            {
+                deleteFile = false;
+            }
+            else
+            {
+                return;
+            }
+            var btu = sender as Button;
+            var id = btu.CommandParameter as string + btu.Tag.ToString();
+            var hm = await ApiHelper.DelRemoteDl(curAccount, id, deleteFile);
+            if (hm.data != null)
+            {
+                var r = hm.data as RemoteDLResponse;
+                if (r.rtn == 0 && r.tasks.Count == 0)
+                {
+                    MessageBox.Show("删除成功！");
+                    remoteDlTab_SelectionChanged(null, null);
+                }
+            }
+        }
+
+        private async void menu_device_relogin_all_Click(object sender, RoutedEventArgs e)
+        {
+            var count = 0;
+            foreach (var t in deviceInfos)
+            {
+                if (t.status == "登陆已过期")
+                {
+                    var ld = settings.loginDatas.Find(l => l.phone == t.phone);
+                    if (ld != null)
+                    {
+                        var suc = await UserLogin(ld);
+                        if (suc)
+                        {
+                            count++;
+                        }
+                        RefreshStatus(ld.phone);
+                    }
+                }
+            }
+            if (count > 0)
+            {
+                MessageBox.Show($"重新登陆{count}个账号成功！", "提示");
+            }
+            else
+            {
+                MessageBox.Show($"没有需要重新登陆的账号！", "提示");
+            }
+        }
+
+        private void btu_save_notify_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var hour = int.Parse(tbx_notifyTime_hour.Text.Trim());
+                var minute = int.Parse(tbx_notifyTime_minute.Text.Trim());
+                settings.dailyNotifyHour = int.Parse(tbx_notifyTime_hour.Text.Trim());
+                settings.dailyNotifyMinute = int.Parse(tbx_notifyTime_minute.Text.Trim());
+                SettingHelper.WriteSettings(settings, password);
+                MessageBox.Show("保存成功", "恭喜");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "错误");
+            }
+        }
+
+        private void menu_income_history_Click(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                var phone = device.phone;
+                if (ApiHelper.incomeHistorys.ContainsKey(phone))
+                {
+                    var ih = ApiHelper.incomeHistorys[phone];
+                    ViewHistoryWindow vhw = new ViewHistoryWindow(phone, ih);
+                    vhw.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("数据还没有获取成功！请刷新后重试", "提示");
+                }
+            }
+        }
+
+        private async void menu_device_restart_all_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show($"确定重启所有设备?", "提示", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                var count = 0;
+                foreach (var t in deviceInfos)
+                {
+                    var ld = settings.loginDatas.Find(l => l.phone == t.phone);
+                    if (ld != null)
+                    {
+                        var suc = await DeviceReboot(ld.phone);
+                        if (suc == "success")
+                        {
+                            count++;
+                        }
+                        RefreshStatus(ld.phone);
+                    }
+                }
+                MessageBox.Show($"重新启动{count}台设备成功！", "提示");
+            }
+        }
+
+        private async void menu_device_reset(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                var phone = device.phone;
+                var result = MessageBox.Show($"确定恢复账号{phone}设备{device.device_name}的默认设置?", "提示", MessageBoxButton.OKCancel);
+                if (result == MessageBoxResult.OK)
+                {
+                    var resp = await DeviceReset(phone);
+                    MessageBox.Show(resp == "success" ? "恢复默认设置成功！请等待设备重启" : resp, "提示");
+                    await RefreshStatus(phone);
+                }
+            }
+        }
+
+        private async void menu_device_reset_all_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show($"确定恢复所有设备的默认设置?", "提示", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                var count = 0;
+                foreach (var t in deviceInfos)
+                {
+                    var ld = settings.loginDatas.Find(l => l.phone == t.phone);
+                    if (ld != null)
+                    {
+                        var suc = await DeviceReset(ld.phone);
+                        if (suc == "success")
+                        {
+                            count++;
+                        }
+                        RefreshStatus(ld.phone);
+                    }
+                }
+                MessageBox.Show($"恢复默认设置{count}台设备成功！", "提示");
+            }
+        }
+
+        private void chk_everyday_report_Click(object sender, RoutedEventArgs e)
+        {
+            settings.everyday_report = chk_everyday_report.IsChecked.Value == true ? 1 : 2;
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void chk_offline_report_Click(object sender, RoutedEventArgs e)
+        {
+            settings.offline_report = chk_offline_report.IsChecked.Value == true ? 1 : 2;
+            SettingHelper.WriteSettings(settings, password);
+        }
+
+        private void btu_export_detail_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            sfd.Filter = "网页(*.html)|*.html";
+            sfd.RestoreDirectory = true;
+            sfd.FileName = DateTime.Now.ToLongDateString() + "汇报-不朽玩客云客户端.html";
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string filename = sfd.FileName;
+                    System.IO.File.WriteAllText(filename, GetDailyNotifyHtml(deviceInfos), Encoding.UTF8);
+                    MessageBox.Show("导出成功！", "提示");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导出失败！" + ex.Message, "提示");
+                }
+            }
+        }
+
+        private void btu_viewSetting_pwd_ok_Click(object sender, RoutedEventArgs e)
+        {
+            if (tbx_viewSetting_pwd.Text.Trim() == password)
+            {
+                this.tbx_viewSetting.Text = JsonHelper.Serialize(settings);
+                MessageBox.Show("密码正确", "提示");
+            }
+            else
+            {
+                this.tbx_viewSetting.Text = "";
+                MessageBox.Show("密码错误", "提示");
+            }
+        }
+
+        private void btu_export_account_Click(object sender, RoutedEventArgs e)
+        {
+            if (tbx_viewSetting_pwd.Text.Trim() == password)
+            {
+                MessageBox.Show("密码正确", "提示");
+                System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                sfd.Filter = "文本文件(*.txt)|*.txt";
+                sfd.RestoreDirectory = true;
+                sfd.FileName = DateTime.Now.ToLongDateString() + "账号密码.txt";
+                if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    try
+                    {
+                        string filename = sfd.FileName;
+                        var text = "";
+                        settings.loginDatas.ForEach(t => text += t.phone + "=" + t.pwd + Environment.NewLine);
+                        System.IO.File.WriteAllText(filename, text, Encoding.UTF8);
+                        MessageBox.Show("导出成功！", "提示");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("导出失败！" + ex.Message, "提示");
+                    }
+                }
+            }
+            else
+            {
+                this.tbx_viewSetting.Text = "";
+                MessageBox.Show("密码错误", "提示");
+            }
+        }
+
+        private void btu_export_detail_excel_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            sfd.Filter = "csv文件(*.csv)|*.csv";
+            sfd.RestoreDirectory = true;
+            sfd.FileName = DateTime.Now.ToLongDateString() + "汇报-不朽玩客云客户端.csv";
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string filename = sfd.FileName;
+                    System.IO.File.WriteAllText(filename, GetDailyNotifyCSV(deviceInfos), Encoding.Default);
+                    MessageBox.Show("导出成功！", "提示");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导出失败！" + ex.Message, "提示");
+                }
+            }
+        }
+
+        private void menu_copy_phone_Click(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                Clipboard.SetDataObject(device.phone);
+            }
+        }
+
+        private void menu_copy_sn_Click(object sender, RoutedEventArgs e)
+        {
+            DeviceInfoVM device = new DeviceInfoVM();
+            if (settings.showSimple)
+            {
+                if ((lv_DeviceStatus as GridControl).SelectedItem != null)
+                {
+                    device = (lv_DeviceStatus as GridControl).SelectedItem as DeviceInfoVM;
+                }
+            }
+            else
+            {
+                if ((lv_DeviceStatus as ListView).SelectedValue != null)
+                {
+                    device = (lv_DeviceStatus as ListView).SelectedValue as DeviceInfoVM;
+                }
+            }
+            if (device.phone != null)
+            {
+                Clipboard.SetDataObject(device.device_sn);
+            }
+        }
+        private void playSound_offline()
+        {
+            System.Media.SystemSounds.Beep.Play();//下线
+        }
+        private void playSound_online()
+        {
+            System.Media.SystemSounds.Asterisk.Play();//上线
         }
     }
 }

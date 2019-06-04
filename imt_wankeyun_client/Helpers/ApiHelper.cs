@@ -18,20 +18,24 @@ using imt_wankeyun_client.Entities.ServerChan;
 using imt_wankeyun_client.Entities.Monitor;
 using imt_wankeyun_client.Entities.Uyulin;
 using imt_wankeyun_client.Entities.Miguan;
+using imt_wanke_client.Entities;
+using System.Windows;
 
 namespace imt_wankeyun_client.Helpers
 {
     public class ApiHelper
     {
+        internal static Dictionary<string, List<Cookie>> cookies;
         /// <summary>
         /// 模拟的app版本
         /// </summary>
-        static string appVersion = "1.4.5";
+        static string appVersion = "1.6.2";
         static string apiAccountUrl = "https://account.onethingpcs.com";
         static string apiControlUrl = "https://control.onethingpcs.com";
-        static string apiRemoteDlUrl = "http://control.remotedl.onethingpcs.com";
+        static string apiRemoteDlUrl = "http://control-remotedl.onethingpcs.com";
         internal static RestClient serverchanClient = new RestClient();
         internal static RestClient monitorClient = new RestClient();
+        internal static Dictionary<string, string> clientsIP = new Dictionary<string, string>();
         internal static Dictionary<string, RestClient> clients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, RestClient> DlClients = new Dictionary<string, RestClient>();
         internal static Dictionary<string, UserBasicData> userBasicDatas = new Dictionary<string, UserBasicData>();
@@ -81,6 +85,8 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"user/check?appversion={appVersion}", Method.POST);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("application/x-www-form-urlencoded", GetParams(client, data), ParameterType.RequestBody);
                 return client.Execute(request);
@@ -98,6 +104,56 @@ namespace imt_wankeyun_client.Helpers
             }
             return message;
         }
+        static string GetRandomIP()
+        {
+            int iSeed = 10;
+            Random ro = new Random(iSeed);
+            long tick = DateTime.Now.Ticks;
+            Random ran = new Random((int)(tick & 0xffffffffL) | (int)(tick >> 32));
+            string ip = $"{ran.Next(1, 255)}.{ran.Next(1, 255)}.{ran.Next(0, 255)}.{ran.Next(0, 255)}";
+            return ip;
+        }
+        /// <summary>
+        /// 检查登陆状态
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<HttpMessage> CheckSession(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiAccountUrl);
+                var request = new RestRequest($"user/check-session?appversion={appVersion}", Method.POST);
+                //Debug.WriteLine(GetParams(client, logindata));
+                request.AddHeader("cache-control", "no-cache");
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+                request.AddParameter("application/x-www-form-urlencoded", GetParams(GetClient(phone), data, true), ParameterType.RequestBody);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("CheckSession:" + resp.Content);
+                message.data = JsonHelper.Deserialize<CheckSessionResponse>(resp.Content);
+            }
+            else
+            {
+                Debug.WriteLine("CheckSession Error:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        static string GetClientIP(string phone)
+        {
+            if (!clientsIP.Keys.Contains(phone))
+            {
+                var ip = GetRandomIP();
+                clientsIP.Add(phone, ip);
+            }
+            return clientsIP[phone];
+        }
         /// <summary>
         /// 登陆
         /// </summary>
@@ -109,42 +165,160 @@ namespace imt_wankeyun_client.Helpers
         /// <param name="imeiid">IMEIID</param>
         /// <returns></returns>
         public static async Task<HttpMessage> Login(string phone, string pwd, string imgcode, string account_type,
-            string deviceid, string imeiid)
+            string deviceid, string imeiid, int loginType)
         {
-            var client = GetClient(phone);
-            client.CookieContainer = new CookieContainer();
-            var logindata = new Dictionary<string, string>();
-            logindata.Add("phone", phone);
-            logindata.Add("pwd", pwd);
-            if (imgcode.Trim().Length > 0)
+            try
             {
-                logindata.Add("img_code", imgcode);
-                Debug.WriteLine("imgcode.Trim():" + imgcode);
+                var client = GetClient(phone);
+                client.CookieContainer = new CookieContainer();
+                //if (MainWindow.settings.cookies != null)
+                //{
+                //    cookies = JsonHelper.Deserialize<Dictionary<string, List<Cookie>>>(MainWindow.settings.cookies);
+                //    if (cookies != null && cookies.Keys.Contains(phone))
+                //    {
+                //        var cc = cookies[phone];
+                //        foreach (Cookie c in cc)
+                //        {
+                //            client.CookieContainer.Add(new Uri(apiAccountUrl), c);
+                //            Debug.WriteLine(c.Name + " " + c.Value);
+                //        }
+                //        Debug.WriteLine(client.CookieContainer.Count);
+                //        Debug.WriteLine("新的登陆方式！" + phone);
+                //        var msg = new HttpMessage
+                //        {
+                //            statusCode = HttpStatusCode.OK,
+                //            data = new LoginResponse
+                //            {
+                //                iRet = 0,
+                //                data = new UserBasicData
+                //                {
+                //                    phone = phone,
+                //                    account_type = "4",
+                //                    nickname = phone,
+                //                    bind_pwd = 1,
+                //                    userid = GetCookie(client, apiAccountUrl, "userid"),
+                //                    pop_frame = new PopFrame()
+                //                }
+                //            }
+                //        };
+                //        HttpMessage chkr = null;
+                //        try
+                //        {
+                //            chkr = await CheckSession(phone);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            MessageBox.Show("EX：" + ex.InnerException);
+                //        }
+                //        if (chkr.statusCode == 0)
+                //        {
+                //            //MessageBox.Show("网络连接失败！请重启电脑所在的光猫、路由器");
+                //            return new HttpMessage { statusCode = HttpStatusCode.BadGateway };
+                //        }
+                //        if (chkr.data != null)
+                //        {
+                //            var chk = chkr.data as CheckSessionResponse;
+                //            if (chk.iRet == 0 && chk.sMsg == "ok")
+                //            {
+                //                return msg;
+                //            }
+                //            else
+                //            {
+                //                Debug.WriteLine("登陆信息过期，正在重新登陆" + phone);
+                //                client.CookieContainer = null;
+                //                client.CookieContainer = new CookieContainer();
+                //            }
+                //        }
+                //    }
+                //}
+                var logindata = new Dictionary<string, string>();
+                if (loginType == 0)
+                {
+                    logindata.Add("phone", phone);
+                    logindata.Add("pwd", pwd);
+                    if (imgcode.Trim().Length > 0)
+                    {
+                        logindata.Add("img_code", imgcode);
+                        Debug.WriteLine("imgcode.Trim():" + imgcode);
+                    }
+                    logindata.Add("account_type", "4");
+                    logindata.Add("deviceid", deviceid);
+                    logindata.Add("imeiid", imeiid);
+                }
+                else if (loginType == 1)
+                {
+                    logindata.Add("phone_area", "Email");
+                    logindata.Add("mail", phone);
+                    logindata.Add("pwd", pwd);
+                    if (imgcode.Trim().Length > 0)
+                    {
+                        logindata.Add("img_code", imgcode);
+                        Debug.WriteLine("imgcode.Trim():" + imgcode);
+                    }
+                    logindata.Add("account_type", "5");
+                    logindata.Add("deviceid", deviceid);
+                    logindata.Add("imeiid", imeiid);
+                }
+                var resp = await Task.Run(() =>
+                {
+                    client.BaseUrl = new Uri(apiAccountUrl);
+                    var request = new RestRequest($"user/login?appversion={appVersion}", Method.POST);
+                    //Debug.WriteLine(GetParams(client, logindata));
+                    request.AddHeader("cache-control", "no-cache");
+                    Random ran = new Random(DateTime.Now.Millisecond);
+                    string ip = GetClientIP(phone);
+                    request.AddHeader("Proxy-Client-IP", ip);
+                    //request.AddHeader("X-Forward-For", ip);
+                    //request.AddHeader("Client-IP", ip);
+                    //request.AddHeader("WL-Proxy-Client-IP", ip);
+                    request.AddParameter("application/x-www-form-urlencoded", GetParams(GetClient(phone), logindata, true), ParameterType.RequestBody);
+                    return client.Execute(request);
+                });
+                var message = new HttpMessage { statusCode = resp.StatusCode };
+                if (resp.StatusCode == HttpStatusCode.OK)
+                {
+                    Debug.WriteLine("Login:" + resp.Content);
+                    var root = JsonHelper.Deserialize<LoginResponse>(resp.Content);
+                    if (root.iRet == 0)
+                    {
+                        var cookie = client.CookieContainer.GetCookies(new Uri(apiAccountUrl));
+                        if (cookies == null)
+                        {
+                            cookies = new Dictionary<string, List<Cookie>>();
+                        }
+                        if (cookies != null && cookies.Keys.Contains(phone))
+                        {
+                            cookies[phone] = new List<Cookie>();
+                            foreach (Cookie c in cookie)
+                            {
+                                cookies[phone].Add(c);
+                            }
+                        }
+                        else
+                        {
+                            cookies[phone] = new List<Cookie>();
+                            foreach (Cookie c in cookie)
+                            {
+                                cookies[phone].Add(c);
+                            }
+                        }
+                        MainWindow.settings.cookies = JsonHelper.Serialize(cookies);
+                        SettingHelper.WriteSettings(MainWindow.settings, MainWindow.password);
+                    }
+                    message.data = root;
+                }
+                else
+                {
+                    Debug.WriteLine(resp.Content);
+                    message.data = resp.Content;
+                }
+                return message;
             }
-            logindata.Add("account_type", account_type);
-            logindata.Add("deviceid", deviceid);
-            logindata.Add("imeiid", imeiid);
-            var resp = await Task.Run(() =>
+            catch (Exception ex)
             {
-                client.BaseUrl = new Uri(apiAccountUrl);
-                var request = new RestRequest($"user/login?appversion={appVersion}", Method.POST);
-                //Debug.WriteLine(GetParams(client, logindata));
-                request.AddHeader("cache-control", "no-cache");
-                request.AddParameter("application/x-www-form-urlencoded", GetParams(GetClient(phone), logindata), ParameterType.RequestBody);
-                return client.Execute(request);
-            });
-            var message = new HttpMessage { statusCode = resp.StatusCode };
-            if (resp.StatusCode == HttpStatusCode.OK)
-            {
-                Debug.WriteLine("Login:" + resp.Content);
-                message.data = JsonHelper.Deserialize<LoginResponse>(resp.Content);
+                MessageBox.Show($"账号{phone}登陆失败：{ex.Message + ex.StackTrace + ex.InnerException + ex.Source}", "登陆API异常错误！");
+                return null;
             }
-            else
-            {
-                Debug.WriteLine(resp.Content);
-                message.data = resp.Content;
-            }
-            return message;
         }
         /// <summary>
         /// 获取设备详情
@@ -161,11 +335,15 @@ namespace imt_wankeyun_client.Helpers
             var gstr = GetParams(client, data, true);
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
             var userid = GetCookie(client, apiAccountUrl, "userid");
+            Debug.WriteLine("ListPeerTest:" + sessionid + " " + userid);
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"listPeer?{gstr}", Method.GET);
                 //Debug.WriteLine(GetParams(client, data));
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -209,8 +387,11 @@ namespace imt_wankeyun_client.Helpers
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
-                var request = new RestRequest($"activate/userinfo?appversion=1.4.5", Method.POST);
+                var request = new RestRequest($"activate/userinfo?appversion=" + appVersion, Method.POST);
                 //Debug.WriteLine(GetParams(client, data));
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -221,7 +402,7 @@ namespace imt_wankeyun_client.Helpers
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                //Debug.WriteLine(resp.Content);
+                Debug.WriteLine("GetUserInfo:" + resp.Content);
                 var root = JsonHelper.Deserialize<UserInfoResponse>(resp.Content);
                 message.data = root;
             }
@@ -252,6 +433,9 @@ namespace imt_wankeyun_client.Helpers
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"wkb/income-history", Method.POST);
                 Debug.WriteLine(GetParams(client, data));
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -297,6 +481,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"list?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -331,7 +518,7 @@ namespace imt_wankeyun_client.Helpers
             data.Add("pid", GetPeerID(phone));
             data.Add("v", "1");
             data.Add("ct", "32");
-            data.Add("tasks", id + "_9");
+            data.Add("tasks", id);
             var gstr = GetParams(client, data, true);
             Debug.WriteLine("StartRemoteDl-gstr:" + gstr);
 
@@ -339,6 +526,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"start?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -373,7 +563,7 @@ namespace imt_wankeyun_client.Helpers
             data.Add("pid", GetPeerID(phone));
             data.Add("v", "1");
             data.Add("ct", "32");
-            data.Add("tasks", id + "_9");
+            data.Add("tasks", id);
             var gstr = GetParams(client, data, true);
             Debug.WriteLine("StopRemoteDl-gstr:" + gstr);
 
@@ -381,6 +571,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"pause?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -392,6 +585,53 @@ namespace imt_wankeyun_client.Helpers
                 Debug.WriteLine("StopRemoteDl:" + resp.Content);
                 //var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
                 //message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine(resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 云添加删除任务
+        /// </summary>
+        /// <param name="phone">手机号</param>
+        /// <param name="id">任务id</param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> DelRemoteDl(string phone, string id, bool deleteFile = true)
+        {
+            var client = GetDlClient(phone);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+            var data = new Dictionary<string, string>();
+            data.Add("pid", GetPeerID(phone));
+            data.Add("v", "1");
+            data.Add("ct", "32");
+            data.Add("tasks", id);
+            data.Add("deleteFile", deleteFile.ToString().ToLower());
+            data.Add("recycleTask", "false");
+            var gstr = GetParams(client, data, true);
+            Debug.WriteLine("DelRemoteDl-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiRemoteDlUrl);
+                var request = new RestRequest($"del?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("DelRemoteDl:" + resp.Content);
+                var root = JsonHelper.Deserialize<RemoteDLResponse>(resp.Content);
+                message.data = root;
             }
             else
             {
@@ -422,6 +662,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"login?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -457,15 +700,18 @@ namespace imt_wankeyun_client.Helpers
                 url = url
             };
             var json = JsonHelper.Serialize(obj);
-            var purl = System.Web.HttpUtility.UrlEncode(json, Encoding.UTF8);
-            Debug.WriteLine("purl=" + purl);
+            //var purl = System.Web.HttpUtility.UrlEncode(json, Encoding.UTF8);
+            //Debug.WriteLine("purl=" + purl);
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"urlResolve?pid={GetPeerID(phone)}&v=1", Method.POST);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
-                request.AddParameter("text/plain", purl, ParameterType.RequestBody);
+                request.AddParameter("text/plain", json, ParameterType.RequestBody);
                 return client.Execute(request);
             });
             var message = new HttpMessage { statusCode = resp.StatusCode };
@@ -494,15 +740,18 @@ namespace imt_wankeyun_client.Helpers
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
             var userid = GetCookie(client, apiAccountUrl, "userid");
             var json = JsonHelper.Serialize(cti);
-            var purl = System.Web.HttpUtility.UrlEncode(json, Encoding.UTF8);
-            Debug.WriteLine("purl=" + purl);
+            //var purl = System.Web.HttpUtility.UrlEncode(json, Encoding.UTF8);
+            //Debug.WriteLine("purl=" + purl);
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiRemoteDlUrl);
                 var request = new RestRequest($"createTask?pid={GetPeerID(phone)}&v=2&ct=32", Method.POST);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
-                request.AddParameter("text/plain", purl, ParameterType.RequestBody);
+                request.AddParameter("text/plain", json, ParameterType.RequestBody);
                 return client.Execute(request);
             });
             var message = new HttpMessage { statusCode = resp.StatusCode };
@@ -542,6 +791,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"getUSBInfo?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -561,6 +813,7 @@ namespace imt_wankeyun_client.Helpers
             }
             return message;
         }
+
         /// <summary>
         /// 获取玩客币账号信息
         /// </summary>
@@ -578,6 +831,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"wkb/account-info", Method.POST);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 Debug.WriteLine("GetWkbAccountInfo-GetParams(client, data)" + GetParams(client, data));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
@@ -616,6 +872,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
                 var request = new RestRequest($"wkb/draw", Method.POST);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 Debug.WriteLine("DrawWkb-GetParams(client, data)" + GetParams(client, data));
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
@@ -660,6 +919,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"setDeviceName?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -688,10 +950,12 @@ namespace imt_wankeyun_client.Helpers
         {
             var client = GetClient(phone);
             var data = new Dictionary<string, string>();
-            data.Add("deviceid", GetDeviceID(phone));
-            data.Add("appversion", appVersion);
-            data.Add("v", "1");
-            data.Add("ct", "1");
+            //data.Add("deviceid", GetDeviceID(phone));
+            //data.Add("appversion", appVersion);
+            //data.Add("v", "1");
+            //data.Add("ct", "1");
+            data.Add("opt", "mnt");
+            data.Add("func", "reboot");
             var gstr = GetParams(client, data, true);
             var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
             var userid = GetCookie(client, apiAccountUrl, "userid");
@@ -701,10 +965,13 @@ namespace imt_wankeyun_client.Helpers
             var resp = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiControlUrl);
-                var request = new RestRequest($"deviceReboot?{gstr}", Method.GET);
+                var request = new RestRequest($"sysmgr?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
-                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
-                request.AddParameter("userid", userid, ParameterType.Cookie);
+                //request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                //request.AddParameter("userid", userid, ParameterType.Cookie);
                 return client.Execute(request);
             });
             var message = new HttpMessage { statusCode = resp.StatusCode };
@@ -744,6 +1011,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"umountUSBDisk?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -759,6 +1029,51 @@ namespace imt_wankeyun_client.Helpers
             else
             {
                 Debug.WriteLine("UmountUSBDisk:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// 恢复默认设置
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<HttpMessage> DeviceReset(string phone)
+        {
+            var client = GetClient(phone);
+            var data = new Dictionary<string, string>();
+            data.Add("deviceid", GetDeviceID(phone));
+            data.Add("appversion", appVersion);
+            data.Add("v", "1");
+            data.Add("ct", "1");
+            var gstr = GetParams(client, data, true);
+            var sessionid = GetCookie(client, apiAccountUrl, "sessionid");
+            var userid = GetCookie(client, apiAccountUrl, "userid");
+
+            Debug.WriteLine("DeviceReset-gstr:" + gstr);
+
+            var resp = await Task.Run(() =>
+            {
+                client.BaseUrl = new Uri(apiControlUrl);
+                var request = new RestRequest($"deviceReset?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
+                request.AddParameter("userid", userid, ParameterType.Cookie);
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("DeviceReset:" + resp.Content);
+                var root = JsonHelper.Deserialize<SimpleResponse>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("DeviceReset:" + resp.Content);
                 message.data = resp.Content;
             }
             return message;
@@ -786,6 +1101,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"upgradeProgress?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -828,6 +1146,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"upgradeCheck?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -846,6 +1167,74 @@ namespace imt_wankeyun_client.Helpers
                 message.data = resp.Content;
             }
             return message;
+        }
+        /// <summary>
+        /// AdQuery
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<HttpMessage> AdQuery()
+        {
+            var client = new RestClient("http://115.159.143.254/api/ad");
+            var resp = await Task.Run(() =>
+            {
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
+                request.AddHeader("accept-encoding", "gzip, deflate");
+                request.AddHeader("dnt", "1");
+                request.AddHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                request.AddHeader("upgrade-insecure-requests", "1");
+                request.AddHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36");
+                return client.Execute(request);
+            });
+            var message = new HttpMessage { statusCode = resp.StatusCode };
+            if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                Debug.WriteLine("AdQuery:" + resp.Content);
+                var root = JsonHelper.Deserialize<Ads>(resp.Content);
+                message.data = root;
+            }
+            else
+            {
+                Debug.WriteLine("AdQuery:" + resp.Content);
+                message.data = resp.Content;
+            }
+            return message;
+        }
+        /// <summary>
+        /// AdTitleQuery
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<HttpMessage> Query(string url)
+        {
+            try
+            {
+                var resp = await Task.Run(() =>
+                {
+                    using (WebClient MyWebClient = new WebClient())
+                    {
+                        MyWebClient.Credentials = CredentialCache.DefaultCredentials;//获取或设置用于向Internet资源的请求进行身份验证的网络凭据
+                        Byte[] pageData = MyWebClient.DownloadData(url); //从指定网站下载数据
+                                                                         //string pageHtml = Encoding.Default.GetString(pageData);  //如果获取网站页面采用的是GB2312，则使用这句            
+                        string pageHtml = Encoding.UTF8.GetString(pageData); //如果获取网站页面采用的是UTF-8，则使用这句
+                        return pageHtml;
+                    }
+                });
+                return new HttpMessage
+                {
+                    statusCode = HttpStatusCode.OK,
+                    data = resp
+                };
+            }
+            catch (WebException webEx)
+            {
+                Debug.WriteLine(webEx.Message.ToString());
+                return new HttpMessage
+                {
+                    statusCode = HttpStatusCode.NoContent,
+                    data = "获取失败"
+                };
+            }
         }
         /// <summary>
         /// 开始固件升级
@@ -870,6 +1259,9 @@ namespace imt_wankeyun_client.Helpers
             {
                 client.BaseUrl = new Uri(apiControlUrl);
                 var request = new RestRequest($"upgradeStart?{gstr}", Method.GET);
+                string ip = GetClientIP(phone);
+                request.AddHeader("Proxy-Client-IP", ip);
+
                 request.AddHeader("cache-control", "no-cache");
                 request.AddParameter("sessionid", sessionid, ParameterType.Cookie);
                 request.AddParameter("userid", userid, ParameterType.Cookie);
@@ -960,18 +1352,29 @@ namespace imt_wankeyun_client.Helpers
         public static async Task<HttpMessage> Uyulin_Wkc_doge()
         {
             var client = new RestClient();
-            client.BaseUrl = new Uri("https://uyulin.com/trade/index_json/market");
             var resp = await Task.Run(() =>
             {
-                Random ran = new Random(DateTime.Now.Millisecond);
-                var request = new RestRequest("wkc_doge?t=" + ran.NextDouble(), Method.GET);
+                client.BaseUrl = new Uri("http://api.moduointerface.com/public/marketRanking");
+                var request = new RestRequest(Method.POST);
                 request.AddHeader("cache-control", "no-cache");
+                request.AddHeader("cookie", "safariId=d3e04f682e4349949bc162740963a42c; JSESSIONID=node0s4dz4bognwbohs8acxgx3oy33118800.node0");
+                request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
+                request.AddHeader("accept-encoding", "gzip, deflate");
+                request.AddHeader("referer", "http://wjwcoin.pro/");
+                request.AddHeader("dnt", "1");
+                request.AddHeader("x-custom-useragent", "vbourse/v1.1.0");
+                request.AddHeader("x-devtools-emulate-network-conditions-client-id", "128F5B953BEC99DACCAABAC0D1174F16");
+                request.AddHeader("accept", "application/json, text/plain, */*");
+                request.AddHeader("content-type", "application/x-www-form-urlencoded");
+                request.AddHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36");
+                request.AddHeader("origin", "http://wjwcoin.pro");
+                request.AddHeader("user-udid", "235234");
                 return client.Execute(request);
             });
             var message = new HttpMessage { statusCode = resp.StatusCode };
             if (resp.StatusCode == HttpStatusCode.OK)
             {
-                //Debug.WriteLine("Uyulin_Wkc_doge:" + resp.Content);
+                Debug.WriteLine("Uyulin_Wkc_doge:" + resp.Content);
                 var root = JsonHelper.Deserialize<UyulinWkc_DogeResponse>(resp.Content);
                 message.data = root;
             }
@@ -988,18 +1391,16 @@ namespace imt_wankeyun_client.Helpers
         /// <returns></returns>
         public static async Task<HttpMessage> GetMiguanPrice()
         {
-            var client = new RestClient("https://x.miguan.in/otc/monitorRecordList?orderBy=turnover");
+            var client = new RestClient("https://x.miguan.in/otc/v7/monitorRecordList?orderBy=turnover");
 
             var resp = await Task.Run(() =>
             {
                 var request = new RestRequest(Method.GET);
                 request.AddHeader("cache-control", "no-cache");
-                request.AddHeader("cookie", "_ga=GA1.2.526643689.1511406570; _gid=GA1.2.1880627450.1511406570");
                 request.AddHeader("accept-language", "zh-CN,zh;q=0.9");
                 request.AddHeader("accept-encoding", "gzip, deflate, br");
                 request.AddHeader("referer", "https://t.miguan.in/monitor");
                 request.AddHeader("dnt", "1");
-                request.AddHeader("user-agent", "");
                 request.AddHeader("origin", "https://t.miguan.in");
                 request.AddHeader("accept", "application/json, text/plain, */*");
                 IRestResponse response = client.Execute(request);
@@ -1107,6 +1508,24 @@ namespace imt_wankeyun_client.Helpers
             var imagedata = await Task.Run(() =>
             {
                 client.BaseUrl = new Uri(apiAccountUrl);
+                var request = new RestRequest(url, Method.GET);
+                return client.Execute(request);
+            });
+            using (var ms = new MemoryStream(imagedata.RawBytes))
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.StreamSource = ms;
+                bitmap.EndInit();
+                return bitmap;
+            }
+        }
+        public static async Task<BitmapImage> GetImg(string url)
+        {
+            var client = new RestClient(url);
+            var imagedata = await Task.Run(() =>
+            {
                 var request = new RestRequest(url, Method.GET);
                 return client.Execute(request);
             });

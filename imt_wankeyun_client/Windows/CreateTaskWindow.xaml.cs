@@ -33,6 +33,25 @@ namespace imt_wankeyun_client.Windows
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             tbx_url.Focus();
+            if (MainWindow.curAccount != null && ApiHelper.usbInfoPartitions.ContainsKey(MainWindow.curAccount))
+            {
+                var parts = ApiHelper.usbInfoPartitions[MainWindow.curAccount];
+                if (parts != null && parts.Count > 0)
+                {
+                    var part = parts[0];
+                    parts.ForEach(t =>
+                    {
+                        if ((t.capacity - t.used) > (part.capacity - part.used))
+                        {
+                            part = t;
+                        }
+                    });
+                    tbx_savePath.Text = part.path + "/onecloud/tddownload";
+                    return;
+                }
+            }
+            tbx_savePath.Text = "没有检测到硬盘，请先插入硬盘或刷新文件-全部的分区状态";
+            btu_urlResolve.IsEnabled = false;
         }
         async Task<TaskInfo> UrlResolve(string phone, string url)
         {

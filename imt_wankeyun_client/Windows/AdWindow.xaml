@@ -1,0 +1,26 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:imt_wankeyun_client"
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="imt_wankeyun_client.AdWindow"
+        mc:Ignorable="d"
+        Title="公告" Height="265.754" Width="349.6" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" Style="{DynamicResource NoResize_window}" MouseLeftButtonDown="About1_MouseLeftButtonDown" Icon="/img/icon.ico">
+    <Window.Background>
+        <ImageBrush ImageSource="/img/defaultbkg.jpg"/>
+    </Window.Background>
+    <Grid>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF4D92D5" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+        </Grid>
+        <TextBlock x:Name="tbk_title" HorizontalAlignment="Left" TextWrapping="Wrap" Text="公告" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" Margin="7,4,0,0" FontSize="15"/>
+        <Image x:Name="img_ad" Margin="0,27,0.2,0"></Image>
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Right" Height="22" Margin="256,0,-0.4,131.6" VerticalAlignment="Top" Width="42" Style="{DynamicResource XButtonStyle}" Click="button_Click"/>
+    </Grid>
+</Window>

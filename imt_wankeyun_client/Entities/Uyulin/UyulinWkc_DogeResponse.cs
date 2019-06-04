@@ -6,87 +6,32 @@ using System.Threading.Tasks;
 
 namespace imt_wankeyun_client.Entities.Uyulin
 {
-    public class RfcDoge
+    public class Body
     {
-        public string price { get; set; }
-    }
-
-    public class LtcDoge
-    {
-        public string price { get; set; }
-    }
-
-    public class EthDoge
-    {
-        public string price { get; set; }
-    }
-
-    public class BtcDoge
-    {
-        public string price { get; set; }
-    }
-
-    public class WkcDoge
-    {
-        public string price { get; set; }
-    }
-
-    public class TrfcLtc
-    {
-        public string price { get; set; }
-    }
-
-    public class BtcLtc
-    {
-        public string price { get; set; }
-    }
-
-    public class EthLtc
-    {
-        public string price { get; set; }
-    }
-
-    public class TwkcBtc
-    {
-        public string price { get; set; }
-    }
-
-    public class DogeLtc
-    {
-        public string price { get; set; }
-    }
-
-    public class WkcLtc
-    {
-        public string price { get; set; }
-    }
-
-    public class Menu
-    {
-        public RfcDoge rfc_doge { get; set; }
-        public LtcDoge ltc_doge { get; set; }
-        public EthDoge eth_doge { get; set; }
-        public BtcDoge btc_doge { get; set; }
-        public WkcDoge wkc_doge { get; set; }
-        public TrfcLtc trfc_ltc { get; set; }
-        public BtcLtc btc_ltc { get; set; }
-        public EthLtc eth_ltc { get; set; }
-        public TwkcBtc twkc_btc { get; set; }
-        public DogeLtc doge_ltc { get; set; }
-        public WkcLtc wkc_ltc { get; set; }
-    }
-
-    public class Depth
-    {
-        public List<List<string>> b { get; set; }
-        public List<List<string>> s { get; set; }
+        public string marketId { get; set; }
+        public string usname { get; set; }
+        public string ename { get; set; }
+        public string coinImg { get; set; }
+        public string coincode { get; set; }
+        public string gCoincode { get; set; }
+        public double newPrice { get; set; }
+        public string fCoincode { get; set; }
+        public double mchange { get; set; }
+        public double buyPrice { get; set; }
+        public double sellPrice { get; set; }
+        public double volume { get; set; }
+        public int minPrice { get; set; }
+        public int maxPrice { get; set; }
+        public int round { get; set; }
+        public int closePrice { get; set; }
+        public int feeSell { get; set; }
+        public int feeBuy { get; set; }
     }
 
     public class UyulinWkc_DogeResponse
     {
-        public Menu menu { get; set; }
-        public List<string> top { get; set; }
-        public Depth depth { get; set; }
-        public List<List<object>> trades { get; set; }
+        public int code { get; set; }
+        public string message { get; set; }
+        public List<Body> body { get; set; }
     }
 }

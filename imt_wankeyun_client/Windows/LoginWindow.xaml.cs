@@ -36,9 +36,9 @@ namespace imt_wankeyun_client.Windows
         public string url_login_vali;
         public bool isShowVali = false;
         public static bool LoginSuccess = false;
+        public static string LoginPhone = "";
         LoginData ld = new LoginData
         {
-            account_type = "4",
             deviceid = UtilHelper.RandomCode(16),
             imeiid = UtilHelper.RandomCode(15),
         };
@@ -105,6 +105,16 @@ namespace imt_wankeyun_client.Windows
         }
         private async Task HandleLogin()
         {
+            var loginType = cbx_type.SelectedIndex;
+            switch (loginType)
+            {
+                case 0:
+                    ld.account_type = "4";
+                    break;
+                case 1:
+                    ld.account_type = "5";
+                    break;
+            }
             IsLogining = true;
             if (ApiHelper.userBasicDatas.ContainsKey(tbx_username.Text.Trim()))
             {
@@ -115,7 +125,7 @@ namespace imt_wankeyun_client.Windows
             ld.pwd = tbx_password.Password.Trim();
             tbx_tip.Text = "正在登陆...";
             HttpMessage resp = await ApiHelper.Login(
-                ld.phone, ld.pwd, tbx_valicode.Text.Trim(), ld.account_type, ld.deviceid, ld.imeiid);
+                ld.phone, ld.pwd, tbx_valicode.Text.Trim(), ld.account_type, ld.deviceid, ld.imeiid, loginType);
             switch (resp.statusCode)
             {
                 case HttpStatusCode.OK:
@@ -132,6 +142,7 @@ namespace imt_wankeyun_client.Windows
                             return;
                         }
                         LoginSuccess = true;
+                        LoginPhone = ld.phone;
                         MessageBox.Show("登陆成功", "恭喜");
                         Debug.WriteLine(MainWindow.settings.loginDatas == null);
                         if (MainWindow.settings.loginDatas == null)
@@ -141,7 +152,7 @@ namespace imt_wankeyun_client.Windows
                         MainWindow.settings.loginDatas.Add(ld);
                         SettingHelper.WriteSettings(MainWindow.settings, MainWindow.password);
                         //保存登陆信息
-                        ApiHelper.userBasicDatas.Add(loginResponse.data.phone, loginResponse.data);
+                        ApiHelper.userBasicDatas.Add(ld.phone, loginResponse.data);
                         //载入登陆响应信息到主窗口
                         this.Close();
                     }
@@ -246,6 +257,13 @@ namespace imt_wankeyun_client.Windows
                     btu_login_Click(sender, null);
                 }
             }
+        }
+
+        private void btu_AddManyAccount_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            LoginManyWindow lmw = new LoginManyWindow();
+            lmw.ShowDialog();
         }
     }
 }

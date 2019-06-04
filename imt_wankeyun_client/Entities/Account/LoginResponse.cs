@@ -16,8 +16,10 @@ namespace imt_wankeyun_client.Entities.Account
 
     public class UserBasicData
     {
+        public string mail { get; set; }
         public string userid { get; set; }
         public string phone { get; set; }
+        public string pwd { get; set; }
         public string account_type { get; set; }
         public int bind_pwd { get; set; }
         public string nickname { get; set; }

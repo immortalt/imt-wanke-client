@@ -95,14 +95,14 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid>
-                        <Border x:Name="border" BorderThickness="1,0,0,0" CornerRadius="0">
+                        <Border x:Name="border" BorderThickness="1,0,0,0" CornerRadius="0,5,0,0">
                             <Border.BorderBrush>
                                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                     <GradientStop Color="#FF0B4072" Offset="0"/>
                                     <GradientStop Offset="1" Color="#005A5A5A"/>
                                 </LinearGradientBrush>
                             </Border.BorderBrush>
-                            <Rectangle x:Name="rectangle" Fill="{x:Null}" Stroke="#B3FFFFFF" Margin="12.25,0,12.375,6.375" StrokeThickness="2" Height="2.5" VerticalAlignment="Bottom"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="_" Width="20" Foreground="#B3FFFFFF" Padding="0,0,0,0" FontSize="14.667" HorizontalAlignment="Stretch" FontWeight="Bold"/>
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
